@@ -6,6 +6,10 @@ const mongoose = require('mongoose');
 const app = express();
 const PORT = process.env.PORT || 5000;
 
+console.log(`[STARTUP] Process starting...`);
+console.log(`[STARTUP] NODE_ENV: ${process.env.NODE_ENV}`);
+console.log(`[STARTUP] PORT: ${PORT}`);
+
 app.use(cors({
   origin: (origin, callback) => {
     const allowedOrigins = [
@@ -25,27 +29,30 @@ app.use(cors({
 
 app.use(express.json());
 
-// Auth routes
-app.use('/api/auth', require('./routes/auth'));
-
-// Protected routes
-app.use('/api/transactions', require('./routes/transactions'));
-app.use('/api/budgets', require('./routes/budgets'));
-
 app.get('/api/health', (req, res) => {
   res.json({ status: 'OK', message: 'Finance Tracker API is running' });
 });
+
+console.log(`[STARTUP] Attempting MongoDB connection to: ${process.env.MONGODB_URI ? 'MongoDB configured' : 'NO MONGODB_URI'}`);
 
 // Connect to MongoDB and start server
 mongoose.connect(process.env.MONGODB_URI)
   .then(() => {
     console.log('✅ MongoDB connected');
+
+    // Load routes AFTER MongoDB connection
+    app.use('/api/auth', require('./routes/auth'));
+    app.use('/api/transactions', require('./routes/transactions'));
+    app.use('/api/budgets', require('./routes/budgets'));
+
+    console.log('[STARTUP] Routes loaded');
+
     app.listen(PORT, '0.0.0.0', () => {
       console.log(`🚀 Server running on port ${PORT}`);
       console.log(`📡 Listening on 0.0.0.0:${PORT}`);
     });
   })
   .catch(err => {
-    console.error('❌ MongoDB connection failed:', err);
+    console.error('❌ MongoDB connection failed:', err.message);
     process.exit(1);
   });
