@@ -10,6 +10,16 @@ console.log(`[STARTUP] Process starting...`);
 console.log(`[STARTUP] NODE_ENV: ${process.env.NODE_ENV}`);
 console.log(`[STARTUP] PORT: ${PORT}`);
 
+// Global error handlers
+process.on('uncaughtException', (err) => {
+  console.error('[UNCAUGHT EXCEPTION]', err.message);
+  console.error(err.stack);
+});
+
+process.on('unhandledRejection', (err) => {
+  console.error('[UNHANDLED REJECTION]', err);
+});
+
 app.use(cors({
   origin: (origin, callback) => {
     const allowedOrigins = [
@@ -40,16 +50,29 @@ mongoose.connect(process.env.MONGODB_URI)
   .then(() => {
     console.log('✅ MongoDB connected');
 
-    // Load routes AFTER MongoDB connection
-    app.use('/api/auth', require('./routes/auth'));
-    app.use('/api/transactions', require('./routes/transactions'));
-    app.use('/api/budgets', require('./routes/budgets'));
+    try {
+      // Load routes AFTER MongoDB connection
+      console.log('[STARTUP] Loading auth routes...');
+      app.use('/api/auth', require('./routes/auth'));
+      console.log('[STARTUP] Loading transaction routes...');
+      app.use('/api/transactions', require('./routes/transactions'));
+      console.log('[STARTUP] Loading budget routes...');
+      app.use('/api/budgets', require('./routes/budgets'));
+      console.log('[STARTUP] Routes loaded');
+    } catch (routeErr) {
+      console.error('[STARTUP] Error loading routes:', routeErr.message);
+      console.error(routeErr.stack);
+      process.exit(1);
+    }
 
-    console.log('[STARTUP] Routes loaded');
-
-    app.listen(PORT, '0.0.0.0', () => {
+    const server = app.listen(PORT, '0.0.0.0', () => {
       console.log(`🚀 Server running on port ${PORT}`);
       console.log(`📡 Listening on 0.0.0.0:${PORT}`);
+    });
+
+    server.on('error', (err) => {
+      console.error('[SERVER ERROR]', err.message);
+      process.exit(1);
     });
   })
   .catch(err => {
