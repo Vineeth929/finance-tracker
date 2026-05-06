@@ -20,6 +20,12 @@ process.on('unhandledRejection', (err) => {
   console.error('[UNHANDLED REJECTION]', err);
 });
 
+// Test route that doesn't depend on anything
+app.get('/test', (req, res) => {
+  console.log('[REQUEST] /test received');
+  res.json({ message: 'Test OK' });
+});
+
 app.use(cors({
   origin: (origin, callback) => {
     const allowedOrigins = [
@@ -40,6 +46,7 @@ app.use(cors({
 app.use(express.json());
 
 app.get('/api/health', (req, res) => {
+  console.log('[REQUEST] /api/health received');
   res.json({ status: 'OK', message: 'Finance Tracker API is running' });
 });
 
