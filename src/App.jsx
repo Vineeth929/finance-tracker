@@ -45,7 +45,15 @@ export default function App() {
       setTransactions(txData.map(t => ({ ...t, id: t._id })));
       setBudgets(budgetData);
     } catch (err) {
-      setError('Could not connect to server. Check if backend is running.');
+      const localTx = JSON.parse(localStorage.getItem('financeTransactions') || '[]');
+      const localBudgets = JSON.parse(localStorage.getItem('budgets') || '{}');
+      if (localTx.length > 0 || Object.keys(localBudgets).length > 0) {
+        setTransactions(localTx);
+        setBudgets(localBudgets);
+        setError('Using offline data. Backend unavailable.');
+      } else {
+        setError('Could not connect to server. Check if backend is running.');
+      }
     } finally {
       setLoading(false);
     }
@@ -66,7 +74,9 @@ export default function App() {
       const saved = await api.addTransaction(transaction);
       setTransactions(prev => [{ ...saved, id: saved._id }, ...prev]);
     } catch {
-      alert('Failed to save transaction. Try again.');
+      const tx = { ...transaction, id: Date.now() };
+      setTransactions(prev => [tx, ...prev]);
+      localStorage.setItem('financeTransactions', JSON.stringify([tx, ...transactions]));
     }
   };
 
@@ -76,7 +86,10 @@ export default function App() {
       setTransactions(prev => prev.filter(t => t.id !== id));
       if (searchResults) setSearchResults(prev => prev.filter(t => t.id !== id));
     } catch {
-      alert('Failed to delete. Try again.');
+      const updated = transactions.filter(t => t.id !== id);
+      setTransactions(updated);
+      localStorage.setItem('financeTransactions', JSON.stringify(updated));
+      if (searchResults) setSearchResults(prev => prev.filter(t => t.id !== id));
     }
   };
 
@@ -85,7 +98,9 @@ export default function App() {
       const updated = await api.updateTransaction(id, updatedData);
       setTransactions(prev => prev.map(t => t.id === id ? { ...updated, id: updated._id } : t));
     } catch {
-      alert('Failed to update. Try again.');
+      const updated = { ...updatedData, id };
+      setTransactions(prev => prev.map(t => t.id === id ? updated : t));
+      localStorage.setItem('financeTransactions', JSON.stringify(transactions.map(t => t.id === id ? updated : t)));
     }
   };
 
