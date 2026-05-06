@@ -61,7 +61,7 @@ export default function App() {
 
   useEffect(() => {
     fetchData();
-  }, [fetchData]);
+  }, []);
 
   const availableMonths = getAvailableMonths(transactions);
   const filteredTransactions = filterByMonth(transactions, selectedMonth);
