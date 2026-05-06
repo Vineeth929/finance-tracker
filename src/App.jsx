@@ -22,6 +22,7 @@ const TABS = [
 ];
 
 export default function App() {
+  console.log('🚀 App component rendering');
   const [transactions, setTransactions] = useState([]);
   const [budgets, setBudgets] = useState({ 'Needs': 0, 'Wants': 0, 'Savings & Investment': 0 });
   const [darkMode, setDarkMode] = useLocalStorage('darkMode', false);
