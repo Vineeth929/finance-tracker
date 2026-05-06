@@ -88,3 +88,38 @@ export const getAvailableMonths = (transactions) => {
   });
   return Array.from(months).sort().reverse();
 };
+
+export const calculateBudgetStatus = (transactions, budgets, selectedMonth) => {
+  const filtered = filterByMonth(transactions, selectedMonth);
+  const spending = calculateByCategory(filtered);
+  return Object.keys(budgets).map(category => {
+    const spent = spending[category] || 0;
+    const budget = budgets[category] || 0;
+    const percent = budget > 0 ? (spent / budget) * 100 : 0;
+    return { category, budget, spent, remaining: Math.max(0, budget - spent), percent: Math.min(100, percent), isOverBudget: spent > budget };
+  });
+};
+
+export const searchTransactions = (transactions, query) => {
+  if (!query.trim()) return transactions;
+  const lowerQuery = query.toLowerCase();
+  return transactions.filter(t => {
+    const amountMatch = t.amount.toString().includes(query);
+    const categoryMatch = (t.category || '').toLowerCase().includes(lowerQuery);
+    const subcategoryMatch = (t.subcategory || '').toLowerCase().includes(lowerQuery);
+    const sourceMatch = (t.source || '').toLowerCase().includes(lowerQuery);
+    const notesMatch = (t.notes || '').toLowerCase().includes(lowerQuery);
+    return amountMatch || categoryMatch || subcategoryMatch || sourceMatch || notesMatch;
+  });
+};
+
+export const getMonthlyTrends = (transactions, months = 6) => {
+  const trends = {};
+  const allMonths = getAvailableMonths(transactions);
+  allMonths.slice(0, months).forEach(month => {
+    const filtered = filterByMonth(transactions, month);
+    const { income, expenses } = calculateTotals(filtered);
+    trends[month] = { income, expenses, savings: income - expenses };
+  });
+  return trends;
+};
