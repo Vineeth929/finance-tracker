@@ -35,6 +35,7 @@ export default function App() {
   });
 
   const fetchData = useCallback(async () => {
+    console.log('🔄 Fetching data from API...');
     try {
       setLoading(true);
       setError(null);
@@ -42,9 +43,11 @@ export default function App() {
         api.getTransactions(),
         api.getBudgets()
       ]);
+      console.log('✅ Got data from API:', txData.length, 'transactions');
       setTransactions(txData.map(t => ({ ...t, id: t._id })));
       setBudgets(budgetData);
     } catch (err) {
+      console.log('❌ API Error:', err.message);
       const localTx = JSON.parse(localStorage.getItem('financeTransactions') || '[]');
       const localBudgets = JSON.parse(localStorage.getItem('budgets') || '{}');
       if (localTx.length > 0 || Object.keys(localBudgets).length > 0) {
@@ -60,8 +63,9 @@ export default function App() {
   }, []);
 
   useEffect(() => {
+    console.log('📱 App mounted, calling fetchData...');
     fetchData();
-  }, []);
+  }, [fetchData]);
 
   const availableMonths = getAvailableMonths(transactions);
   const filteredTransactions = filterByMonth(transactions, selectedMonth);
