@@ -29,6 +29,10 @@ mongoose.connect(process.env.MONGODB_URI)
   .then(() => console.log('✅ MongoDB connected'))
   .catch(err => console.error('❌ MongoDB error:', err));
 
+// Auth routes
+app.use('/api/auth', require('./routes/auth'));
+
+// Protected routes
 app.use('/api/transactions', require('./routes/transactions'));
 app.use('/api/budgets', require('./routes/budgets'));
 

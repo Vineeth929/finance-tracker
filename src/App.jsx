@@ -1,7 +1,16 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState } from 'react';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { AuthProvider, useAuth } from './context/AuthContext';
 import { useLocalStorage } from './hooks/useLocalStorage';
-import { api } from './hooks/useApi';
-import { calculateTotals, getSuggestions, filterByMonth, getAvailableMonths, searchTransactions } from './utils/calculations';
+
+// Auth Components
+import Login from './components/Login';
+import Signup from './components/Signup';
+import ForgotPassword from './components/ForgotPassword';
+import Profile from './components/Profile';
+import ProtectedRoute from './components/ProtectedRoute';
+
+// Dashboard Components
 import Dashboard from './components/Dashboard';
 import AddIncome from './components/AddIncome';
 import AddExpense from './components/AddExpense';
@@ -10,6 +19,17 @@ import TransactionList from './components/TransactionList';
 import BudgetPlanner from './components/BudgetPlanner';
 import Analytics from './components/Analytics';
 import SearchFilter from './components/SearchFilter';
+import NavBar from './components/NavBar';
+
+// Utilities
+import {
+  calculateTotals,
+  getSuggestions,
+  filterByMonth,
+  getAvailableMonths,
+  searchTransactions
+} from './utils/calculations';
+import { api } from './hooks/useApi';
 
 const TABS = [
   { id: 'dashboard', icon: '📊', label: 'Dashboard' },
@@ -21,10 +41,13 @@ const TABS = [
   { id: 'transactions', icon: '📋', label: 'History' }
 ];
 
-export default function App() {
-  console.log('🚀 App component rendering');
+function DashboardLayout() {
   const [transactions, setTransactions] = useState([]);
-  const [budgets, setBudgets] = useState({ 'Needs': 0, 'Wants': 0, 'Savings & Investment': 0 });
+  const [budgets, setBudgets] = useState({
+    'Needs': 0,
+    'Wants': 0,
+    'Savings & Investment': 0
+  });
   const [darkMode, setDarkMode] = useLocalStorage('darkMode', false);
   const [activeTab, setActiveTab] = useState('dashboard');
   const [loading, setLoading] = useState(true);
@@ -35,8 +58,12 @@ export default function App() {
     return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
   });
 
-  const fetchData = useCallback(async () => {
-    console.log('🔄 Fetching data from API...');
+  // Fetch data on mount
+  React.useEffect(() => {
+    fetchData();
+  }, []);
+
+  const fetchData = async () => {
     try {
       setLoading(true);
       setError(null);
@@ -44,11 +71,9 @@ export default function App() {
         api.getTransactions(),
         api.getBudgets()
       ]);
-      console.log('✅ Got data from API:', txData.length, 'transactions');
       setTransactions(txData.map(t => ({ ...t, id: t._id })));
       setBudgets(budgetData);
     } catch (err) {
-      console.log('❌ API Error:', err.message);
       const localTx = JSON.parse(localStorage.getItem('financeTransactions') || '[]');
       const localBudgets = JSON.parse(localStorage.getItem('budgets') || '{}');
       if (localTx.length > 0 || Object.keys(localBudgets).length > 0) {
@@ -61,12 +86,7 @@ export default function App() {
     } finally {
       setLoading(false);
     }
-  }, []);
-
-  useEffect(() => {
-    console.log('📱 App mounted, calling fetchData...');
-    fetchData();
-  }, [fetchData]);
+  };
 
   const availableMonths = getAvailableMonths(transactions);
   const filteredTransactions = filterByMonth(transactions, selectedMonth);
@@ -101,11 +121,16 @@ export default function App() {
   const editTransaction = async (id, updatedData) => {
     try {
       const updated = await api.updateTransaction(id, updatedData);
-      setTransactions(prev => prev.map(t => t.id === id ? { ...updated, id: updated._id } : t));
+      setTransactions(prev =>
+        prev.map(t => (t.id === id ? { ...updated, id: updated._id } : t))
+      );
     } catch {
       const updated = { ...updatedData, id };
-      setTransactions(prev => prev.map(t => t.id === id ? updated : t));
-      localStorage.setItem('financeTransactions', JSON.stringify(transactions.map(t => t.id === id ? updated : t)));
+      setTransactions(prev => prev.map(t => (t.id === id ? updated : t)));
+      localStorage.setItem(
+        'financeTransactions',
+        JSON.stringify(transactions.map(t => (t.id === id ? updated : t)))
+      );
     }
   };
 
@@ -121,8 +146,14 @@ export default function App() {
   const exportData = () => {
     const dataStr = JSON.stringify({ transactions, budgets }, null, 2);
     const element = document.createElement('a');
-    element.setAttribute('href', 'data:text/json;charset=utf-8,' + encodeURIComponent(dataStr));
-    element.setAttribute('download', `finance-data-${new Date().toISOString().split('T')[0]}.json`);
+    element.setAttribute(
+      'href',
+      'data:text/json;charset=utf-8,' + encodeURIComponent(dataStr)
+    );
+    element.setAttribute(
+      'download',
+      `finance-data-${new Date().toISOString().split('T')[0]}.json`
+    );
     element.style.display = 'none';
     document.body.appendChild(element);
     element.click();
@@ -132,22 +163,16 @@ export default function App() {
   return (
     <div className={darkMode ? 'dark' : ''}>
       <div className="min-h-screen bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 transition-colors">
-        {/* Header */}
-        <header className="bg-white dark:bg-gray-800 shadow-sm sticky top-0 z-50">
-          <div className="max-w-6xl mx-auto px-4 py-4 flex justify-between items-center">
-            <h1 className="text-xl sm:text-2xl font-bold text-blue-600">💰 Finance Tracker</h1>
-            <button onClick={() => setDarkMode(!darkMode)} className="btn btn-secondary text-sm sm:text-base">
-              {darkMode ? '☀️ Light' : '🌙 Dark'}
-            </button>
-          </div>
-        </header>
+        <NavBar darkMode={darkMode} onDarkModeToggle={() => setDarkMode(!darkMode)} />
 
         <main className="max-w-6xl mx-auto px-4 py-6 sm:py-8">
           {/* Error Banner */}
           {error && (
             <div className="mb-6 p-4 bg-red-100 dark:bg-red-900/30 border border-red-400 text-red-800 dark:text-red-200 rounded-lg flex justify-between items-center">
               <span>⚠️ {error}</span>
-              <button onClick={fetchData} className="btn btn-secondary text-sm ml-4">Retry</button>
+              <button onClick={fetchData} className="btn btn-secondary text-sm ml-4">
+                Retry
+              </button>
             </div>
           )}
 
@@ -176,16 +201,21 @@ export default function App() {
               <label className="font-medium whitespace-nowrap">Filter by Month:</label>
               <select
                 value={selectedMonth}
-                onChange={(e) => setSelectedMonth(e.target.value)}
+                onChange={e => setSelectedMonth(e.target.value)}
                 className="select max-w-xs text-sm sm:text-base"
               >
                 <option value="">All Time</option>
                 {availableMonths.map(month => {
                   const [year, monthNum] = month.split('-');
                   const date = new Date(year, parseInt(monthNum) - 1);
-                  return <option key={month} value={month}>
-                    {date.toLocaleDateString('en-US', { year: 'numeric', month: 'long' })}
-                  </option>;
+                  return (
+                    <option key={month} value={month}>
+                      {date.toLocaleDateString('en-US', {
+                        year: 'numeric',
+                        month: 'long'
+                      })}
+                    </option>
+                  );
                 })}
               </select>
             </div>
@@ -208,18 +238,36 @@ export default function App() {
               {activeTab === 'expense' && <AddExpense onAddExpense={addTransaction} />}
               {activeTab === 'search' && (
                 <div className="space-y-6">
-                  <SearchFilter transactions={filteredTransactions} onSearchChange={setSearchResults} />
+                  <SearchFilter
+                    transactions={filteredTransactions}
+                    onSearchChange={setSearchResults}
+                  />
                   {searchResults && (
-                    <TransactionList transactions={searchResults} onDelete={deleteTransaction} onEdit={editTransaction} />
+                    <TransactionList
+                      transactions={searchResults}
+                      onDelete={deleteTransaction}
+                      onEdit={editTransaction}
+                    />
                   )}
                 </div>
               )}
               {activeTab === 'budget' && (
-                <BudgetPlanner transactions={transactions} budgets={budgets} onBudgetChange={handleBudgetChange} selectedMonth={selectedMonth} />
+                <BudgetPlanner
+                  transactions={transactions}
+                  budgets={budgets}
+                  onBudgetChange={handleBudgetChange}
+                  selectedMonth={selectedMonth}
+                />
               )}
-              {activeTab === 'analytics' && <Analytics transactions={transactions} selectedMonth={selectedMonth} />}
+              {activeTab === 'analytics' && (
+                <Analytics transactions={transactions} selectedMonth={selectedMonth} />
+              )}
               {activeTab === 'transactions' && (
-                <TransactionList transactions={displayTransactions} onDelete={deleteTransaction} onEdit={editTransaction} />
+                <TransactionList
+                  transactions={displayTransactions}
+                  onDelete={deleteTransaction}
+                  onEdit={editTransaction}
+                />
               )}
             </>
           )}
@@ -232,5 +280,71 @@ export default function App() {
         </main>
       </div>
     </div>
+  );
+}
+
+function AppContent() {
+  const { isAuthenticated, loading } = useAuth();
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900">
+        <div className="text-center">
+          <div className="inline-block w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
+          <p className="mt-4 text-gray-600 dark:text-gray-400">Loading...</p>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <Routes>
+      {/* Public Auth Routes */}
+      {!isAuthenticated ? (
+        <>
+          <Route path="/login" element={<Login />} />
+          <Route path="/signup" element={<Signup />} />
+          <Route path="/forgot-password" element={<ForgotPassword />} />
+          <Route path="*" element={<Navigate to="/login" replace />} />
+        </>
+      ) : (
+        <>
+          {/* Protected Dashboard Routes */}
+          <Route
+            path="/"
+            element={
+              <ProtectedRoute>
+                <DashboardLayout />
+              </ProtectedRoute>
+            }
+          />
+          {/* Profile Route */}
+          <Route
+            path="/profile"
+            element={
+              <ProtectedRoute>
+                <div className="dark:bg-gray-900">
+                  <NavBar darkMode={false} onDarkModeToggle={() => {}} />
+                  <Profile />
+                </div>
+              </ProtectedRoute>
+            }
+          />
+          <Route path="/login" element={<Navigate to="/" replace />} />
+          <Route path="/signup" element={<Navigate to="/" replace />} />
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </>
+      )}
+    </Routes>
+  );
+}
+
+export default function App() {
+  return (
+    <Router>
+      <AuthProvider>
+        <AppContent />
+      </AuthProvider>
+    </Router>
   );
 }
