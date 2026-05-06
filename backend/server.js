@@ -7,10 +7,18 @@ const app = express();
 const PORT = process.env.PORT || 5000;
 
 app.use(cors({
-  origin: [
-    process.env.FRONTEND_URL || 'https://vineeth929.github.io',
-    'http://localhost:5173'
-  ],
+  origin: (origin, callback) => {
+    const allowedOrigins = [
+      'https://vineeth929.github.io',
+      'http://localhost:5173',
+      'http://localhost:3000'
+    ];
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('CORS not allowed'), false);
+    }
+  },
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
   credentials: true
 }));
