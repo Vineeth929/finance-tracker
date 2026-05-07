@@ -1,1 +1,1 @@
-web: npm --prefix backend ci && npm --prefix backend start
+web: cd backend && npm ci && npm start
