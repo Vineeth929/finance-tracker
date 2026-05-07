@@ -4,11 +4,13 @@ const cors = require('cors');
 const mongoose = require('mongoose');
 
 const app = express();
-const PORT = process.env.PORT || 5000;
+const PORT = parseInt(process.env.PORT) || 5000;
 
 console.log(`[STARTUP] Process starting...`);
 console.log(`[STARTUP] NODE_ENV: ${process.env.NODE_ENV}`);
-console.log(`[STARTUP] PORT: ${PORT}`);
+console.log(`[STARTUP] PORT env: ${process.env.PORT}`);
+console.log(`[STARTUP] Using PORT: ${PORT}`);
+console.log(`[STARTUP] typeof PORT: ${typeof PORT}`);
 
 // Global error handlers
 process.on('uncaughtException', (err) => {
