@@ -7,9 +7,7 @@
     "preview": "vite preview",
     "deploy": "npm run build && gh-pages -d dist",
     "start": "npm --prefix backend start",
-    "postinstall": "npm --prefix backend install",
-    "test:e2e": "playwright test",
-    "test:e2e:ui": "playwright test --ui"
+    "postinstall": "npm --prefix backend install"
   },
   "dependencies": {
     "chart.js": "^4.4.0",
@@ -19,7 +17,6 @@
     "react-router-dom": "^6.20.0"
   },
   "devDependencies": {
-    "@playwright/test": "^1.59.1",
     "@vitejs/plugin-react": "^4.2.0",
     "autoprefixer": "^10.4.16",
     "gh-pages": "^6.3.0",
