@@ -3,6 +3,8 @@ import { HashRouter as Router, Routes, Route, Navigate } from 'react-router-dom'
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { AppProvider } from './context/AppContext';
 
+// v2.0 - Premium fintech dashboard
+
 // Layout
 import Sidebar from './components/layout/Sidebar';
 

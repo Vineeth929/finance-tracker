@@ -24,7 +24,7 @@ export const AppProvider = ({ children }) => {
   const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
 
   const api = async (endpoint, options = {}) => {
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem('authToken');
     const response = await fetch(`${apiUrl}${endpoint}`, {
       ...options,
       headers: {
