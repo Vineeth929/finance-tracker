@@ -16,10 +16,25 @@ export const AppProvider = ({ children }) => {
   const [budgets, setBudgets] = useState(null);
   const [goals, setGoals] = useState([]);
   const [notifications, setNotifications] = useState([]);
-  const [darkMode, setDarkMode] = useState(true);
+  const [darkMode, setDarkModeState] = useState(() => {
+    const saved = localStorage.getItem('darkMode');
+    return saved !== null ? JSON.parse(saved) : true;
+  });
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+
+  const setDarkMode = (value) => {
+    setDarkModeState(value);
+    localStorage.setItem('darkMode', JSON.stringify(value));
+    if (value) {
+      document.documentElement.classList.add('dark');
+      document.documentElement.classList.remove('light');
+    } else {
+      document.documentElement.classList.add('light');
+      document.documentElement.classList.remove('dark');
+    }
+  };
 
   const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
 
@@ -173,6 +188,16 @@ export const AppProvider = ({ children }) => {
       fetchTransactions();
       fetchBudgets();
       fetchGoals();
+    }
+  }, []);
+
+  useEffect(() => {
+    if (darkMode) {
+      document.documentElement.classList.add('dark');
+      document.documentElement.classList.remove('light');
+    } else {
+      document.documentElement.classList.add('light');
+      document.documentElement.classList.remove('dark');
     }
   }, []);
 

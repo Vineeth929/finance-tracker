@@ -28,13 +28,15 @@ export default function Sidebar() {
       className={`glass fixed left-0 top-0 h-screen transition-all duration-300 z-40 flex flex-col ${
         sidebarCollapsed ? 'w-20' : 'w-64'
       }`}
+      style={{ borderColor: 'var(--glass-border)' }}
     >
       {/* Header */}
-      <div className="p-4 border-b border-white/10 flex items-center justify-between">
+      <div className="p-4 border-b flex items-center justify-between" style={{ borderColor: 'var(--glass-border)' }}>
         {!sidebarCollapsed && <h1 className="text-xl font-bold gradient-text">💰 Finance</h1>}
         <button
           onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
-          className="p-2 hover:bg-white/10 rounded-lg transition-colors"
+          className="p-2 rounded-lg transition-colors"
+          style={{ color: 'var(--text-primary)' }}
         >
           {sidebarCollapsed ? '▶️' : '◀️'}
         </button>
@@ -52,8 +54,9 @@ export default function Sidebar() {
                   className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-300 ${
                     isActive
                       ? 'gradient-brand text-white shadow-lg'
-                      : 'text-gray-300 hover:bg-white/10'
+                      : 'hover:bg-white/10'
                   }`}
+                  style={{ color: isActive ? 'white' : 'var(--text-secondary)' }}
                 >
                   <span className="text-lg">{item.icon}</span>
                   {!sidebarCollapsed && <span className="text-sm font-medium">{item.label}</span>}
@@ -65,11 +68,11 @@ export default function Sidebar() {
       </nav>
 
       {/* User Profile */}
-      <div className="p-4 border-t border-white/10 space-y-3">
+      <div className="p-4 border-t space-y-3" style={{ borderColor: 'var(--glass-border)' }}>
         {!sidebarCollapsed && user && (
           <div className="text-xs">
-            <p className="text-gray-400">Logged in as</p>
-            <p className="text-white font-semibold truncate">{user.fullName || user.email}</p>
+            <p style={{ color: 'var(--text-secondary)' }}>Logged in as</p>
+            <p style={{ color: 'var(--text-primary)' }} className="font-semibold truncate">{user.fullName || user.email}</p>
           </div>
         )}
         <button

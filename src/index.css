@@ -11,9 +11,26 @@
   --color-danger: #f43f5e;
   --color-warning: #f59e0b;
   --color-info: #3b82f6;
+  /* Dark mode (default) */
   --glass-bg: rgba(255, 255, 255, 0.05);
   --glass-border: rgba(255, 255, 255, 0.1);
+  --glass-hover-bg: rgba(255, 255, 255, 0.08);
+  --glass-hover-border: rgba(255, 255, 255, 0.15);
   --glass-blur: blur(20px);
+  --text-primary: rgb(243, 244, 246);
+  --text-secondary: rgb(156, 163, 175);
+  --bg-gradient: linear-gradient(to bottom right, rgb(15, 23, 42), rgb(30, 41, 59), rgb(15, 23, 42));
+}
+
+html.light {
+  /* Light mode */
+  --glass-bg: rgba(99, 102, 241, 0.05);
+  --glass-border: rgba(99, 102, 241, 0.1);
+  --glass-hover-bg: rgba(99, 102, 241, 0.08);
+  --glass-hover-border: rgba(99, 102, 241, 0.15);
+  --text-primary: rgb(17, 24, 39);
+  --text-secondary: rgb(75, 85, 99);
+  --bg-gradient: linear-gradient(to bottom right, rgb(255, 255, 255), rgb(240, 249, 255), rgb(255, 255, 255));
 }
 
 * {
@@ -24,8 +41,14 @@ html {
   color-scheme: dark;
 }
 
+html.light {
+  color-scheme: light;
+}
+
 body {
-  @apply bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 text-gray-100 transition-colors duration-300;
+  background: var(--bg-gradient);
+  color: var(--text-primary);
+  @apply transition-colors duration-300;
   overflow-x: hidden;
 }
 
@@ -124,14 +147,14 @@ body {
 }
 
 .glass:hover {
-  background: rgba(255, 255, 255, 0.08);
-  border-color: rgba(255, 255, 255, 0.15);
+  background: var(--glass-hover-bg);
+  border-color: var(--glass-hover-border);
   @apply shadow-xl;
 }
 
 .glass-elevated {
   @apply glass shadow-2xl;
-  background: rgba(255, 255, 255, 0.08);
+  background: var(--glass-hover-bg);
 }
 
 /* Cards */
@@ -182,7 +205,8 @@ body {
 }
 
 .btn-secondary {
-  @apply btn glass text-gray-100 hover:bg-white/10;
+  @apply btn glass hover:bg-white/10;
+  color: var(--text-primary);
 }
 
 .btn-danger {

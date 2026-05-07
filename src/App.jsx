@@ -1,7 +1,7 @@
 import React from 'react';
 import { HashRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext';
-import { AppProvider } from './context/AppContext';
+import { AppProvider, useApp } from './context/AppContext';
 
 // v2.0 - Premium fintech dashboard
 
@@ -25,8 +25,13 @@ import SettingsPage from './pages/Settings';
 import Profile from './components/Profile';
 
 function ProtectedLayout({ children }) {
+  const { darkMode } = useApp();
   return (
-    <div className="flex min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 text-gray-100">
+    <div className={`flex min-h-screen transition-colors duration-300 ${
+      darkMode
+        ? 'bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 text-gray-100'
+        : 'bg-gradient-to-br from-white via-blue-50 to-white text-gray-900'
+    }`}>
       <Sidebar />
       <main className="flex-1 ml-64 transition-all duration-300 p-6">
         <div className="max-w-7xl mx-auto">{children}</div>
@@ -37,13 +42,18 @@ function ProtectedLayout({ children }) {
 
 function AppContent() {
   const { isAuthenticated, loading } = useAuth();
+  const { darkMode } = useApp();
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950">
+      <div className={`min-h-screen flex items-center justify-center ${
+        darkMode
+          ? 'bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950'
+          : 'bg-gradient-to-br from-white via-blue-50 to-white'
+      }`}>
         <div className="text-center">
           <div className="inline-block w-8 h-8 border-4 border-indigo-600 border-t-transparent rounded-full animate-spin"></div>
-          <p className="mt-4 text-gray-400">Loading...</p>
+          <p className={`mt-4 ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>Loading...</p>
         </div>
       </div>
     );
