@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
 export default function Profile() {
+  const navigate = useNavigate();
   const { user, updateProfile, updatePassword, logout } = useAuth();
   const [activeTab, setActiveTab] = useState('profile');
   const [loading, setLoading] = useState(false);
@@ -101,7 +103,7 @@ export default function Profile() {
   const handleLogout = () => {
     if (window.confirm('Are you sure you want to log out?')) {
       logout();
-      window.location.href = '/finance-tracker/#/login';
+      navigate('/login');
     }
   };
 
