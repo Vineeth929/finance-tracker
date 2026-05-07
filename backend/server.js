@@ -7,6 +7,7 @@ const { generalLimiter, authLimiter, externalAPILimiter } = require('./middlewar
 console.log('🔧 Starting server with NODE_ENV:', process.env.NODE_ENV);
 console.log('📦 MONGODB_URI configured:', !!process.env.MONGODB_URI);
 console.log('🔑 JWT_SECRET configured:', !!process.env.JWT_SECRET);
+console.log('🌍 Markets, News, and Insights routes enabled');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
