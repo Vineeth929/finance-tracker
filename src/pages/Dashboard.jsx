@@ -82,28 +82,30 @@ export default function DashboardPage() {
           </div>
 
           {/* Score Breakdown */}
-          <div className="mt-6 grid grid-cols-2 md:grid-cols-5 gap-3">
-            <div className="bg-white/5 rounded-lg p-3">
-              <p className="text-xs text-gray-400">Savings Rate</p>
-              <p className="text-lg font-bold text-emerald-400">{healthScore.breakdown.savingsRate} pts</p>
+          {healthScore.breakdown && (
+            <div className="mt-6 grid grid-cols-2 md:grid-cols-5 gap-3">
+              <div className="bg-white/5 rounded-lg p-3">
+                <p className="text-xs text-gray-400">Savings Rate</p>
+                <p className="text-lg font-bold text-emerald-400">{healthScore.breakdown.savingsRate || 0} pts</p>
+              </div>
+              <div className="bg-white/5 rounded-lg p-3">
+                <p className="text-xs text-gray-400">Expenses</p>
+                <p className="text-lg font-bold text-indigo-400">{healthScore.breakdown.expenseRatio || 0} pts</p>
+              </div>
+              <div className="bg-white/5 rounded-lg p-3">
+                <p className="text-xs text-gray-400">Budget</p>
+                <p className="text-lg font-bold text-blue-400">{healthScore.breakdown.budgetAdherence || 0} pts</p>
+              </div>
+              <div className="bg-white/5 rounded-lg p-3">
+                <p className="text-xs text-gray-400">Consistency</p>
+                <p className="text-lg font-bold text-purple-400">{healthScore.breakdown.consistency || 0} pts</p>
+              </div>
+              <div className="bg-white/5 rounded-lg p-3">
+                <p className="text-xs text-gray-400">Goals</p>
+                <p className="text-lg font-bold text-rose-400">{healthScore.breakdown.goalProgress || 0} pts</p>
+              </div>
             </div>
-            <div className="bg-white/5 rounded-lg p-3">
-              <p className="text-xs text-gray-400">Expenses</p>
-              <p className="text-lg font-bold text-indigo-400">{healthScore.breakdown.expenseRatio} pts</p>
-            </div>
-            <div className="bg-white/5 rounded-lg p-3">
-              <p className="text-xs text-gray-400">Budget</p>
-              <p className="text-lg font-bold text-blue-400">{healthScore.breakdown.budgetAdherence} pts</p>
-            </div>
-            <div className="bg-white/5 rounded-lg p-3">
-              <p className="text-xs text-gray-400">Consistency</p>
-              <p className="text-lg font-bold text-purple-400">{healthScore.breakdown.consistency} pts</p>
-            </div>
-            <div className="bg-white/5 rounded-lg p-3">
-              <p className="text-xs text-gray-400">Goals</p>
-              <p className="text-lg font-bold text-rose-400">{healthScore.breakdown.goalProgress} pts</p>
-            </div>
-          </div>
+          )}
         </GlassCard>
       )}
 
@@ -162,7 +164,7 @@ export default function DashboardPage() {
         </GlassCard>
 
         {/* Budget Overview */}
-        {budgets && (
+        {budgets && budgets.Needs ? (
           <GlassCard className="p-6">
             <h3 className="text-xl font-bold mb-4 flex items-center gap-2">
               <span>💰</span> Budget
@@ -172,17 +174,24 @@ export default function DashboardPage() {
                 <div key={cat}>
                   <div className="flex justify-between mb-2">
                     <span className="text-sm text-gray-300">{cat}</span>
-                    <span className="text-sm font-semibold">₹{budgets[cat]?.toLocaleString() || 0}</span>
+                    <span className="text-sm font-semibold">₹{Math.round(budgets[cat] || 0).toLocaleString()}</span>
                   </div>
                   <div className="w-full bg-white/10 rounded-full h-2">
                     <div
                       className="h-2 rounded-full bg-gradient-to-r from-indigo-600 to-purple-600"
-                      style={{ width: `${Math.min((budgets[cat] / (budgets['Needs'] + budgets['Wants'] + budgets['Savings & Investment'])) * 100, 100)}%` }}
+                      style={{
+                        width: `${Math.min(((budgets[cat] || 0) / Math.max(budgets['Needs'] + budgets['Wants'] + budgets['Savings & Investment'], 1)) * 100, 100)}%`
+                      }}
                     />
                   </div>
                 </div>
               ))}
             </div>
+          </GlassCard>
+        ) : (
+          <GlassCard className="p-6">
+            <h3 className="text-xl font-bold mb-4">💰 Budget</h3>
+            <p className="text-gray-400 text-center py-4">No budget set yet. Create one to get started!</p>
           </GlassCard>
         )}
       </div>
