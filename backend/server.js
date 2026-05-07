@@ -37,8 +37,14 @@ app.use('/api/transactions', require('./routes/transactions'));
 app.use('/api/budgets', require('./routes/budgets'));
 
 // Start server immediately
-app.listen(PORT, () => {
+const server = app.listen(PORT, () => {
   console.log(`🚀 Server running on port ${PORT}`);
+  console.log(`✅ Ready to accept requests`);
+});
+
+server.on('error', (err) => {
+  console.error('❌ Server error:', err.message);
+  process.exit(1);
 });
 
 // Connect to MongoDB in the background
