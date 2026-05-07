@@ -14,7 +14,7 @@ const PORT = process.env.PORT || 5000;
 console.log('🎯 Server will listen on port:', PORT);
 
 app.use(cors({
-  origin: ['https://vineeth929.github.io', 'http://localhost:5173', 'http://localhost:3000'],
+  origin: ['https://vineeth929.github.io', 'http://localhost:5173', 'http://localhost:5174', 'http://localhost:5175', 'http://localhost:3000'],
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   credentials: true,
   allowedHeaders: ['Content-Type', 'Authorization']
