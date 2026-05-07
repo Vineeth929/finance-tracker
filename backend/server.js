@@ -2,6 +2,7 @@ require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const mongoose = require('mongoose');
+const { generalLimiter, authLimiter, externalAPILimiter } = require('./middleware/rateLimiter');
 
 console.log('🔧 Starting server with NODE_ENV:', process.env.NODE_ENV);
 console.log('📦 MONGODB_URI configured:', !!process.env.MONGODB_URI);
@@ -19,6 +20,7 @@ app.use(cors({
 }));
 
 app.use(express.json());
+app.use(generalLimiter);
 
 let mongoConnected = false;
 
@@ -32,9 +34,13 @@ app.get('/api/health', (req, res) => {
 });
 
 // Load routes
-app.use('/api/auth', require('./routes/auth'));
+app.use('/api/auth', authLimiter, require('./routes/auth'));
 app.use('/api/transactions', require('./routes/transactions'));
 app.use('/api/budgets', require('./routes/budgets'));
+app.use('/api/goals', require('./routes/goals'));
+app.use('/api/markets', externalAPILimiter, require('./routes/markets'));
+app.use('/api/news', externalAPILimiter, require('./routes/news'));
+app.use('/api/insights', require('./routes/insights'));
 
 // Start server immediately
 const server = app.listen(PORT, () => {

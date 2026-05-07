@@ -1,13 +1,19 @@
 const express = require('express');
 const router = express.Router();
 const Budget = require('../models/Budget');
+const { protect } = require('../middleware/auth');
 
-// GET budgets
-router.get('/', async (req, res) => {
+// GET user's budget (protected)
+router.get('/', protect, async (req, res) => {
   try {
-    let budget = await Budget.findOne({ key: 'default' });
+    let budget = await Budget.findOne({ userId: req.user.id });
     if (!budget) {
-      budget = await Budget.create({ key: 'default', needs: 0, wants: 0, savings: 0 });
+      budget = await Budget.create({
+        userId: req.user.id,
+        needs: 0,
+        wants: 0,
+        savings: 0
+      });
     }
     res.json({
       'Needs': budget.needs,
@@ -19,12 +25,12 @@ router.get('/', async (req, res) => {
   }
 });
 
-// PUT update budgets
-router.put('/', async (req, res) => {
+// PUT update user's budget (protected)
+router.put('/', protect, async (req, res) => {
   try {
     const { 'Needs': needs, 'Wants': wants, 'Savings & Investment': savings } = req.body;
     const budget = await Budget.findOneAndUpdate(
-      { key: 'default' },
+      { userId: req.user.id },
       { needs: needs || 0, wants: wants || 0, savings: savings || 0 },
       { new: true, upsert: true }
     );
