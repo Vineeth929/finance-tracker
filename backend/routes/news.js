@@ -143,14 +143,44 @@ router.get('/category/:category', async (req, res) => {
   }
 });
 
-// Preload cache on startup
-(async () => {
+// Preload cache on startup (fetch news articles in background)
+setTimeout(async () => {
   try {
-    const response = await fetch('/');
-    console.log('✅ News cache preloaded on startup');
+    // Fetch all articles to populate cache on startup
+    const allArticles = [];
+    for (const [source, feedUrl] of Object.entries(feeds)) {
+      try {
+        const feed = await parser.parseURL(feedUrl);
+        feed.items.forEach((item) => {
+          allArticles.push({
+            id: `${source}_${item.guid || item.link}`,
+            source: source.charAt(0).toUpperCase() + source.slice(1),
+            title: item.title,
+            description: item.contentSnippet || item.summary,
+            link: item.link,
+            imageUrl: item.mediaImage?.url || null,
+            pubDate: item.pubDate,
+            category: categorizeArticle(item)
+          });
+        });
+      } catch (err) {
+        console.warn(`Failed to preload ${source}:`, err.message);
+      }
+    }
+
+    if (allArticles.length > 0) {
+      allArticles.sort((a, b) => new Date(b.pubDate) - new Date(a.pubDate));
+      newsCache = {
+        articles: allArticles.slice(0, 50),
+        total: allArticles.length,
+        lastUpdated: new Date().toISOString()
+      };
+      cacheTimestamp = Date.now();
+      console.log('✅ News cache preloaded on startup with', newsCache.articles.length, 'articles');
+    }
   } catch (err) {
     console.warn('⚠️  News preload failed:', err.message);
   }
-})();
+}, 2000);
 
 module.exports = router;
