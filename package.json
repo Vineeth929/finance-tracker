@@ -1,12 +1,13 @@
 {
   "name": "finance-tracker",
   "version": "1.0.0",
-  "type": "module",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "deploy": "npm run build && gh-pages -d dist"
+    "deploy": "npm run build && gh-pages -d dist",
+    "start": "npm --prefix backend start",
+    "install": "npm install --legacy-peer-deps && npm --prefix backend install"
   },
   "dependencies": {
     "chart.js": "^4.4.0",
