@@ -34,14 +34,84 @@ app.get('/api/health', (req, res) => {
   res.json({ status: mongoConnected ? 'OK' : 'connecting', message: 'Finance Tracker API is running', mongoConnected });
 });
 
-// Load routes
-app.use('/api/auth', authLimiter, require('./routes/auth'));
-app.use('/api/transactions', require('./routes/transactions'));
-app.use('/api/budgets', require('./routes/budgets'));
-app.use('/api/goals', require('./routes/goals'));
-app.use('/api/markets', externalAPILimiter, require('./routes/markets'));
-app.use('/api/news', externalAPILimiter, require('./routes/news'));
-app.use('/api/insights', require('./routes/insights'));
+// Load routes with error handling
+try {
+  app.use('/api/auth', authLimiter, require('./routes/auth'));
+  console.log('✅ Auth routes loaded');
+} catch (err) {
+  console.error('❌ Failed to load auth routes:', err.message);
+}
+
+try {
+  app.use('/api/transactions', require('./routes/transactions'));
+  console.log('✅ Transactions routes loaded');
+} catch (err) {
+  console.error('❌ Failed to load transactions routes:', err.message);
+}
+
+try {
+  app.use('/api/budgets', require('./routes/budgets'));
+  console.log('✅ Budgets routes loaded');
+} catch (err) {
+  console.error('❌ Failed to load budgets routes:', err.message);
+}
+
+try {
+  app.use('/api/goals', require('./routes/goals'));
+  console.log('✅ Goals routes loaded');
+} catch (err) {
+  console.error('❌ Failed to load goals routes:', err.message);
+}
+
+try {
+  app.use('/api/markets', externalAPILimiter, require('./routes/markets'));
+  console.log('✅ Markets routes loaded');
+} catch (err) {
+  console.error('❌ Failed to load markets routes:', err.message);
+}
+
+try {
+  app.use('/api/news', externalAPILimiter, require('./routes/news'));
+  console.log('✅ News routes loaded');
+} catch (err) {
+  console.error('❌ Failed to load news routes:', err.message);
+}
+
+try {
+  app.use('/api/insights', require('./routes/insights'));
+  console.log('✅ Insights routes loaded');
+} catch (err) {
+  console.error('❌ Failed to load insights routes:', err.message);
+}
+
+// Catch-all 404 handler
+app.use((req, res) => {
+  res.status(404).json({
+    error: 'Not Found',
+    message: `Route ${req.method} ${req.path} not found`,
+    availableRoutes: [
+      'GET /api/health',
+      'POST /api/auth/signup',
+      'POST /api/auth/login',
+      'GET /api/auth/me',
+      'GET /api/transactions',
+      'POST /api/transactions',
+      'DELETE /api/transactions/:id',
+      'GET /api/budgets',
+      'PUT /api/budgets',
+      'GET /api/goals',
+      'POST /api/goals',
+      'DELETE /api/goals/:id',
+      'PUT /api/goals/:id/progress',
+      'GET /api/markets/crypto',
+      'GET /api/markets/overview',
+      'GET /api/news',
+      'GET /api/news/category/:category',
+      'GET /api/insights/health-score',
+      'GET /api/insights/spending-insights'
+    ]
+  });
+});
 
 // Start server immediately
 const server = app.listen(PORT, () => {
