@@ -101,7 +101,7 @@ export default function Profile() {
   const handleLogout = () => {
     if (window.confirm('Are you sure you want to log out?')) {
       logout();
-      window.location.href = '/login';
+      window.location.href = '/#/login';
     }
   };
 
