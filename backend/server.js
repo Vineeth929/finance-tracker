@@ -15,25 +15,28 @@ app.use(cors({
 
 app.use(express.json());
 
+let mongoConnected = false;
+
 app.get('/api/health', (req, res) => {
-  res.json({ status: 'OK', message: 'Finance Tracker API is running' });
+  res.json({ status: mongoConnected ? 'OK' : 'connecting', message: 'Finance Tracker API is running', mongoConnected });
 });
 
-// Connect to MongoDB and start server
+// Load routes
+app.use('/api/auth', require('./routes/auth'));
+app.use('/api/transactions', require('./routes/transactions'));
+app.use('/api/budgets', require('./routes/budgets'));
+
+// Start server immediately
+app.listen(PORT, () => {
+  console.log(`🚀 Server running on port ${PORT}`);
+});
+
+// Connect to MongoDB in the background
 mongoose.connect(process.env.MONGODB_URI)
   .then(() => {
     console.log('✅ MongoDB connected');
-
-    // Load routes after MongoDB connection
-    app.use('/api/auth', require('./routes/auth'));
-    app.use('/api/transactions', require('./routes/transactions'));
-    app.use('/api/budgets', require('./routes/budgets'));
-
-    app.listen(PORT, () => {
-      console.log(`🚀 Server running on port ${PORT}`);
-    });
+    mongoConnected = true;
   })
   .catch(err => {
-    console.error('❌ MongoDB connection failed:', err);
-    process.exit(1);
+    console.error('❌ MongoDB connection failed:', err.message);
   });
