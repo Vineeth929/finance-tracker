@@ -1,6 +1,6 @@
 [build]
 cmds = [
-  "npm ci --include=dev",
+  "npm install",
   "npm run build"
 ]
 
