@@ -1,6 +1,6 @@
 import React from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { Home, TrendingUp, Wallet, Target, Newspaper, Settings } from 'lucide-react';
+import { Home, TrendingUp, Wallet, Target, Settings, BarChart3 } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 export default function MobileBottomNav() {
@@ -9,11 +9,11 @@ export default function MobileBottomNav() {
 
   const tabs = [
     { path: '/', icon: Home, label: 'Home', id: 'dashboard' },
-    { path: '/markets', icon: TrendingUp, label: 'Markets', id: 'markets' },
-    { path: '/transactions', icon: Wallet, label: 'Wallet', id: 'transactions' },
+    { path: '/transactions', icon: Wallet, label: 'Money', id: 'transactions' },
+    { path: '/budget', icon: BarChart3, label: 'Budget', id: 'budget' },
     { path: '/goals', icon: Target, label: 'Goals', id: 'goals' },
-    { path: '/news', icon: Newspaper, label: 'News', id: 'news' },
-    { path: '/settings', icon: Settings, label: 'Settings', id: 'settings' },
+    { path: '/analytics', icon: TrendingUp, label: 'Analytics', id: 'analytics' },
+    { path: '/settings', icon: Settings, label: 'More', id: 'settings' },
   ];
 
   const isActive = (path) => location.pathname === path;

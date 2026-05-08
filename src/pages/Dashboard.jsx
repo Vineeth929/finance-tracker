@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useApp } from '../context/AppContext';
 import { api } from '../hooks/useApi';
+import { useNavigate } from 'react-router-dom';
 import GlassCard from '../components/ui/GlassCard';
 import StatCard from '../components/ui/StatCard';
 import SkeletonLoader from '../components/ui/SkeletonLoader';
@@ -8,6 +9,7 @@ import Badge from '../components/ui/Badge';
 
 export default function DashboardPage() {
   const { transactions, budgets, goals } = useApp();
+  const navigate = useNavigate();
   const [healthScore, setHealthScore] = useState(null);
   const [insights, setInsights] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -54,11 +56,41 @@ export default function DashboardPage() {
   return (
     <div className="space-y-4 sm:space-y-6 lg:space-y-8 animate-fadeIn">
       {/* Welcome Header - Responsive Typography */}
-      <div className="space-y-1 sm:space-y-2">
-        <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold gradient-text">Welcome Back! 👋</h1>
-        <p className="text-xs sm:text-sm" style={{ color: 'var(--text-secondary)' }}>
-          {new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}
-        </p>
+      <div className="space-y-3 sm:space-y-4">
+        <div className="space-y-1 sm:space-y-2">
+          <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold gradient-text">Welcome Back! 👋</h1>
+          <p className="text-xs sm:text-sm" style={{ color: 'var(--text-secondary)' }}>
+            {new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}
+          </p>
+        </div>
+
+        {/* Quick Action Buttons - Financial Tracking */}
+        <div className="flex flex-wrap gap-2 sm:gap-3">
+          <button
+            onClick={() => navigate('/transactions')}
+            className="btn btn-primary btn-sm sm:btn-base"
+          >
+            + Income
+          </button>
+          <button
+            onClick={() => navigate('/transactions')}
+            className="btn btn-secondary btn-sm sm:btn-base"
+          >
+            - Expense
+          </button>
+          <button
+            onClick={() => navigate('/budget')}
+            className="btn btn-secondary btn-sm sm:btn-base"
+          >
+            📊 Budget
+          </button>
+          <button
+            onClick={() => navigate('/analytics')}
+            className="btn btn-secondary btn-sm sm:btn-base"
+          >
+            📈 Analytics
+          </button>
+        </div>
       </div>
 
       {/* Health Score - Responsive */}
