@@ -13,7 +13,7 @@ export const useApp = () => {
 export const AppProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [transactions, setTransactions] = useState([]);
-  const [budgets, setBudgets] = useState(null);
+  const [budgets, setBudgets] = useState({ Needs: 0, Wants: 0, 'Savings & Investment': 0 });
   const [goals, setGoals] = useState([]);
   const [notifications, setNotifications] = useState([]);
   const [darkMode, setDarkModeState] = useState(() => {
@@ -68,9 +68,10 @@ export const AppProvider = ({ children }) => {
   const fetchBudgets = async () => {
     try {
       const data = await api('/budgets');
-      setBudgets(data);
+      setBudgets(data || { Needs: 0, Wants: 0, 'Savings & Investment': 0 });
     } catch (err) {
       console.error('Failed to fetch budgets:', err);
+      setBudgets({ Needs: 0, Wants: 0, 'Savings & Investment': 0 });
     }
   };
 

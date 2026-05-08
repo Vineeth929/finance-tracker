@@ -7,7 +7,9 @@ export default function BudgetPlanner({ transactions, budgets, onBudgetChange, s
   const [editingCategory, setEditingCategory] = useState(null);
   const [inputValue, setInputValue] = useState('');
 
-  const budgetStatus = calculateBudgetStatus(transactions, budgets, selectedMonth);
+  const safeBudgets = budgets || { Needs: 0, Wants: 0, 'Savings & Investment': 0 };
+  const safeTransactions = Array.isArray(transactions) ? transactions : [];
+  const budgetStatus = calculateBudgetStatus(safeTransactions, safeBudgets, selectedMonth);
 
   const handleEditClick = (category, currentAmount) => {
     setEditingCategory(category);
@@ -16,7 +18,7 @@ export default function BudgetPlanner({ transactions, budgets, onBudgetChange, s
 
   const handleSaveBudget = (category) => {
     const amount = parseFloat(inputValue) || 0;
-    onBudgetChange({ ...budgets, [category]: amount });
+    onBudgetChange({ ...safeBudgets, [category]: amount });
     setEditingCategory(null);
   };
 
@@ -46,8 +48,8 @@ export default function BudgetPlanner({ transactions, budgets, onBudgetChange, s
                     <button onClick={() => setEditingCategory(null)} className="btn btn-secondary">Cancel</button>
                   </div>
                 ) : (
-                  <div onClick={() => handleEditClick(category, budgets[category] || 0)} className="cursor-pointer p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded transition-colors">
-                    <p className="text-sm text-gray-600 dark:text-gray-400">Budget: ₹{(budgets[category] || 0).toFixed(2)}</p>
+                  <div onClick={() => handleEditClick(category, safeBudgets[category] || 0)} className="cursor-pointer p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded transition-colors">
+                    <p className="text-sm text-gray-600 dark:text-gray-400">Budget: ₹{(safeBudgets[category] || 0).toFixed(2)}</p>
                   </div>
                 )}
               </div>
