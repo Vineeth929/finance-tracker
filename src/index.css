@@ -125,6 +125,73 @@
   --transition-fast: 100ms cubic-bezier(0.4, 0, 0.2, 1);
   --transition-base: 200ms cubic-bezier(0.4, 0, 0.2, 1);
   --transition-slow: 300ms cubic-bezier(0.4, 0, 0.2, 1);
+
+  /* ============================================================================
+     FINANCIAL HEARTBEAT STATES - Emotional Colors for All Pages
+     ============================================================================ */
+
+  /* Thriving State - Exuberant Growth (Purple/Gold) */
+  --state-thriving-primary: #A855F7;
+  --state-thriving-secondary: #EC4899;
+  --state-thriving-accent: #F59E0B;
+  --state-thriving-bg: rgba(168, 85, 247, 0.08);
+  --state-thriving-border: rgba(168, 85, 247, 0.3);
+  --state-thriving-glow: 0 0 30px rgba(168, 85, 247, 0.3);
+
+  /* Growing State - Positive Momentum (Emerald/Teal) */
+  --state-growing-primary: #10B981;
+  --state-growing-secondary: #34D399;
+  --state-growing-accent: #0D9488;
+  --state-growing-bg: rgba(16, 185, 129, 0.08);
+  --state-growing-border: rgba(16, 185, 129, 0.3);
+  --state-growing-glow: 0 0 30px rgba(16, 185, 129, 0.3);
+
+  /* Stable State - Healthy Foundation (Indigo/Blue) */
+  --state-stable-primary: #3B82F6;
+  --state-stable-secondary: #60A5FA;
+  --state-stable-accent: #1E40AF;
+  --state-stable-bg: rgba(59, 130, 246, 0.08);
+  --state-stable-border: rgba(59, 130, 246, 0.3);
+  --state-stable-glow: 0 0 30px rgba(59, 130, 246, 0.2);
+
+  /* Cautious State - Attention Needed (Amber/Orange) */
+  --state-cautious-primary: #F59E0B;
+  --state-cautious-secondary: #FBBF24;
+  --state-cautious-accent: #D97706;
+  --state-cautious-bg: rgba(245, 158, 11, 0.08);
+  --state-cautious-border: rgba(245, 158, 11, 0.3);
+  --state-cautious-glow: 0 0 30px rgba(245, 158, 11, 0.2);
+
+  /* Struggling State - Requires Focus (Rose/Red) */
+  --state-struggling-primary: #EF4444;
+  --state-struggling-secondary: #F87171;
+  --state-struggling-accent: #DC2626;
+  --state-struggling-bg: rgba(239, 68, 68, 0.08);
+  --state-struggling-border: rgba(239, 68, 68, 0.3);
+  --state-struggling-glow: 0 0 30px rgba(239, 68, 68, 0.2);
+
+  /* ============================================================================
+     SURFACE VARIANTS - Unified Surface Architecture
+     ============================================================================ */
+
+  /* Surface elevation levels for consistent layering */
+  --surface-base: var(--bg-app);
+  --surface-1: var(--bg-surface-1);
+  --surface-2: var(--bg-surface-2);
+  --surface-3: var(--bg-surface-3);
+
+  /* Interactive surfaces */
+  --surface-interactive: var(--bg-surface-2);
+  --surface-interactive-hover: var(--bg-surface-3);
+  --surface-interactive-active: var(--bg-surface-active);
+
+  /* Card surfaces with proper elevation */
+  --surface-card: var(--bg-surface-3);
+  --surface-card-elevated: var(--bg-surface-3);
+
+  /* Modal and overlay surfaces */
+  --surface-modal: rgba(7, 17, 31, 0.95);
+  --surface-modal-border: rgba(255, 255, 255, 0.1);
 }
 
 html.light {
@@ -289,6 +356,43 @@ body {
   }
 }
 
+@keyframes heartbeat {
+  0%, 100% {
+    transform: scale(1);
+  }
+  25% {
+    transform: scale(1.05);
+  }
+  50% {
+    transform: scale(1);
+  }
+  75% {
+    transform: scale(1.03);
+  }
+}
+
+@keyframes floatUp {
+  0% {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes staggeredFadeIn {
+  0% {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 /* Animation Utility Classes */
 .animate-fadeIn {
   animation: fadeIn var(--transition-slow) ease-out;
@@ -339,6 +443,70 @@ body {
     var(--bg-surface-2) 100%
   );
   background-size: 1200px 100%;
+}
+
+.animate-heartbeat {
+  animation: heartbeat 2s ease-in-out infinite;
+}
+
+.animate-floatUp {
+  animation: floatUp var(--transition-slow) ease-out;
+}
+
+.animate-staggerIn {
+  animation: staggeredFadeIn var(--transition-slow) ease-out;
+}
+
+/* Stagger delay utilities for sequential animations */
+.stagger-0 { animation-delay: 0ms; }
+.stagger-1 { animation-delay: 50ms; }
+.stagger-2 { animation-delay: 100ms; }
+.stagger-3 { animation-delay: 150ms; }
+.stagger-4 { animation-delay: 200ms; }
+.stagger-5 { animation-delay: 250ms; }
+.stagger-6 { animation-delay: 300ms; }
+
+/* ============================================================================
+   TEXT UTILITIES - Emotional Text Styling
+   ============================================================================ */
+
+.text-primary { color: var(--text-primary); }
+.text-secondary { color: var(--text-secondary); }
+.text-tertiary { color: var(--text-tertiary); }
+.text-muted { color: var(--text-muted); }
+.text-disabled { color: var(--text-disabled); }
+
+.text-state-thriving { color: var(--state-thriving-primary); }
+.text-state-growing { color: var(--state-growing-primary); }
+.text-state-stable { color: var(--state-stable-primary); }
+.text-state-cautious { color: var(--state-cautious-primary); }
+.text-state-struggling { color: var(--state-struggling-primary); }
+
+.font-display { font-weight: 900; letter-spacing: -0.02em; }
+.font-heading { font-weight: 800; letter-spacing: -0.01em; }
+.font-body { font-weight: 400; }
+
+/* ============================================================================
+   LAYOUT UTILITIES - Responsive Containers
+   ============================================================================ */
+
+.page-container {
+  width: 100%;
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: var(--spacing-lg);
+}
+
+.section-spacing {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xl);
+}
+
+.grid-responsive {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: var(--spacing-lg);
 }
 
 /* ============================================================================
@@ -392,6 +560,99 @@ body {
   border-color: var(--border-accent);
   box-shadow: var(--shadow-2xl), var(--glow-purple-strong);
   transform: translateY(-4px);
+}
+
+/* ============================================================================
+   SURFACE VARIANTS - Unified Emotional Surfaces
+   ============================================================================ */
+
+.surface-elevated {
+  background: var(--bg-surface-1);
+  border: 1px solid var(--border-normal);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-md);
+  transition: all var(--transition-base);
+}
+
+.surface-elevated:hover {
+  border-color: var(--border-accent);
+  box-shadow: var(--shadow-lg);
+  transform: translateY(-2px);
+}
+
+.surface-card {
+  background: var(--bg-surface-3);
+  border: 1px solid var(--border-normal);
+  border-radius: var(--radius-xl);
+  padding: var(--spacing-lg);
+  box-shadow: var(--shadow-md);
+  transition: all var(--transition-base);
+}
+
+.surface-card:hover {
+  border-color: var(--border-accent);
+  box-shadow: var(--shadow-lg);
+  transform: translateY(-2px);
+}
+
+.surface-interactive {
+  background: var(--bg-surface-2);
+  border: 1px solid var(--border-normal);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-md);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.surface-interactive:hover {
+  background: var(--bg-surface-3);
+  border-color: var(--border-accent);
+}
+
+.surface-interactive:active {
+  background: var(--bg-surface-active);
+  border-color: var(--border-accent-active);
+}
+
+/* State-specific surfaces - Financial Heartbeat Awareness */
+.surface-thriving {
+  background: var(--state-thriving-bg);
+  border: 1px solid var(--state-thriving-border);
+  border-radius: var(--radius-xl);
+  padding: var(--spacing-lg);
+  box-shadow: var(--state-thriving-glow), var(--shadow-md);
+}
+
+.surface-growing {
+  background: var(--state-growing-bg);
+  border: 1px solid var(--state-growing-border);
+  border-radius: var(--radius-xl);
+  padding: var(--spacing-lg);
+  box-shadow: var(--state-growing-glow), var(--shadow-md);
+}
+
+.surface-stable {
+  background: var(--state-stable-bg);
+  border: 1px solid var(--state-stable-border);
+  border-radius: var(--radius-xl);
+  padding: var(--spacing-lg);
+  box-shadow: var(--state-stable-glow), var(--shadow-md);
+}
+
+.surface-cautious {
+  background: var(--state-cautious-bg);
+  border: 1px solid var(--state-cautious-border);
+  border-radius: var(--radius-xl);
+  padding: var(--spacing-lg);
+  box-shadow: var(--state-cautious-glow), var(--shadow-md);
+}
+
+.surface-struggling {
+  background: var(--state-struggling-bg);
+  border: 1px solid var(--state-struggling-border);
+  border-radius: var(--radius-xl);
+  padding: var(--spacing-lg);
+  box-shadow: var(--state-struggling-glow), var(--shadow-md);
 }
 
 /* ============================================================================

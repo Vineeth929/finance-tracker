@@ -9,7 +9,7 @@ import MarketHeatmap from '../components/markets/MarketHeatmap';
 import MarketInsights from '../components/markets/MarketInsights';
 import CompactStockList from '../components/markets/CompactStockList';
 import PremiumStockCardV2 from '../components/markets/PremiumStockCardV2';
-import { TrendingUp, TrendingDown, Activity } from 'lucide-react';
+import { TrendingUp, TrendingDown, Activity, BarChart3, Zap } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 export default function MarketsPage() {
@@ -55,6 +55,8 @@ export default function MarketsPage() {
   const getLosers = () => stocks.slice().sort((a, b) => (a.change24h || 0) - (b.change24h || 0)).slice(0, 5);
   const getMostActive = () => stocks.slice().sort((a, b) => Math.abs(b.change24h || 0) - Math.abs(a.change24h || 0)).slice(0, 5);
 
+  const gainPercentage = getGainers().length > 0 ? Math.round((getGainers().length / stocks.length) * 100) : 0;
+
   if (loading) {
     return (
       <div className="space-y-6 animate-fadeIn">
@@ -66,43 +68,166 @@ export default function MarketsPage() {
   }
 
   return (
-    <div className="space-y-4 sm:space-y-6 animate-fadeIn">
-      {/* Live Ticker */}
-      <LiveMarketTicker stocks={stocks.slice(0, 10)} />
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      className="section-spacing"
+    >
+      {/* Page Header with Emotional Message */}
+      <motion.div className="space-y-2 animate-fadeInDown">
+        <h1 className="text-4xl font-display gradient-text">Global Markets</h1>
+        <p className="text-lg text-secondary">
+          {gainPercentage > 60 ? '📈 Markets are rallying strongly' : gainPercentage > 40 ? '➡️ Mixed market momentum' : '📉 Markets showing caution'}
+        </p>
+      </motion.div>
 
-      {/* Error State */}
+      {/* Live Ticker - Atmospheric Scrolling */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.1 }}
+      >
+        <LiveMarketTicker stocks={stocks.slice(0, 10)} />
+      </motion.div>
+
+      {/* Error State - Emotional Messaging */}
       {error && (
-        <GlassCard className="p-3 sm:p-4 border-l-4 border-rose-500 bg-rose-500/10">
-          <p className="text-rose-400 text-xs sm:text-sm">⚠️ {error}</p>
-        </GlassCard>
+        <motion.div
+          initial={{ opacity: 0, x: -20 }}
+          animate={{ opacity: 1, x: 0 }}
+          className="surface-cautious"
+        >
+          <div className="flex items-start gap-3">
+            <span className="text-2xl">⚠️</span>
+            <div>
+              <p className="font-heading text-state-cautious-primary">Market Data Temporarily Unavailable</p>
+              <p className="text-secondary text-sm mt-1">Using cached data • Refreshing in 30s</p>
+            </div>
+          </div>
+        </motion.div>
       )}
 
-      {/* Last Updated & Refresh */}
+      {/* Last Updated & Refresh - Subtle Controls */}
       {lastUpdated && (
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
-          <p className="text-xs" style={{ color: 'var(--text-secondary)' }}>
-            Last updated: {lastUpdated.toLocaleTimeString()}
-          </p>
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 surface-interactive p-4"
+        >
+          <div className="flex items-center gap-2">
+            <Zap size={16} style={{ color: 'var(--state-stable-primary)' }} />
+            <p className="text-sm text-secondary">
+              Updated {lastUpdated.toLocaleTimeString()}
+            </p>
+          </div>
           <motion.button
-            whileHover={{ rotate: 180 }}
+            whileHover={{ rotate: 180, scale: 1.1 }}
             onClick={fetchMarkets}
-            className="p-2 rounded-lg glass hover:bg-white/10"
+            className="px-4 py-2 rounded-lg surface-interactive hover:surface-interactive-hover font-medium text-sm flex items-center gap-2"
           >
-            🔄
+            🔄 Refresh
           </motion.button>
-        </div>
+        </motion.div>
       )}
 
-      {/* Market Hero Section */}
-      {overview && <MarketHero overview={overview} />}
+      {/* Market Hero Section - Atmospheric Overview */}
+      {overview && (
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.15 }}
+        >
+          <MarketHero overview={overview} />
+        </motion.div>
+      )}
 
-      {/* Advanced Chart Section - Hide on small mobile for performance */}
-      <div className="hidden sm:block">
-        <AdvancedChart stocks={stocks} />
+      {/* Market Breadth & Indices - Narrative View */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2 }}
+          className="surface-card"
+        >
+          <div className="flex items-center gap-3 mb-6">
+            <BarChart3 size={24} style={{ color: 'var(--state-growing-primary)' }} />
+            <h3 className="text-xl font-heading">Market Breadth</h3>
+          </div>
+          <div className="space-y-5">
+            <div>
+              <div className="flex justify-between mb-3">
+                <span className="text-secondary font-medium">Advances</span>
+                <span className="font-heading text-state-growing-primary">1,250 (65%)</span>
+              </div>
+              <div className="w-full h-3 rounded-full" style={{ background: 'var(--bg-surface-2)' }}>
+                <motion.div
+                  initial={{ width: 0 }}
+                  animate={{ width: '65%' }}
+                  transition={{ duration: 1, delay: 0.3, ease: 'easeOut' }}
+                  className="h-full rounded-full"
+                  style={{ background: 'var(--state-growing-primary)' }}
+                />
+              </div>
+            </div>
+            <div>
+              <div className="flex justify-between mb-3">
+                <span className="text-secondary font-medium">Declines</span>
+                <span className="font-heading text-state-struggling-primary">550 (35%)</span>
+              </div>
+              <div className="w-full h-3 rounded-full" style={{ background: 'var(--bg-surface-2)' }}>
+                <motion.div
+                  initial={{ width: 0 }}
+                  animate={{ width: '35%' }}
+                  transition={{ duration: 1, delay: 0.3, ease: 'easeOut' }}
+                  className="h-full rounded-full"
+                  style={{ background: 'var(--state-struggling-primary)' }}
+                />
+              </div>
+            </div>
+          </div>
+        </motion.div>
+
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.25 }}
+          className="surface-card"
+        >
+          <div className="flex items-center gap-3 mb-6">
+            <BarChart3 size={24} style={{ color: 'var(--state-stable-primary)' }} />
+            <h3 className="text-xl font-heading">Market Indices</h3>
+          </div>
+          <div className="space-y-4">
+            {[
+              { name: 'BSE 500', change: 1.2, changeType: 'positive' },
+              { name: 'Midcap 150', change: 2.1, changeType: 'positive' },
+              { name: 'Smallcap 250', change: -0.8, changeType: 'negative' },
+            ].map((idx, i) => (
+              <motion.div
+                key={idx.name}
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.3 + i * 0.05 }}
+                className="flex justify-between items-center p-3 rounded-lg"
+                style={{ background: 'var(--bg-surface-2)' }}
+              >
+                <span className="font-medium">{idx.name}</span>
+                <span
+                  className="font-heading text-base"
+                  style={{
+                    color: idx.changeType === 'positive' ? 'var(--state-growing-primary)' : 'var(--state-struggling-primary)'
+                  }}
+                >
+                  {idx.changeType === 'positive' ? '↑' : '↓'} {Math.abs(idx.change).toFixed(1)}%
+                </span>
+              </motion.div>
+            ))}
+          </div>
+        </motion.div>
       </div>
 
-      {/* Top Performers Grid - Responsive */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-6">
+      {/* Top Performers - Emotional Layout */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         <CompactStockList title="Top Gainers" stocks={getGainers()} type="gainers" icon={TrendingUp} />
         <CompactStockList title="Top Losers" stocks={getLosers()} type="losers" icon={TrendingDown} />
         <div className="sm:col-span-2 lg:col-span-1">
@@ -110,114 +235,72 @@ export default function MarketsPage() {
         </div>
       </div>
 
-      {/* Market Heatmap - Hide on small screens */}
-      <div className="hidden md:block">
-        <MarketHeatmap />
-      </div>
+      {/* Advanced Chart Section */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.35 }}
+        className="hidden sm:block"
+      >
+        <AdvancedChart stocks={stocks} />
+      </motion.div>
 
-      {/* Main Content Grid - Stocks + Insights (Responsive) */}
-      <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 sm:gap-6">
-        {/* Stock Grid */}
+      {/* Market Heatmap */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.4 }}
+        className="hidden md:block"
+      >
+        <MarketHeatmap />
+      </motion.div>
+
+      {/* Main Content Grid - Stocks + Insights */}
+      <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
         <div className="lg:col-span-3">
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            className="space-y-4"
+            className="space-y-6"
           >
-            <h2 className="text-xl sm:text-2xl font-bold gradient-text">Market Watchlist</h2>
-            {stocks.length > 0 ? (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-3 sm:gap-4">
-                {stocks.map((stock, idx) => (
-                  <PremiumStockCardV2 key={stock.id} stock={stock} index={idx} />
-                ))}
-              </div>
-            ) : (
-              <GlassCard className="p-8 sm:p-12 text-center" style={{ color: 'var(--text-secondary)' }}>
-                <p className="text-sm sm:text-base">Loading market data...</p>
-              </GlassCard>
-            )}
+            <div>
+              <h2 className="text-2xl font-heading gradient-text mb-4">Market Watchlist</h2>
+              {stocks.length > 0 ? (
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-4">
+                  {stocks.map((stock, idx) => (
+                    <motion.div
+                      key={stock.id}
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.4 + (idx * 0.05) }}
+                    >
+                      <PremiumStockCardV2 stock={stock} index={idx} />
+                    </motion.div>
+                  ))}
+                </div>
+              ) : (
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  className="surface-card text-center py-12"
+                >
+                  <p className="text-lg text-secondary">📊 Loading market data...</p>
+                </motion.div>
+              )}
+            </div>
           </motion.div>
         </div>
 
-        {/* Insights Sidebar - Hidden on mobile */}
-        <div className="hidden lg:block">
+        {/* Insights Sidebar */}
+        <motion.div
+          initial={{ opacity: 0, x: 20 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ delay: 0.3 }}
+          className="hidden lg:block"
+        >
           <MarketInsights />
-        </div>
-      </div>
-
-      {/* Market News & Analytics - Responsive Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="glass p-4 sm:p-6 rounded-2xl"
-        >
-          <h3 className="font-bold gradient-text mb-3 sm:mb-4 text-sm sm:text-base">Market News</h3>
-          <div className="space-y-2 sm:space-y-3">
-            {[
-              'RBI keeps rates steady at 6.5%',
-              'Nifty breaks 21,000 resistance',
-              'Rupee strengthens against dollar'
-            ].map((news, idx) => (
-              <div key={idx} className="text-xs sm:text-sm p-2 sm:p-3 rounded-lg" style={{ background: 'var(--glass-bg)' }}>
-                <p style={{ color: 'var(--text-secondary)' }}>{news}</p>
-              </div>
-            ))}
-          </div>
-        </motion.div>
-
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.1 }}
-          className="glass p-4 sm:p-6 rounded-2xl"
-        >
-          <h3 className="font-bold gradient-text mb-3 sm:mb-4 text-sm sm:text-base">Market Breadth</h3>
-          <div className="space-y-2 sm:space-y-3">
-            <div>
-              <div className="flex justify-between mb-1 text-xs sm:text-sm">
-                <span>Advance</span>
-                <span className="text-emerald-400 font-semibold">1,250</span>
-              </div>
-              <div className="w-full bg-white/5 rounded-full h-2">
-                <div className="bg-emerald-500 h-2 rounded-full" style={{ width: '65%' }} />
-              </div>
-            </div>
-            <div>
-              <div className="flex justify-between mb-1 text-xs sm:text-sm">
-                <span>Decline</span>
-                <span className="text-rose-400 font-semibold">550</span>
-              </div>
-              <div className="w-full bg-white/5 rounded-full h-2">
-                <div className="bg-rose-500 h-2 rounded-full" style={{ width: '35%' }} />
-              </div>
-            </div>
-          </div>
-        </motion.div>
-
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2 }}
-          className="glass p-4 sm:p-6 rounded-2xl sm:col-span-2 lg:col-span-1"
-        >
-          <h3 className="font-bold gradient-text mb-3 sm:mb-4 text-sm sm:text-base">Market Indices</h3>
-          <div className="space-y-2 text-xs sm:text-sm">
-            <div className="flex justify-between">
-              <span style={{ color: 'var(--text-secondary)' }}>BSE 500</span>
-              <span className="text-emerald-400 font-semibold">+1.2%</span>
-            </div>
-            <div className="flex justify-between">
-              <span style={{ color: 'var(--text-secondary)' }}>Midcap 150</span>
-              <span className="text-emerald-400 font-semibold">+2.1%</span>
-            </div>
-            <div className="flex justify-between">
-              <span style={{ color: 'var(--text-secondary)' }}>Smallcap 250</span>
-              <span className="text-rose-400 font-semibold">-0.8%</span>
-            </div>
-          </div>
         </motion.div>
       </div>
-    </div>
+    </motion.div>
   );
 }

@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { User, Mail, Lock, Eye, EyeOff, CheckCircle2 } from 'lucide-react';
+import { motion } from 'framer-motion';
 
 export default function Signup() {
   const [formData, setFormData] = useState({
@@ -58,163 +60,288 @@ export default function Signup() {
     }
   };
 
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.1,
+        delayChildren: 0.2,
+      },
+    },
+  };
+
+  const itemVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: { opacity: 1, y: 0, transition: { duration: 0.5 } },
+  };
+
+  const isPasswordValid = formData.password.length >= 6;
+  const passwordsMatch = formData.password === formData.confirmPassword && formData.password.length > 0;
+
   return (
     <div
       className="min-h-screen flex items-center justify-center px-4 py-12 transition-colors duration-300"
       style={{ background: 'var(--bg-gradient)' }}
     >
-      <div className="w-full max-w-md">
+      <motion.div
+        variants={containerVariants}
+        initial="hidden"
+        animate="visible"
+        className="w-full max-w-md"
+      >
         {/* Header */}
-        <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold gradient-text mb-2">💰 Finance Tracker</h1>
-          <p style={{ color: 'var(--text-secondary)' }}>
-            Create your account and start tracking
+        <motion.div variants={itemVariants} className="text-center mb-10">
+          <motion.h1
+            className="text-5xl font-display gradient-text mb-3"
+            initial={{ scale: 0.8 }}
+            animate={{ scale: 1 }}
+            transition={{ type: 'spring', stiffness: 200, damping: 20 }}
+          >
+            ✨
+          </motion.h1>
+          <h1 className="text-4xl font-display gradient-text mb-2">Finance Tracker</h1>
+          <p className="text-lg text-secondary">
+            Begin your journey to financial mastery
           </p>
-        </div>
+        </motion.div>
 
         {/* Signup Card */}
-        <div className="glass p-8">
-          {/* Error Message */}
+        <motion.div variants={itemVariants} className="glass p-8 space-y-6">
+          {/* Error Message - Animated */}
           {error && (
-            <div className="mb-6 p-4 rounded-lg flex items-center gap-2 border-l-4" style={{ borderColor: 'var(--color-danger)', background: `color-mix(in srgb, var(--color-danger) 10%, transparent)` }}>
-              <span>⚠️</span>
-              <span style={{ color: 'var(--color-danger)' }}>{error}</span>
-            </div>
+            <motion.div
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -20 }}
+              className="p-4 rounded-lg flex items-start gap-3 border-l-4"
+              style={{ borderColor: 'var(--state-struggling-primary)', background: 'var(--state-struggling-bg)' }}
+            >
+              <span className="text-xl">⚠️</span>
+              <span style={{ color: 'var(--state-struggling-primary)' }}>{error}</span>
+            </motion.div>
           )}
 
           <form onSubmit={handleSignup} className="space-y-5">
             {/* Full Name Input */}
-            <div>
+            <motion.div variants={itemVariants}>
               <label className="label">Full Name</label>
-              <input
-                type="text"
-                name="fullName"
-                value={formData.fullName}
-                onChange={handleChange}
-                placeholder="John Doe"
-                className="input"
-                disabled={loading}
-              />
-            </div>
+              <div className="relative">
+                <User
+                  size={18}
+                  className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted pointer-events-none"
+                />
+                <input
+                  type="text"
+                  name="fullName"
+                  value={formData.fullName}
+                  onChange={handleChange}
+                  placeholder="Your name"
+                  className="input pl-10"
+                  disabled={loading}
+                  style={{ background: 'var(--bg-surface-2)' }}
+                />
+              </div>
+            </motion.div>
 
             {/* Email Input */}
-            <div>
+            <motion.div variants={itemVariants}>
               <label className="label">Email Address</label>
-              <input
-                type="email"
-                name="email"
-                value={formData.email}
-                onChange={handleChange}
-                placeholder="you@example.com"
-                className="input"
-                disabled={loading}
-              />
-            </div>
+              <div className="relative">
+                <Mail
+                  size={18}
+                  className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted pointer-events-none"
+                />
+                <input
+                  type="email"
+                  name="email"
+                  value={formData.email}
+                  onChange={handleChange}
+                  placeholder="you@example.com"
+                  className="input pl-10"
+                  disabled={loading}
+                  style={{ background: 'var(--bg-surface-2)' }}
+                />
+              </div>
+            </motion.div>
 
             {/* Password Input */}
-            <div>
-              <label className="label">Password</label>
+            <motion.div variants={itemVariants}>
+              <label className="label flex items-center gap-2 justify-between">
+                Password
+                {isPasswordValid && formData.password && (
+                  <motion.span
+                    initial={{ scale: 0 }}
+                    animate={{ scale: 1 }}
+                    className="text-state-growing-primary"
+                  >
+                    <CheckCircle2 size={16} />
+                  </motion.span>
+                )}
+              </label>
               <div className="relative">
+                <Lock
+                  size={18}
+                  className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted pointer-events-none"
+                />
                 <input
                   type={showPassword ? 'text' : 'password'}
                   name="password"
                   value={formData.password}
                   onChange={handleChange}
                   placeholder="••••••••"
-                  className="input"
+                  className="input pl-10 pr-10"
                   disabled={loading}
+                  style={{ background: 'var(--bg-surface-2)' }}
                 />
-                <button
+                <motion.button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 transform -translate-y-1/2 transition-opacity"
-                  style={{ opacity: 0.6 }}
+                  whileHover={{ scale: 1.1 }}
+                  whileTap={{ scale: 0.9 }}
+                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-secondary hover:text-primary transition"
                 >
-                  {showPassword ? '👁️' : '👁️‍🗨️'}
-                </button>
+                  {showPassword ? <Eye size={18} /> : <EyeOff size={18} />}
+                </motion.button>
               </div>
-              <p className="mt-1 text-xs" style={{ color: 'var(--text-secondary)' }}>
-                At least 6 characters
+              <p className="mt-2 text-xs text-muted">
+                {formData.password.length === 0
+                  ? 'At least 6 characters required'
+                  : isPasswordValid
+                    ? '✓ Password strength: Strong'
+                    : '✗ Password strength: Weak'}
               </p>
-            </div>
+            </motion.div>
 
             {/* Confirm Password Input */}
-            <div>
-              <label className="label">Confirm Password</label>
+            <motion.div variants={itemVariants}>
+              <label className="label flex items-center gap-2 justify-between">
+                Confirm Password
+                {passwordsMatch && (
+                  <motion.span
+                    initial={{ scale: 0 }}
+                    animate={{ scale: 1 }}
+                    className="text-state-growing-primary"
+                  >
+                    <CheckCircle2 size={16} />
+                  </motion.span>
+                )}
+              </label>
               <div className="relative">
+                <Lock
+                  size={18}
+                  className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted pointer-events-none"
+                />
                 <input
                   type={showConfirmPassword ? 'text' : 'password'}
                   name="confirmPassword"
                   value={formData.confirmPassword}
                   onChange={handleChange}
                   placeholder="••••••••"
-                  className="input"
+                  className="input pl-10 pr-10"
                   disabled={loading}
+                  style={{ background: 'var(--bg-surface-2)' }}
                 />
-                <button
+                <motion.button
                   type="button"
                   onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                  className="absolute right-3 top-1/2 transform -translate-y-1/2 transition-opacity"
-                  style={{ opacity: 0.6 }}
+                  whileHover={{ scale: 1.1 }}
+                  whileTap={{ scale: 0.9 }}
+                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-secondary hover:text-primary transition"
                 >
-                  {showConfirmPassword ? '👁️' : '👁️‍🗨️'}
-                </button>
+                  {showConfirmPassword ? <Eye size={18} /> : <EyeOff size={18} />}
+                </motion.button>
               </div>
-            </div>
+            </motion.div>
 
             {/* Terms & Conditions */}
-            <label className="flex items-start gap-2 text-sm" style={{ color: 'var(--text-secondary)' }}>
+            <motion.label
+              variants={itemVariants}
+              className="flex items-start gap-3 cursor-pointer text-sm text-secondary hover:text-primary transition"
+            >
               <input
                 type="checkbox"
-                className="w-4 h-4 rounded accent-indigo-500 mt-1"
+                className="w-4 h-4 rounded accent-indigo-500 mt-1 flex-shrink-0"
                 required
               />
               <span>
-                I agree to the Terms and Conditions and Privacy Policy
+                I agree to the Terms and Conditions and Privacy Policy of Finance Tracker
               </span>
-            </label>
+            </motion.label>
 
             {/* Signup Button */}
-            <button
+            <motion.button
+              variants={itemVariants}
               type="submit"
-              disabled={loading}
-              className="w-full btn btn-primary justify-center mt-6"
+              disabled={loading || !isPasswordValid || !passwordsMatch}
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              className="w-full btn btn-primary justify-center mt-8 font-heading text-base disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {loading ? (
-                <>
-                  <span className="inline-block w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
-                  Creating account...
-                </>
+                <motion.span
+                  animate={{ rotate: 360 }}
+                  transition={{ repeat: Infinity, duration: 1, linear: true }}
+                  className="inline-block"
+                >
+                  ⏳
+                </motion.span>
               ) : (
-                '✨ Sign Up'
+                <>
+                  <CheckCircle2 size={18} />
+                  Create Your Account
+                </>
               )}
-            </button>
+            </motion.button>
           </form>
 
           {/* Divider */}
-          <div className="relative my-6">
+          <div className="relative">
             <div className="absolute inset-0 flex items-center">
               <div style={{ width: '100%', height: '1px', background: 'var(--glass-border)' }} />
             </div>
             <div className="relative flex justify-center text-sm">
-              <span className="px-2" style={{ background: 'var(--bg-gradient)', color: 'var(--text-secondary)' }}>
-                or
+              <span className="px-3" style={{ background: 'var(--glass-bg)', color: 'var(--text-secondary)' }}>
+                Already a member?
               </span>
             </div>
           </div>
 
           {/* Login Link */}
-          <p className="text-center" style={{ color: 'var(--text-secondary)' }}>
-            Already have an account?{' '}
+          <motion.div variants={itemVariants} className="text-center">
+            <p className="text-secondary mb-3">
+              Log in to your existing account
+            </p>
             <Link
               to="/login"
-              className="text-indigo-400 hover:text-indigo-300 font-medium transition"
+              className="inline-flex items-center gap-2 px-6 py-2 rounded-lg font-heading text-state-stable-primary hover:text-state-thriving-primary transition"
+              style={{ background: 'var(--state-stable-bg)', border: '1px solid var(--state-stable-border)' }}
             >
-              Log in here
+              🔓 Log In Instead
             </Link>
-          </p>
-        </div>
-      </div>
+          </motion.div>
+        </motion.div>
+
+        {/* Value Proposition */}
+        <motion.div variants={itemVariants} className="mt-8 space-y-3">
+          {[
+            { icon: '💰', text: 'Track wealth with emotional intelligence' },
+            { icon: '📈', text: 'Beautiful data visualization & insights' },
+            { icon: '🎯', text: 'Achieve financial goals with confidence' },
+          ].map((item, idx) => (
+            <motion.div
+              key={idx}
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.5 + idx * 0.1 }}
+              className="flex items-center gap-3 text-sm text-secondary"
+            >
+              <span className="text-2xl">{item.icon}</span>
+              <span>{item.text}</span>
+            </motion.div>
+          ))}
+        </motion.div>
+      </motion.div>
     </div>
   );
 }

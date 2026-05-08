@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { Lock, Mail, Eye, EyeOff } from 'lucide-react';
+import { motion } from 'framer-motion';
 
 export default function Login() {
   const [email, setEmail] = useState('');
@@ -32,70 +34,118 @@ export default function Login() {
     }
   };
 
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.1,
+        delayChildren: 0.2,
+      },
+    },
+  };
+
+  const itemVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: { opacity: 1, y: 0, transition: { duration: 0.5 } },
+  };
+
   return (
     <div
       className="min-h-screen flex items-center justify-center px-4 py-12 transition-colors duration-300"
       style={{ background: 'var(--bg-gradient)' }}
     >
-      <div className="w-full max-w-md">
+      <motion.div
+        variants={containerVariants}
+        initial="hidden"
+        animate="visible"
+        className="w-full max-w-md"
+      >
         {/* Header */}
-        <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold gradient-text mb-2">💰 Finance Tracker</h1>
-          <p style={{ color: 'var(--text-secondary)' }}>
-            Welcome back! Log in to your account
+        <motion.div variants={itemVariants} className="text-center mb-10">
+          <motion.h1
+            className="text-5xl font-display gradient-text mb-3"
+            initial={{ scale: 0.8 }}
+            animate={{ scale: 1 }}
+            transition={{ type: 'spring', stiffness: 200, damping: 20 }}
+          >
+            💰
+          </motion.h1>
+          <h1 className="text-4xl font-display gradient-text mb-2">Finance Tracker</h1>
+          <p className="text-lg text-secondary">
+            Welcome back to your financial journey
           </p>
-        </div>
+        </motion.div>
 
         {/* Login Card */}
-        <div className="glass p-8">
-          {/* Error Message */}
+        <motion.div variants={itemVariants} className="glass p-8 space-y-6">
+          {/* Error Message - Animated */}
           {error && (
-            <div className="mb-6 p-4 rounded-lg flex items-center gap-2 border-l-4" style={{ borderColor: 'var(--color-danger)', background: `color-mix(in srgb, var(--color-danger) 10%, transparent)` }}>
-              <span>⚠️</span>
-              <span style={{ color: 'var(--color-danger)' }}>{error}</span>
-            </div>
+            <motion.div
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -20 }}
+              className="p-4 rounded-lg flex items-start gap-3 border-l-4"
+              style={{ borderColor: 'var(--state-struggling-primary)', background: 'var(--state-struggling-bg)' }}
+            >
+              <span className="text-xl">⚠️</span>
+              <span style={{ color: 'var(--state-struggling-primary)' }}>{error}</span>
+            </motion.div>
           )}
 
           <form onSubmit={handleLogin} className="space-y-5">
             {/* Email Input */}
-            <div>
+            <motion.div variants={itemVariants}>
               <label className="label">Email Address</label>
-              <input
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="you@example.com"
-                className="input"
-                disabled={loading}
-              />
-            </div>
+              <div className="relative">
+                <Mail
+                  size={18}
+                  className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted pointer-events-none"
+                />
+                <input
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="you@example.com"
+                  className="input pl-10"
+                  disabled={loading}
+                  style={{ background: 'var(--bg-surface-2)' }}
+                />
+              </div>
+            </motion.div>
 
             {/* Password Input */}
-            <div>
+            <motion.div variants={itemVariants}>
               <label className="label">Password</label>
               <div className="relative">
+                <Lock
+                  size={18}
+                  className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted pointer-events-none"
+                />
                 <input
                   type={showPassword ? 'text' : 'password'}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="••••••••"
-                  className="input"
+                  className="input pl-10 pr-10"
                   disabled={loading}
+                  style={{ background: 'var(--bg-surface-2)' }}
                 />
-                <button
+                <motion.button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 transform -translate-y-1/2 transition-opacity"
-                  style={{ opacity: 0.6 }}
+                  whileHover={{ scale: 1.1 }}
+                  whileTap={{ scale: 0.9 }}
+                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-secondary hover:text-primary transition"
                 >
-                  {showPassword ? '👁️' : '👁️‍🗨️'}
-                </button>
+                  {showPassword ? <Eye size={18} /> : <EyeOff size={18} />}
+                </motion.button>
               </div>
-            </div>
+            </motion.div>
 
             {/* Remember Me & Forgot Password */}
-            <div className="flex items-center justify-between text-sm">
-              <label className="flex items-center gap-2" style={{ color: 'var(--text-secondary)' }}>
+            <motion.div variants={itemVariants} className="flex items-center justify-between text-sm">
+              <label className="flex items-center gap-2 cursor-pointer text-secondary hover:text-primary transition">
                 <input
                   type="checkbox"
                   className="w-4 h-4 rounded accent-indigo-500"
@@ -104,65 +154,81 @@ export default function Login() {
               </label>
               <Link
                 to="/forgot-password"
-                className="text-indigo-400 hover:text-indigo-300 transition"
+                className="text-state-stable-primary hover:text-state-growing-primary font-medium transition"
               >
                 Forgot password?
               </Link>
-            </div>
+            </motion.div>
 
             {/* Login Button */}
-            <button
+            <motion.button
+              variants={itemVariants}
               type="submit"
               disabled={loading}
-              className="w-full btn btn-primary justify-center mt-6"
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              className="w-full btn btn-primary justify-center mt-8 font-heading text-base"
             >
               {loading ? (
-                <>
-                  <span className="inline-block w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
-                  Logging in...
-                </>
+                <motion.span
+                  animate={{ rotate: 360 }}
+                  transition={{ repeat: Infinity, duration: 1, linear: true }}
+                  className="inline-block"
+                >
+                  ⏳
+                </motion.span>
               ) : (
-                '🔓 Log In'
+                <>
+                  <Lock size={18} />
+                  Log In to Dashboard
+                </>
               )}
-            </button>
+            </motion.button>
           </form>
 
           {/* Divider */}
-          <div className="relative my-6">
+          <div className="relative">
             <div className="absolute inset-0 flex items-center">
               <div style={{ width: '100%', height: '1px', background: 'var(--glass-border)' }} />
             </div>
             <div className="relative flex justify-center text-sm">
-              <span className="px-2" style={{ background: 'var(--bg-gradient)', color: 'var(--text-secondary)' }}>
-                or
+              <span className="px-3" style={{ background: 'var(--glass-bg)', color: 'var(--text-secondary)' }}>
+                New to Finance Tracker?
               </span>
             </div>
           </div>
 
           {/* Signup Link */}
-          <p className="text-center" style={{ color: 'var(--text-secondary)' }}>
-            Don't have an account?{' '}
+          <motion.div variants={itemVariants} className="text-center">
+            <p className="text-secondary mb-3">
+              Create an account to start tracking your wealth
+            </p>
             <Link
               to="/signup"
-              className="text-indigo-400 hover:text-indigo-300 font-medium transition"
+              className="inline-flex items-center gap-2 px-6 py-2 rounded-lg font-heading text-state-growing-primary hover:text-state-thriving-primary transition"
+              style={{ background: 'var(--state-growing-bg)', border: '1px solid var(--state-growing-border)' }}
             >
-              Sign up here
+              ✨ Create Account
             </Link>
-          </p>
-        </div>
+          </motion.div>
+        </motion.div>
 
-        {/* Demo Info */}
-        <div
-          className="mt-6 p-4 rounded-lg border-l-4"
-          style={{ borderColor: 'var(--color-info)', background: `color-mix(in srgb, var(--color-info) 10%, transparent)` }}
+        {/* Demo Info - Animated */}
+        <motion.div
+          variants={itemVariants}
+          className="mt-8 p-5 rounded-xl border-l-4"
+          style={{
+            borderColor: 'var(--state-stable-primary)',
+            background: 'var(--state-stable-bg)',
+          }}
         >
-          <p className="text-sm" style={{ color: 'var(--color-info)' }}>
-            <strong>Demo Account:</strong><br />
-            Email: demo@example.com<br />
-            Password: demo123
+          <p className="font-heading text-state-stable-primary mb-2">💡 Quick Demo</p>
+          <p className="text-sm text-secondary">
+            <span className="block">Email: <code className="bg-black/30 px-2 py-1 rounded">demo@example.com</code></span>
+            <span className="block mt-1">Password: <code className="bg-black/30 px-2 py-1 rounded">demo123</code></span>
           </p>
-        </div>
-      </div>
+        </motion.div>
+      </motion.div>
     </div>
   );
 }

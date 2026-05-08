@@ -18,14 +18,16 @@ export default function AmbientBackground({ state = 'stable', intensity = 0.5 })
 
   useEffect(() => {
     // Generate random particles for ambient effect
-    const newParticles = Array.from({ length: 3 }).map((_, i) => ({
+    // Reduced particle count for better performance on low-end devices
+    const particleCount = prefersReducedMotion ? 0 : 3;
+    const newParticles = Array.from({ length: particleCount }).map((_, i) => ({
       id: i,
       x: Math.random() * 100,
       y: Math.random() * 100,
       delay: i * 0.3,
     }));
     setParticles(newParticles);
-  }, []);
+  }, [prefersReducedMotion]);
 
   const getGradientByState = () => {
     switch (state) {
