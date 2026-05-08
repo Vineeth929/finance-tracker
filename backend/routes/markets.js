@@ -58,32 +58,52 @@ router.get('/crypto', async (req, res) => {
     // Fetch quotes for all stocks in parallel
     const quotes = await Promise.all(
       INDIAN_STOCKS.map(async (stock) => {
-        const symbolWithExchange = `${stock.symbol}:NSE`;
-        const url = `https://finnhub.io/api/v1/quote?symbol=${symbolWithExchange}&token=${apiKey}`;
-
         try {
-          console.log(`🔍 Fetching: ${symbolWithExchange}`);
-          const response = await fetch(url);
+          // Try multiple formats to find one that works
+          const formats = [
+            `${stock.symbol}:NSE`,      // Try NSE first
+            stock.symbol,                // Try plain symbol
+            `${stock.symbol}.NS`         // Try .NS suffix
+          ];
 
-          console.log(`   Status: ${response.status} ${response.statusText}`);
+          for (const symbol of formats) {
+            const url = `https://finnhub.io/api/v1/quote?symbol=${symbol}&token=${apiKey}`;
+            console.log(`\n🔍 Trying ${stock.symbol} as "${symbol}"`);
 
-          if (!response.ok) {
-            console.warn(`   ⚠️ Bad status for ${stock.symbol}`);
-            return null;
+            try {
+              const response = await fetch(url);
+              console.log(`   HTTP ${response.status}`);
+
+              if (!response.ok) continue;
+
+              const data = await response.json();
+              console.log(`   FULL RESPONSE:`, JSON.stringify(data, null, 2));
+
+              // Validate response has actual price data
+              if (data.c && typeof data.c === 'number' && data.c > 0) {
+                console.log(`   ✅ VALID: ${stock.symbol} = ₹${data.c} (${data.dp || 0}%)`);
+                return {
+                  symbol: stock.symbol,
+                  name: stock.name,
+                  c: data.c,
+                  d: data.d,
+                  dp: data.dp,
+                  pc: data.pc,
+                  h: data.h,
+                  l: data.l
+                };
+              } else {
+                console.warn(`   ❌ Invalid: c=${data.c}, d=${data.d}, pc=${data.pc}`);
+              }
+            } catch (err) {
+              console.error(`   Error with ${symbol}:`, err.message);
+            }
           }
 
-          const data = await response.json();
-          console.log(`   Raw data:`, JSON.stringify(data).substring(0, 100));
-
-          if (data.c !== undefined && data.c !== null) {
-            console.log(`   ✅ Success: ${stock.symbol} = ₹${data.c}`);
-            return { symbol: stock.symbol, name: stock.name, ...data };
-          } else {
-            console.warn(`   ❌ No price data for ${stock.symbol}:`, Object.keys(data));
-            return null;
-          }
+          console.log(`❌ All formats failed for ${stock.symbol}`);
+          return null;
         } catch (err) {
-          console.error(`   ❌ Exception for ${stock.symbol}:`, err.message);
+          console.error(`FATAL for ${stock.symbol}:`, err.message);
           return null;
         }
       })
@@ -91,21 +111,38 @@ router.get('/crypto', async (req, res) => {
 
     console.log(`📊 Received ${quotes.length} responses, non-null: ${quotes.filter(q => q).length}`);
 
-    // Filter out failed requests and transform data
+    // Filter and transform data - ONLY valid prices
     const stocks = quotes
-      .filter(q => q && q.c !== undefined)
-      .slice(0, 20) // Limit to 20 stocks
+      .filter(q => {
+        if (!q || !q.c || q.c <= 0) {
+          console.log(`⏭️  Skipping invalid data:`, q ? `c=${q.c}` : 'null');
+          return false;
+        }
+        return true;
+      })
+      .slice(0, 20)
       .map(quote => {
         const stockIndex = INDIAN_STOCKS.findIndex(s => s.symbol === quote.symbol);
-        return {
+
+        // Use dp (percentage change) from Finnhub if available, otherwise calculate
+        const percentChange = quote.dp !== undefined ? quote.dp :
+                              (quote.d !== undefined && quote.pc ? (quote.d / quote.pc) * 100 : 0);
+
+        const stock = {
           id: quote.symbol,
           symbol: quote.symbol,
           name: quote.name || quote.symbol,
           currentPrice: quote.c,
-          change24h: quote.d !== undefined ? (quote.d / quote.pc) * 100 : 0,
+          change24h: percentChange,
+          dayHigh: quote.h,
+          dayLow: quote.l,
+          previousClose: quote.pc,
           marketCapRank: stockIndex + 1,
           sparkline: []
         };
+
+        console.log(`📊 Transformed: ${stock.symbol} ₹${stock.currentPrice} ${stock.change24h > 0 ? '📈' : '📉'} ${stock.change24h}%`);
+        return stock;
       });
 
     console.log(`✅ Transformed ${stocks.length} valid stocks`);
