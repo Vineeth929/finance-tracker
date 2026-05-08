@@ -7,13 +7,13 @@ let stocksCache = null;
 let cacheTimestamp = null;
 const CACHE_DURATION = 5 * 60 * 1000;
 
-// Major Indian stocks (Nifty 50 selection)
+// Major Indian stocks (Nifty 50 selection) - with NSE exchange suffix for Finnhub
 const INDIAN_STOCKS = [
-  'RELIANCE', 'TCS', 'HDFC', 'INFY', 'ICICIBANK',
-  'SBIN', 'WIPRO', 'BAJAJFINSV', 'MARUTI', 'HCLTECH',
-  'INDUSINDBK', 'AXISBANK', 'SUNPHARMA', 'LT', 'ASIANPAINT',
-  'DMART', 'JSWSTEEL', 'LTIM', 'NESTLEIND', 'KOTAKBANK',
-  'COALINDIA', 'HINDALCO', 'ADANIPORTS', 'ADANIENT', 'POWERGRID'
+  'RELIANCE.NS', 'TCS.NS', 'HDFC.NS', 'INFY.NS', 'ICICIBANK.NS',
+  'SBIN.NS', 'WIPRO.NS', 'BAJAJFINSV.NS', 'MARUTI.NS', 'HCLTECH.NS',
+  'INDUSINDBK.NS', 'AXISBANK.NS', 'SUNPHARMA.NS', 'LT.NS', 'ASIANPAINT.NS',
+  'DMART.NS', 'JSWSTEEL.NS', 'LTIM.NS', 'NESTLEIND.NS', 'KOTAKBANK.NS',
+  'COALINDIA.NS', 'HINDALCO.NS', 'ADANIPORTS.NS', 'ADANIENT.NS', 'POWERGRID.NS'
 ];
 
 // GET top Indian stocks (public - no auth required, rate limited)
@@ -57,15 +57,18 @@ router.get('/crypto', async (req, res) => {
     const stocks = quotes
       .filter(q => q && q.c)
       .slice(0, 20) // Limit to 20 stocks
-      .map(quote => ({
-        id: quote.symbol,
-        symbol: quote.symbol,
-        name: quote.symbol,
-        currentPrice: quote.c,
-        change24h: quote.d !== undefined ? (quote.d / quote.pc) * 100 : 0,
-        marketCapRank: INDIAN_STOCKS.indexOf(quote.symbol) + 1,
-        sparkline: []
-      }));
+      .map(quote => {
+        const displaySymbol = quote.symbol.replace('.NS', ''); // Remove exchange suffix for display
+        return {
+          id: quote.symbol,
+          symbol: displaySymbol,
+          name: displaySymbol,
+          currentPrice: quote.c,
+          change24h: quote.d !== undefined ? (quote.d / quote.pc) * 100 : 0,
+          marketCapRank: INDIAN_STOCKS.findIndex(s => s === quote.symbol) + 1,
+          sparkline: []
+        };
+      });
 
     // Cache the result
     stocksCache = {
