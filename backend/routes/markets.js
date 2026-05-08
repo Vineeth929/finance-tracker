@@ -2,176 +2,187 @@ const express = require('express');
 const router = express.Router();
 const fetch = require('node-fetch');
 
-// Cache for CoinGecko data (5 minutes)
-let cryptoCache = null;
+// Cache for stock data (5 minutes)
+let stocksCache = null;
 let cacheTimestamp = null;
 const CACHE_DURATION = 5 * 60 * 1000;
 
-// GET top crypto prices (public - no auth required, rate limited)
+// Major Indian stocks (Nifty 50 selection)
+const INDIAN_STOCKS = [
+  'RELIANCE', 'TCS', 'HDFC', 'INFY', 'ICICIBANK',
+  'SBIN', 'WIPRO', 'BAJAJFINSV', 'MARUTI', 'HCLTECH',
+  'INDUSINDBK', 'AXISBANK', 'SUNPHARMA', 'LT', 'ASIANPAINT',
+  'DMART', 'JSWSTEEL', 'LTIM', 'NESTLEIND', 'KOTAKBANK',
+  'COALINDIA', 'HINDALCO', 'ADANIPORTS', 'ADANIENT', 'POWERGRID'
+];
+
+// GET top Indian stocks (public - no auth required, rate limited)
 router.get('/crypto', async (req, res) => {
   try {
     const now = Date.now();
 
     // Return cached data if still fresh
-    if (cryptoCache && cacheTimestamp && (now - cacheTimestamp) < CACHE_DURATION) {
+    if (stocksCache && cacheTimestamp && (now - cacheTimestamp) < CACHE_DURATION) {
       return res.json({
-        ...cryptoCache,
+        ...stocksCache,
         cached: true,
         cacheAge: Math.floor((now - cacheTimestamp) / 1000)
       });
     }
 
-    // Fetch from CoinGecko with proper headers
-    const response = await fetch(
-      'https://api.coingecko.com/api/v3/coins/markets?' +
-      'vs_currency=inr&' +
-      'order=market_cap_desc&' +
-      'per_page=20&' +
-      'sparkline=true&' +
-      'price_change_percentage=24h,7d',
-      {
-        headers: {
-          'User-Agent': 'FinanceTracker/1.0'
+    // Fetch stock quotes from Finnhub
+    const apiKey = process.env.FINNHUB_API_KEY;
+    if (!apiKey) {
+      throw new Error('FINNHUB_API_KEY not configured');
+    }
+
+    // Fetch quotes for all stocks in parallel
+    const quotes = await Promise.all(
+      INDIAN_STOCKS.map(async (symbol) => {
+        try {
+          const response = await fetch(
+            `https://finnhub.io/api/v1/quote?symbol=${symbol}&token=${apiKey}`
+          );
+          if (!response.ok) return null;
+          const data = await response.json();
+          return { symbol, ...data };
+        } catch (err) {
+          console.error(`Failed to fetch ${symbol}:`, err.message);
+          return null;
         }
-      }
+      })
     );
 
-    if (!response.ok) {
-      throw new Error(`CoinGecko API error: ${response.status}`);
-    }
-
-    const data = await response.json();
-    if (!Array.isArray(data)) {
-      throw new Error('Invalid response format from CoinGecko');
-    }
-
-    // Transform data for frontend
-    const cryptos = data.map(coin => ({
-      id: coin.id,
-      symbol: coin.symbol.toUpperCase(),
-      name: coin.name,
-      image: coin.image,
-      currentPrice: coin.current_price,
-      marketCap: coin.market_cap,
-      marketCapRank: coin.market_cap_rank,
-      change24h: coin.price_change_percentage_24h,
-      change7d: coin.price_change_percentage_7d,
-      sparkline: coin.sparkline_in_7d?.price || []
-    }));
+    // Filter out failed requests and transform data
+    const stocks = quotes
+      .filter(q => q && q.c)
+      .slice(0, 20) // Limit to 20 stocks
+      .map(quote => ({
+        id: quote.symbol,
+        symbol: quote.symbol,
+        name: quote.symbol,
+        currentPrice: quote.c,
+        change24h: quote.d !== undefined ? (quote.d / quote.pc) * 100 : 0,
+        marketCapRank: INDIAN_STOCKS.indexOf(quote.symbol) + 1,
+        sparkline: []
+      }));
 
     // Cache the result
-    cryptoCache = {
-      cryptos,
+    stocksCache = {
+      cryptos: stocks, // Keep 'cryptos' key for frontend compatibility
       lastUpdated: new Date().toISOString()
     };
     cacheTimestamp = now;
 
     res.json({
-      ...cryptoCache,
+      ...stocksCache,
       cached: false
     });
   } catch (err) {
-    console.error('CoinGecko API error:', err.message);
+    console.error('Finnhub API error:', err.message);
     // If cache exists but is stale, return it with a warning
-    if (cryptoCache) {
+    if (stocksCache) {
       console.warn('Returning stale cache due to API error');
       return res.json({
-        ...cryptoCache,
+        ...stocksCache,
         cached: true,
         stale: true,
         cacheAge: Math.floor((Date.now() - cacheTimestamp) / 1000),
         error: 'Showing cached data due to API unavailability'
       });
     }
-    res.status(500).json({ error: 'Failed to fetch crypto data', details: err.message });
+    res.status(500).json({ error: 'Failed to fetch stock data', details: err.message });
   }
 });
 
-// GET crypto details
-router.get('/crypto/:coinId', async (req, res) => {
+// GET stock details
+router.get('/crypto/:symbol', async (req, res) => {
   try {
-    const { coinId } = req.params;
+    const { symbol } = req.params;
+    const apiKey = process.env.FINNHUB_API_KEY;
 
+    if (!apiKey) {
+      throw new Error('FINNHUB_API_KEY not configured');
+    }
+
+    // Fetch stock quote from Finnhub
     const response = await fetch(
-      `https://api.coingecko.com/api/v3/coins/${coinId}?` +
-      'localization=false&' +
-      'tickers=false&' +
-      'market_data=true&' +
-      'community_data=false&' +
-      'developer_data=false',
-      {
-        headers: {
-          'User-Agent': 'FinanceTracker/1.0'
-        }
-      }
+      `https://finnhub.io/api/v1/quote?symbol=${symbol.toUpperCase()}&token=${apiKey}`
     );
 
     if (!response.ok) {
       if (response.status === 404) {
-        return res.status(404).json({ error: 'Cryptocurrency not found' });
+        return res.status(404).json({ error: 'Stock not found' });
       }
-      throw new Error(`CoinGecko API error: ${response.status}`);
+      throw new Error(`Finnhub API error: ${response.status}`);
     }
 
-    const coin = await response.json();
+    const quote = await response.json();
 
-    const coinData = {
-      id: coin.id,
-      symbol: coin.symbol.toUpperCase(),
-      name: coin.name,
-      image: coin.image?.large,
-      description: coin.description?.en,
-      website: coin.links?.homepage?.[0],
-      currentPrice: coin.market_data?.current_price?.inr,
-      marketCap: coin.market_data?.market_cap?.inr,
-      ath: coin.market_data?.ath?.inr,
-      atl: coin.market_data?.atl?.inr,
-      change24h: coin.market_data?.price_change_percentage_24h,
-      change7d: coin.market_data?.price_change_percentage_7d,
-      change30d: coin.market_data?.price_change_percentage_30d,
-      circulatingSupply: coin.market_data?.circulating_supply,
-      totalSupply: coin.market_data?.total_supply
+    const stockData = {
+      id: symbol,
+      symbol: symbol.toUpperCase(),
+      name: symbol.toUpperCase(),
+      currentPrice: quote.c,
+      change24h: quote.d !== undefined ? (quote.d / quote.pc) * 100 : 0,
+      dayHigh: quote.h,
+      dayLow: quote.l,
+      open: quote.o,
+      previousClose: quote.pc
     };
 
-    res.json(coinData);
+    res.json(stockData);
   } catch (err) {
-    console.error('CoinGecko API error:', err.message);
-    res.status(500).json({ error: 'Failed to fetch coin details', details: err.message });
+    console.error('Finnhub API error:', err.message);
+    res.status(500).json({ error: 'Failed to fetch stock details', details: err.message });
   }
 });
 
-// GET market overview
+// GET market overview (Indian stock market)
 router.get('/overview', async (req, res) => {
   try {
-    const response = await fetch(
-      'https://api.coingecko.com/api/v3/global',
-      {
-        headers: {
-          'User-Agent': 'FinanceTracker/1.0'
-        }
-      }
-    );
+    const apiKey = process.env.FINNHUB_API_KEY;
 
-    if (!response.ok) {
-      throw new Error(`CoinGecko API error: ${response.status}`);
+    if (!apiKey) {
+      throw new Error('FINNHUB_API_KEY not configured');
     }
 
-    const data = await response.json();
+    // Fetch indices from Finnhub
+    const [nifty50, sensex, niftyBank] = await Promise.all([
+      fetch(`https://finnhub.io/api/v1/quote?symbol=NIFTY50&token=${apiKey}`).then(r => r.json()),
+      fetch(`https://finnhub.io/api/v1/quote?symbol=SENSEX&token=${apiKey}`).then(r => r.json()),
+      fetch(`https://finnhub.io/api/v1/quote?symbol=NIFTYBANK&token=${apiKey}`).then(r => r.json())
+    ]);
 
     const overview = {
-      totalMarketCap: data.total_market_cap?.inr,
-      totalVolume: data.total_volume?.inr,
-      btcDominance: data.btc_market_cap_percentage,
-      ethDominance: data.eth_market_cap_percentage,
-      activeCryptos: data.active_cryptocurrencies,
-      markets: data.markets,
-      change24h: data.market_cap_change_percentage_24h_usd
+      totalMarketCap: null,
+      totalVolume: null,
+      btcDominance: nifty50.c ? ((nifty50.d / nifty50.pc) * 100).toFixed(2) : 0,
+      ethDominance: sensex.c ? ((sensex.d / sensex.pc) * 100).toFixed(2) : 0,
+      activeCryptos: INDIAN_STOCKS.length,
+      markets: 2,
+      change24h: nifty50.c ? ((nifty50.d / nifty50.pc) * 100).toFixed(2) : 0,
+      nifty50: nifty50.c || 0,
+      sensex: sensex.c || 0,
+      niftyBank: niftyBank.c || 0
     };
 
     res.json(overview);
   } catch (err) {
-    console.error('CoinGecko API error:', err.message);
-    res.status(500).json({ error: 'Failed to fetch market overview', details: err.message });
+    console.error('Finnhub API error:', err.message);
+    res.status(500).json({
+      error: 'Failed to fetch market overview',
+      details: err.message,
+      overview: {
+        totalMarketCap: null,
+        totalVolume: null,
+        btcDominance: null,
+        ethDominance: null,
+        activeCryptos: INDIAN_STOCKS.length,
+        markets: 2,
+        change24h: null
+      }
+    });
   }
 });
 
