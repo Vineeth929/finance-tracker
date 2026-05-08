@@ -21,14 +21,19 @@ router.get('/crypto', async (req, res) => {
       });
     }
 
-    // Fetch from CoinGecko
+    // Fetch from CoinGecko with proper headers
     const response = await fetch(
       'https://api.coingecko.com/api/v3/coins/markets?' +
       'vs_currency=inr&' +
       'order=market_cap_desc&' +
       'per_page=20&' +
       'sparkline=true&' +
-      'price_change_percentage=24h,7d'
+      'price_change_percentage=24h,7d',
+      {
+        headers: {
+          'User-Agent': 'FinanceTracker/1.0'
+        }
+      }
     );
 
     if (!response.ok) {
@@ -36,6 +41,9 @@ router.get('/crypto', async (req, res) => {
     }
 
     const data = await response.json();
+    if (!Array.isArray(data)) {
+      throw new Error('Invalid response format from CoinGecko');
+    }
 
     // Transform data for frontend
     const cryptos = data.map(coin => ({
@@ -64,6 +72,17 @@ router.get('/crypto', async (req, res) => {
     });
   } catch (err) {
     console.error('CoinGecko API error:', err.message);
+    // If cache exists but is stale, return it with a warning
+    if (cryptoCache) {
+      console.warn('Returning stale cache due to API error');
+      return res.json({
+        ...cryptoCache,
+        cached: true,
+        stale: true,
+        cacheAge: Math.floor((Date.now() - cacheTimestamp) / 1000),
+        error: 'Showing cached data due to API unavailability'
+      });
+    }
     res.status(500).json({ error: 'Failed to fetch crypto data', details: err.message });
   }
 });
@@ -79,7 +98,12 @@ router.get('/crypto/:coinId', async (req, res) => {
       'tickers=false&' +
       'market_data=true&' +
       'community_data=false&' +
-      'developer_data=false'
+      'developer_data=false',
+      {
+        headers: {
+          'User-Agent': 'FinanceTracker/1.0'
+        }
+      }
     );
 
     if (!response.ok) {
@@ -120,7 +144,12 @@ router.get('/crypto/:coinId', async (req, res) => {
 router.get('/overview', async (req, res) => {
   try {
     const response = await fetch(
-      'https://api.coingecko.com/api/v3/global'
+      'https://api.coingecko.com/api/v3/global',
+      {
+        headers: {
+          'User-Agent': 'FinanceTracker/1.0'
+        }
+      }
     );
 
     if (!response.ok) {

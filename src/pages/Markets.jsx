@@ -60,32 +60,32 @@ export default function MarketsPage() {
       )}
 
       {lastUpdated && (
-        <p className="text-sm text-gray-400">Last updated: {lastUpdated.toLocaleTimeString()}</p>
+        <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>Last updated: {lastUpdated.toLocaleTimeString()}</p>
       )}
 
       {/* Market Overview */}
       {overview && (
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <GlassCard>
-            <p className="text-gray-400 text-sm mb-2">Total Market Cap</p>
+            <p className="text-sm mb-2" style={{ color: 'var(--text-secondary)' }}>Total Market Cap</p>
             <p className="text-2xl font-bold gradient-text">₹{overview.totalMarketCap ? (overview.totalMarketCap / 1e12).toFixed(2) : '—'}T</p>
             <p className={`text-xs mt-2 ${(overview.change24h || 0) >= 0 ? 'text-emerald-400' : 'text-rose-400'}`}>
               {(overview.change24h || 0) >= 0 ? '📈' : '📉'} {Math.abs(overview.change24h || 0).toFixed(2)}% (24h)
             </p>
           </GlassCard>
           <GlassCard>
-            <p className="text-gray-400 text-sm mb-2">BTC Dominance</p>
+            <p className="text-sm mb-2" style={{ color: 'var(--text-secondary)' }}>BTC Dominance</p>
             <p className="text-2xl font-bold text-orange-400">{overview.btcDominance ? overview.btcDominance.toFixed(1) : '—'}%</p>
           </GlassCard>
           <GlassCard>
-            <p className="text-gray-400 text-sm mb-2">ETH Dominance</p>
+            <p className="text-sm mb-2" style={{ color: 'var(--text-secondary)' }}>ETH Dominance</p>
             <p className="text-2xl font-bold text-purple-400">{overview.ethDominance ? overview.ethDominance.toFixed(1) : '—'}%</p>
           </GlassCard>
         </div>
       )}
 
       {!overview && !error && !loading && (
-        <GlassCard className="p-4 text-center text-gray-400">
+        <GlassCard className="p-4 text-center" style={{ color: 'var(--text-secondary)' }}>
           <p>Market data unavailable. Please try again later.</p>
         </GlassCard>
       )}
@@ -101,7 +101,7 @@ export default function MarketsPage() {
                 )}
                 <div>
                   <h3 className="font-semibold">{crypto.name}</h3>
-                  <p className="text-xs text-gray-400">{crypto.symbol}</p>
+                  <p className="text-xs" style={{ color: 'var(--text-secondary)' }}>{crypto.symbol}</p>
                 </div>
               </div>
 
@@ -118,7 +118,7 @@ export default function MarketsPage() {
             </GlassCard>
           ))
         ) : (
-          <GlassCard className="p-8 text-center text-gray-400">
+          <GlassCard className="p-8 text-center" style={{ color: 'var(--text-secondary)' }}>
             <p>No cryptocurrency data available. Waiting for market data to load...</p>
           </GlassCard>
         )}
