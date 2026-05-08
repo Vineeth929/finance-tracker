@@ -47,36 +47,53 @@ router.get('/crypto', async (req, res) => {
 
     // Fetch stock quotes from Finnhub
     const apiKey = process.env.FINNHUB_API_KEY;
+    console.log('💹 FINNHUB_API_KEY configured:', !!apiKey);
+
     if (!apiKey) {
       throw new Error('FINNHUB_API_KEY not configured');
     }
 
-    // Fetch quotes for all stocks in parallel - try with :NSE format
+    console.log(`📡 Fetching ${INDIAN_STOCKS.length} stocks from Finnhub...`);
+
+    // Fetch quotes for all stocks in parallel
     const quotes = await Promise.all(
       INDIAN_STOCKS.map(async (stock) => {
+        const symbolWithExchange = `${stock.symbol}:NSE`;
+        const url = `https://finnhub.io/api/v1/quote?symbol=${symbolWithExchange}&token=${apiKey}`;
+
         try {
-          // Try :NSE format first (Finnhub's India format)
-          const symbolWithExchange = `${stock.symbol}:NSE`;
-          const response = await fetch(
-            `https://finnhub.io/api/v1/quote?symbol=${symbolWithExchange}&token=${apiKey}`
-          );
-          if (!response.ok) return null;
-          const data = await response.json();
-          if (data.c) {
-            console.log(`✅ Fetched ${stock.symbol}: ₹${data.c}`);
-            return { symbol: stock.symbol, name: stock.name, ...data };
+          console.log(`🔍 Fetching: ${symbolWithExchange}`);
+          const response = await fetch(url);
+
+          console.log(`   Status: ${response.status} ${response.statusText}`);
+
+          if (!response.ok) {
+            console.warn(`   ⚠️ Bad status for ${stock.symbol}`);
+            return null;
           }
-          return null;
+
+          const data = await response.json();
+          console.log(`   Raw data:`, JSON.stringify(data).substring(0, 100));
+
+          if (data.c !== undefined && data.c !== null) {
+            console.log(`   ✅ Success: ${stock.symbol} = ₹${data.c}`);
+            return { symbol: stock.symbol, name: stock.name, ...data };
+          } else {
+            console.warn(`   ❌ No price data for ${stock.symbol}:`, Object.keys(data));
+            return null;
+          }
         } catch (err) {
-          console.error(`Failed to fetch ${stock.symbol}:`, err.message);
+          console.error(`   ❌ Exception for ${stock.symbol}:`, err.message);
           return null;
         }
       })
     );
 
+    console.log(`📊 Received ${quotes.length} responses, non-null: ${quotes.filter(q => q).length}`);
+
     // Filter out failed requests and transform data
     const stocks = quotes
-      .filter(q => q && q.c)
+      .filter(q => q && q.c !== undefined)
       .slice(0, 20) // Limit to 20 stocks
       .map(quote => {
         const stockIndex = INDIAN_STOCKS.findIndex(s => s.symbol === quote.symbol);
@@ -91,12 +108,30 @@ router.get('/crypto', async (req, res) => {
         };
       });
 
-    // Cache the result
-    stocksCache = {
-      cryptos: stocks, // Keep 'cryptos' key for frontend compatibility
-      lastUpdated: new Date().toISOString()
-    };
-    cacheTimestamp = now;
+    console.log(`✅ Transformed ${stocks.length} valid stocks`);
+
+    // ONLY cache if we got real data, don't cache empty results
+    if (stocks.length > 0) {
+      stocksCache = {
+        cryptos: stocks,
+        lastUpdated: new Date().toISOString()
+      };
+      cacheTimestamp = now;
+      console.log('💾 Cached stock data');
+    } else {
+      console.warn('⚠️ No valid stocks received, NOT caching empty result');
+      // Return test data temporarily to debug frontend
+      const testData = [
+        { id: 'INFY', symbol: 'INFY', name: 'Infosys', currentPrice: 1650, change24h: 2.5, marketCapRank: 1, sparkline: [] },
+        { id: 'TCS', symbol: 'TCS', name: 'TCS', currentPrice: 3800, change24h: 1.2, marketCapRank: 2, sparkline: [] },
+        { id: 'RELIANCE', symbol: 'RELIANCE', name: 'Reliance', currentPrice: 2850, change24h: -0.5, marketCapRank: 3, sparkline: [] },
+      ];
+      return res.json({
+        cryptos: testData,
+        cached: false,
+        debug: 'RETURNING TEST DATA - Finnhub API not returning valid data'
+      });
+    }
 
     res.json({
       ...stocksCache,
