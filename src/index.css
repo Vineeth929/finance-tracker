@@ -929,13 +929,17 @@ body {
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-lg);
   padding: var(--spacing-md);
-  box-shadow: var(--shadow-sm);
+  box-shadow:
+    var(--shadow-sm),
+    inset 0 1px 0 rgba(248, 250, 252, 0.04);
   transition: all var(--transition-fast);
 }
 
 .card-sm:hover {
   border-color: var(--border-soft);
-  box-shadow: var(--shadow-md);
+  box-shadow:
+    var(--shadow-md),
+    inset 0 1px 0 rgba(248, 250, 252, 0.08);
   transform: translateY(-1px);
 }
 
@@ -949,11 +953,13 @@ body {
   border-radius: var(--radius-xl);
   padding: var(--spacing-lg);
   transition: all var(--transition-base);
+  box-shadow: inset 0 1px 0 rgba(248, 250, 252, 0.04);
 }
 
 .card-flat:hover {
   background: var(--surface-level-2);
   border-color: var(--border-soft);
+  box-shadow: inset 0 1px 0 rgba(248, 250, 252, 0.08);
 }
 
 /* ============================================================================
@@ -1015,7 +1021,7 @@ body {
   content: '';
   position: absolute;
   inset: 0;
-  background: linear-gradient(135deg, rgba(248, 250, 252, 0.1) 0%, transparent 100%);
+  background: linear-gradient(135deg, rgba(139, 92, 246, 0.05) 0%, transparent 100%);
   pointer-events: none;
 }
 
@@ -1058,12 +1064,16 @@ body {
   border: 1.5px solid var(--border-soft);
   color: var(--text-primary);
   transition: all var(--transition-fast);
+  box-shadow: inset 0 1px 0 rgba(248, 250, 252, 0.06);
 }
 
 .btn-secondary:hover {
-  border-color: var(--accent-violet);
-  background: var(--surface-level-3);
-  box-shadow: var(--glow-violet), var(--shadow-md);
+  border-color: var(--border-normal);
+  background: var(--surface-level-2);
+  box-shadow:
+    inset 0 1px 0 rgba(139, 92, 246, 0.12),
+    0 0 16px rgba(139, 92, 246, 0.12),
+    var(--shadow-md);
 }
 
 /* Danger Button - Rose (Alert) */
@@ -1371,17 +1381,19 @@ body {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: var(--border-accent);
+  background: linear-gradient(180deg, rgba(139, 92, 246, 0.4) 0%, rgba(6, 182, 212, 0.3) 100%);
   border-radius: var(--radius-full);
-  transition: background var(--transition-fast);
+  transition: all var(--transition-fast);
   border: 3px solid transparent;
   background-clip: content-box;
+  box-shadow: inset 0 0 8px rgba(139, 92, 246, 0.2);
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: var(--accent-violet);
+  background: linear-gradient(180deg, rgba(139, 92, 246, 0.6) 0%, rgba(6, 182, 212, 0.5) 100%);
   border: 3px solid transparent;
   background-clip: content-box;
+  box-shadow: inset 0 0 12px rgba(139, 92, 246, 0.3);
 }
 
 /* ============================================================================
