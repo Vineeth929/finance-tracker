@@ -7,7 +7,8 @@ const { generalLimiter, authLimiter, externalAPILimiter } = require('./middlewar
 console.log('🔧 Starting server with NODE_ENV:', process.env.NODE_ENV);
 console.log('📦 MONGODB_URI configured:', !!process.env.MONGODB_URI);
 console.log('🔑 JWT_SECRET configured:', !!process.env.JWT_SECRET);
-console.log('🌍 Markets, News, and Insights routes enabled - v1.4 MANUAL DEPLOY');
+console.log('💹 FINNHUB_API_KEY configured:', !!process.env.FINNHUB_API_KEY);
+console.log('🌍 Markets (Indian Stocks), News, and Insights routes enabled');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
