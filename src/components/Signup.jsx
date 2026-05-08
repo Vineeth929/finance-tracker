@@ -139,7 +139,7 @@ export default function Signup() {
                   placeholder="Your name"
                   className="input pl-10"
                   disabled={loading}
-                  style={{ background: 'var(--bg-surface-2)' }}
+                  style={{ background: 'var(--surface-level-2)' }}
                 />
               </div>
             </motion.div>
@@ -160,7 +160,7 @@ export default function Signup() {
                   placeholder="you@example.com"
                   className="input pl-10"
                   disabled={loading}
-                  style={{ background: 'var(--bg-surface-2)' }}
+                  style={{ background: 'var(--surface-level-2)' }}
                 />
               </div>
             </motion.div>
@@ -192,7 +192,7 @@ export default function Signup() {
                   placeholder="••••••••"
                   className="input pl-10 pr-10"
                   disabled={loading}
-                  style={{ background: 'var(--bg-surface-2)' }}
+                  style={{ background: 'var(--surface-level-2)' }}
                 />
                 <motion.button
                   type="button"
@@ -240,7 +240,7 @@ export default function Signup() {
                   placeholder="••••••••"
                   className="input pl-10 pr-10"
                   disabled={loading}
-                  style={{ background: 'var(--bg-surface-2)' }}
+                  style={{ background: 'var(--surface-level-2)' }}
                 />
                 <motion.button
                   type="button"

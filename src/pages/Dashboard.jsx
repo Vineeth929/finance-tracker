@@ -214,6 +214,7 @@ export default function DashboardPage() {
             value={totals.income}
             icon="📈"
             isGrowing={heartbeat.state === 'thriving' || heartbeat.state === 'growing'}
+            emotion="goals"
           />
           <AnimatedStatCard
             label="Expenses"
@@ -224,6 +225,7 @@ export default function DashboardPage() {
                 ? { direction: 'down', percentage: 5 }
                 : null
             }
+            emotion="expenses"
           />
           <AnimatedStatCard
             label="Savings"
@@ -235,11 +237,13 @@ export default function DashboardPage() {
                 ? { direction: totals.savings > 0 ? 'up' : 'down', percentage: Math.abs((totals.savings / totals.income) * 100) }
                 : null
             }
+            emotion="savings"
           />
           <AnimatedStatCard
             label="Goals"
             value={activeGoals}
             icon="🎯"
+            emotion="investments"
           />
         </motion.div>
 

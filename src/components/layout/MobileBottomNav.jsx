@@ -26,8 +26,8 @@ export default function MobileBottomNav() {
       transition={{ duration: 0.3 }}
       className="fixed bottom-0 left-0 right-0 md:hidden z-40 px-3 py-2.5"
       style={{
-        background: 'linear-gradient(180deg, var(--bg-surface-2) 0%, var(--bg-surface-1) 100%)',
-        borderTop: '1.5px solid var(--border-accent)',
+        background: 'linear-gradient(180deg, var(--surface-level-2) 0%, var(--surface-level-1) 100%)',
+        borderTop: '1.5px solid var(--glass-border)',
         boxShadow: '0 -8px 24px rgba(0, 0, 0, 0.5)',
       }}
     >

@@ -232,7 +232,7 @@ export default function SettingsPage() {
             transition={{ delay: 0.3 }}
             className="p-4 rounded-lg border-t-2"
             style={{
-              background: 'var(--bg-surface-2)',
+              background: 'var(--surface-level-2)',
               borderColor: 'var(--emotion-analytics)',
             }}
           >

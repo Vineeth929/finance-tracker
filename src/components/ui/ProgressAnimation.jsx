@@ -42,7 +42,7 @@ export default function ProgressAnimation({
       {/* Background track */}
       <div
         className="w-full h-2 rounded-full overflow-hidden"
-        style={{ background: 'var(--bg-surface-2)' }}
+        style={{ background: 'var(--surface-level-3)' }}
       >
         {/* Animated progress fill */}
         <motion.div

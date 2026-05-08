@@ -109,7 +109,7 @@ export default function Login() {
                   placeholder="you@example.com"
                   className="input pl-10"
                   disabled={loading}
-                  style={{ background: 'var(--bg-surface-2)' }}
+                  style={{ background: 'var(--surface-level-2)' }}
                 />
               </div>
             </motion.div>
@@ -129,7 +129,7 @@ export default function Login() {
                   placeholder="••••••••"
                   className="input pl-10 pr-10"
                   disabled={loading}
-                  style={{ background: 'var(--bg-surface-2)' }}
+                  style={{ background: 'var(--surface-level-2)' }}
                 />
                 <motion.button
                   type="button"

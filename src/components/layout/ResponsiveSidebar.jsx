@@ -47,7 +47,7 @@ export default function ResponsiveSidebar() {
       animate={{ width: sidebarCollapsed ? 80 : 256 }}
       className="hidden md:flex flex-col fixed left-0 top-0 h-screen z-30 pt-6"
       style={{
-        background: 'linear-gradient(180deg, var(--bg-surface-1) 0%, var(--bg-surface-2) 100%)',
+        background: 'linear-gradient(180deg, var(--surface-level-1) 0%, var(--surface-level-2) 100%)',
         borderRight: '1.5px solid var(--border-accent)',
         boxShadow: 'inset -1px 0 0 var(--border-subtle)',
       }}
@@ -286,7 +286,7 @@ export default function ResponsiveSidebar() {
             exit="exit"
             className="fixed left-0 top-0 w-72 h-screen z-50 flex flex-col pt-6"
             style={{
-              background: 'linear-gradient(180deg, var(--bg-surface-2) 0%, var(--bg-surface-3) 100%)',
+              background: 'linear-gradient(180deg, var(--surface-level-2) 0%, var(--surface-level-3) 100%)',
               backdropFilter: 'var(--glass-backdrop-strong)',
               WebkitBackdropFilter: 'var(--glass-backdrop-strong)',
               borderRight: '1.5px solid var(--border-accent)',
@@ -510,7 +510,7 @@ export default function ResponsiveSidebar() {
       transition={{ duration: 0.3 }}
       className="fixed top-0 left-0 right-0 md:hidden z-30 px-4 py-3"
       style={{
-        background: 'linear-gradient(180deg, var(--bg-surface-1) 0%, var(--bg-surface-2) 100%)',
+        background: 'linear-gradient(180deg, var(--surface-level-1) 0%, var(--surface-level-2) 100%)',
         borderBottom: '1.5px solid var(--border-accent)',
         boxShadow: '0 4px 16px rgba(0, 0, 0, 0.4)',
       }}

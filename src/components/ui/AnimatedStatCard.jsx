@@ -12,8 +12,19 @@ export default function AnimatedStatCard({
   icon = "💰",
   onHover = null,
   isGrowing = false, // If true, emphasize growth with special colors
+  emotion = 'analytics', // 'savings', 'expenses', 'investments', 'goals', 'analytics'
 }) {
   const [isHovered, setIsHovered] = useState(false);
+
+  const emotionConfig = {
+    savings: { var: '--emotion-savings', glowColor: 'rgba(16, 185, 129, 0.2)' },
+    expenses: { var: '--emotion-expenses', glowColor: 'rgba(239, 68, 68, 0.2)' },
+    investments: { var: '--emotion-investments', glowColor: 'rgba(6, 182, 212, 0.2)' },
+    goals: { var: '--emotion-goals', glowColor: 'rgba(217, 119, 6, 0.2)' },
+    analytics: { var: '--emotion-analytics', glowColor: 'rgba(168, 85, 247, 0.2)' },
+  };
+
+  const config = emotionConfig[emotion] || emotionConfig.analytics;
 
   const formatValue = (val) => {
     return new Intl.NumberFormat('en-IN', {
@@ -37,15 +48,17 @@ export default function AnimatedStatCard({
       }}
       whileHover={{ y: -8 }}
       transition={{ type: 'spring', stiffness: 300, damping: 20 }}
-      className="relative overflow-hidden rounded-xl p-6"
+      className="relative overflow-hidden rounded-xl p-6 surface-card"
       style={{
         background: isHovered
-          ? 'linear-gradient(135deg, var(--bg-surface-3), var(--bg-surface-2))'
-          : 'var(--bg-surface-3)',
-        border: '1px solid var(--border-normal)',
+          ? `linear-gradient(135deg, var(${config.var}-bg), var(--surface-level-3))`
+          : `var(${config.var}-bg)`,
+        border: isHovered
+          ? `1px solid var(${config.var}-border)`
+          : `1px solid var(${config.var}-border)`,
         boxShadow: isHovered
-          ? '0 12px 32px rgba(168, 85, 247, 0.15)'
-          : '0 4px 12px rgba(0, 0, 0, 0.3)',
+          ? `0 12px 32px ${config.glowColor}`
+          : `0 4px 12px rgba(0, 0, 0, 0.3)`,
         transition: 'all 300ms cubic-bezier(0.4, 0, 0.2, 1)',
       }}
     >
