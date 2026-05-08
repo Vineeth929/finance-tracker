@@ -51,16 +51,22 @@ router.get('/crypto', async (req, res) => {
       throw new Error('FINNHUB_API_KEY not configured');
     }
 
-    // Fetch quotes for all stocks in parallel
+    // Fetch quotes for all stocks in parallel - try with :NSE format
     const quotes = await Promise.all(
       INDIAN_STOCKS.map(async (stock) => {
         try {
+          // Try :NSE format first (Finnhub's India format)
+          const symbolWithExchange = `${stock.symbol}:NSE`;
           const response = await fetch(
-            `https://finnhub.io/api/v1/quote?symbol=${stock.symbol}&token=${apiKey}`
+            `https://finnhub.io/api/v1/quote?symbol=${symbolWithExchange}&token=${apiKey}`
           );
           if (!response.ok) return null;
           const data = await response.json();
-          return { symbol: stock.symbol, name: stock.name, ...data };
+          if (data.c) {
+            console.log(`✅ Fetched ${stock.symbol}: ₹${data.c}`);
+            return { symbol: stock.symbol, name: stock.name, ...data };
+          }
+          return null;
         } catch (err) {
           console.error(`Failed to fetch ${stock.symbol}:`, err.message);
           return null;
