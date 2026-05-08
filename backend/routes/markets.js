@@ -260,4 +260,76 @@ router.get('/overview', async (req, res) => {
   }
 });
 
+// GET top gainers
+router.get('/gainers', async (req, res) => {
+  try {
+    const now = Date.now();
+    if (stocksCache && cacheTimestamp && (now - cacheTimestamp) < CACHE_DURATION) {
+      const gainers = stocksCache.cryptos
+        .sort((a, b) => (b.change24h || 0) - (a.change24h || 0))
+        .slice(0, 10);
+      return res.json({ gainers, cached: true });
+    }
+
+    // Fetch fresh data if cache is stale
+    const response = await fetch(`http://localhost:${process.env.PORT || 5000}/api/markets/crypto`);
+    const data = await response.json();
+    const gainers = data.cryptos
+      .sort((a, b) => (b.change24h || 0) - (a.change24h || 0))
+      .slice(0, 10);
+    res.json({ gainers, cached: false });
+  } catch (err) {
+    console.error('Gainers fetch error:', err.message);
+    res.status(500).json({ error: 'Failed to fetch gainers', details: err.message });
+  }
+});
+
+// GET top losers
+router.get('/losers', async (req, res) => {
+  try {
+    const now = Date.now();
+    if (stocksCache && cacheTimestamp && (now - cacheTimestamp) < CACHE_DURATION) {
+      const losers = stocksCache.cryptos
+        .sort((a, b) => (a.change24h || 0) - (b.change24h || 0))
+        .slice(0, 10);
+      return res.json({ losers, cached: true });
+    }
+
+    // Fetch fresh data if cache is stale
+    const response = await fetch(`http://localhost:${process.env.PORT || 5000}/api/markets/crypto`);
+    const data = await response.json();
+    const losers = data.cryptos
+      .sort((a, b) => (a.change24h || 0) - (b.change24h || 0))
+      .slice(0, 10);
+    res.json({ losers, cached: false });
+  } catch (err) {
+    console.error('Losers fetch error:', err.message);
+    res.status(500).json({ error: 'Failed to fetch losers', details: err.message });
+  }
+});
+
+// GET most active stocks
+router.get('/movers', async (req, res) => {
+  try {
+    const now = Date.now();
+    if (stocksCache && cacheTimestamp && (now - cacheTimestamp) < CACHE_DURATION) {
+      const movers = stocksCache.cryptos
+        .sort((a, b) => Math.abs(b.change24h || 0) - Math.abs(a.change24h || 0))
+        .slice(0, 10);
+      return res.json({ movers, cached: true });
+    }
+
+    // Fetch fresh data if cache is stale
+    const response = await fetch(`http://localhost:${process.env.PORT || 5000}/api/markets/crypto`);
+    const data = await response.json();
+    const movers = data.cryptos
+      .sort((a, b) => Math.abs(b.change24h || 0) - Math.abs(a.change24h || 0))
+      .slice(0, 10);
+    res.json({ movers, cached: false });
+  } catch (err) {
+    console.error('Movers fetch error:', err.message);
+    res.status(500).json({ error: 'Failed to fetch movers', details: err.message });
+  }
+});
+
 module.exports = router;

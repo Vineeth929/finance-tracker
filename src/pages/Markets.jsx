@@ -1,8 +1,16 @@
 import React, { useEffect, useState } from 'react';
 import { api } from '../hooks/useApi';
-import GlassCard from '../components/ui/GlassCard';
 import SkeletonLoader from '../components/ui/SkeletonLoader';
-import MiniSparkline from '../components/ui/MiniSparkline';
+import GlassCard from '../components/ui/GlassCard';
+import LiveMarketTicker from '../components/markets/LiveMarketTicker';
+import MarketHero from '../components/markets/MarketHero';
+import AdvancedChart from '../components/markets/AdvancedChart';
+import MarketHeatmap from '../components/markets/MarketHeatmap';
+import MarketInsights from '../components/markets/MarketInsights';
+import CompactStockList from '../components/markets/CompactStockList';
+import PremiumStockCardV2 from '../components/markets/PremiumStockCardV2';
+import { TrendingUp, TrendingDown, Activity } from 'lucide-react';
+import { motion } from 'framer-motion';
 
 export default function MarketsPage() {
   const [stocks, setStocks] = useState([]);
@@ -13,115 +21,190 @@ export default function MarketsPage() {
 
   useEffect(() => {
     fetchMarkets();
+    const interval = setInterval(fetchMarkets, 30000);
+    return () => clearInterval(interval);
   }, []);
 
   const fetchMarkets = async () => {
     try {
-      setLoading(true);
-      setError(null);
       const [stocksData, overviewData] = await Promise.all([
         api.getMarkets(),
         api.getMarketOverview(),
       ]);
-      setStocks(stocksData?.cryptos || []); // API still uses 'cryptos' key for compatibility
+      setStocks(stocksData?.cryptos || []);
       setOverview(overviewData || null);
       setLastUpdated(new Date());
+      setError(null);
     } catch (err) {
       console.error('Failed to fetch markets:', err);
-      setError('Unable to fetch market data. Please try again.');
-      setStocks([]);
-      setOverview(null);
+      setError('Unable to fetch market data');
     } finally {
       setLoading(false);
     }
   };
 
+  const getGainers = () => stocks.slice().sort((a, b) => (b.change24h || 0) - (a.change24h || 0)).slice(0, 5);
+  const getLosers = () => stocks.slice().sort((a, b) => (a.change24h || 0) - (b.change24h || 0)).slice(0, 5);
+  const getMostActive = () => stocks.slice().sort((a, b) => Math.abs(b.change24h || 0) - Math.abs(a.change24h || 0)).slice(0, 5);
+
   if (loading) {
     return (
       <div className="space-y-6 animate-fadeIn">
-        <SkeletonLoader height="h-32" count={5} />
+        <SkeletonLoader height="h-20" count={1} />
+        <SkeletonLoader height="h-96" count={1} />
+        <SkeletonLoader height="h-64" count={2} />
       </div>
     );
   }
 
   return (
     <div className="space-y-6 animate-fadeIn">
-      <div className="flex justify-between items-center">
-        <h1 className="text-3xl font-bold gradient-text">Indian Stock Market</h1>
-        <button onClick={fetchMarkets} className="btn btn-secondary">
-          🔄 Refresh
-        </button>
-      </div>
+      {/* Live Ticker */}
+      <LiveMarketTicker stocks={stocks.slice(0, 10)} />
 
+      {/* Error State */}
       {error && (
-        <GlassCard className="p-4 border border-rose-500/50 bg-rose-500/10">
-          <p className="text-rose-400">⚠️ {error}</p>
+        <GlassCard className="p-4 border-l-4 border-rose-500 bg-rose-500/10">
+          <p className="text-rose-400 text-sm">⚠️ {error}</p>
         </GlassCard>
       )}
 
+      {/* Last Updated */}
       {lastUpdated && (
-        <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>Last updated: {lastUpdated.toLocaleTimeString()}</p>
-      )}
-
-      {/* Market Overview */}
-      {overview && (
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <GlassCard>
-            <p className="text-sm mb-2" style={{ color: 'var(--text-secondary)' }}>Nifty 50</p>
-            <p className="text-2xl font-bold gradient-text">₹{overview.nifty50 ? Math.round(overview.nifty50).toLocaleString() : '—'}</p>
-            <p className={`text-xs mt-2 ${(overview.change24h || 0) >= 0 ? 'text-emerald-400' : 'text-rose-400'}`}>
-              {(overview.change24h || 0) >= 0 ? '📈' : '📉'} {Math.abs(overview.change24h || 0).toFixed(2)}% (24h)
-            </p>
-          </GlassCard>
-          <GlassCard>
-            <p className="text-sm mb-2" style={{ color: 'var(--text-secondary)' }}>Sensex</p>
-            <p className="text-2xl font-bold text-orange-400">₹{overview.sensex ? Math.round(overview.sensex).toLocaleString() : '—'}</p>
-          </GlassCard>
-          <GlassCard>
-            <p className="text-sm mb-2" style={{ color: 'var(--text-secondary)' }}>Nifty Bank</p>
-            <p className="text-2xl font-bold text-purple-400">₹{overview.niftyBank ? Math.round(overview.niftyBank).toLocaleString() : '—'}</p>
-          </GlassCard>
+        <div className="flex justify-between items-center">
+          <p className="text-xs" style={{ color: 'var(--text-secondary)' }}>
+            Last updated: {lastUpdated.toLocaleTimeString()}
+          </p>
+          <motion.button
+            whileHover={{ rotate: 180 }}
+            onClick={fetchMarkets}
+            className="p-2 rounded-lg glass hover:bg-white/10"
+          >
+            🔄
+          </motion.button>
         </div>
       )}
 
-      {!overview && !error && !loading && (
-        <GlassCard className="p-4 text-center" style={{ color: 'var(--text-secondary)' }}>
-          <p>Market data unavailable. Please try again later.</p>
-        </GlassCard>
-      )}
+      {/* Market Hero Section */}
+      {overview && <MarketHero overview={overview} />}
 
-      {/* Stock List */}
-      <div className="space-y-3">
-        {stocks.length > 0 ? (
-          stocks.map((stock) => (
-            <GlassCard key={stock.id} className="p-4 flex items-center justify-between">
-              <div className="flex items-center gap-4 flex-1">
-                <div className="w-10 h-10 rounded-full flex items-center justify-center" style={{ background: 'var(--glass-hover-bg)' }}>
-                  <span className="text-lg font-bold" style={{ color: 'var(--color-brand-primary)' }}>📈</span>
+      {/* Advanced Chart Section */}
+      <AdvancedChart stocks={stocks} />
+
+      {/* Top Performers Grid */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <CompactStockList title="Top Gainers" stocks={getGainers()} type="gainers" icon={TrendingUp} />
+        <CompactStockList title="Top Losers" stocks={getLosers()} type="losers" icon={TrendingDown} />
+        <CompactStockList title="Most Active" stocks={getMostActive()} type="movers" icon={Activity} />
+      </div>
+
+      {/* Market Heatmap */}
+      <MarketHeatmap />
+
+      {/* Main Content Grid - Stocks + Insights */}
+      <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+        {/* Stock Grid - Takes 3 columns */}
+        <div className="lg:col-span-3">
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="space-y-4"
+          >
+            <div>
+              <h2 className="text-2xl font-bold gradient-text mb-4">Market Watchlist</h2>
+              {stocks.length > 0 ? (
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  {stocks.map((stock, idx) => (
+                    <PremiumStockCardV2 key={stock.id} stock={stock} index={idx} />
+                  ))}
                 </div>
-                <div>
-                  <h3 className="font-semibold">{stock.symbol}</h3>
-                  <p className="text-xs" style={{ color: 'var(--text-secondary)' }}>NSE Stock</p>
-                </div>
-              </div>
+              ) : (
+                <GlassCard className="p-12 text-center" style={{ color: 'var(--text-secondary)' }}>
+                  <p>Loading market data...</p>
+                </GlassCard>
+              )}
+            </div>
+          </motion.div>
+        </div>
 
-              <div className="flex-1 mx-4 h-8">
-                <MiniSparkline data={stock.sparkline || []} color="#6366f1" />
-              </div>
+        {/* Insights Sidebar - Takes 1 column */}
+        <div className="lg:col-span-1">
+          <MarketInsights />
+        </div>
+      </div>
 
-              <div className="text-right">
-                <p className="font-bold">₹{stock.currentPrice ? Math.round(stock.currentPrice).toLocaleString() : '—'}</p>
-                <p className={`text-sm ${(stock.change24h || 0) >= 0 ? 'text-emerald-400' : 'text-rose-400'}`}>
-                  {(stock.change24h || 0) >= 0 ? '📈' : '📉'} {Math.abs(stock.change24h || 0).toFixed(2)}%
-                </p>
+      {/* Market News & Analytics Section */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="glass p-6 rounded-2xl"
+        >
+          <h3 className="font-bold gradient-text mb-4">Market News</h3>
+          <div className="space-y-3">
+            {[
+              'RBI keeps rates steady at 6.5%',
+              'Nifty breaks 21,000 resistance',
+              'Rupee strengthens against dollar'
+            ].map((news, idx) => (
+              <div key={idx} className="text-sm p-3 rounded-lg" style={{ background: 'var(--glass-bg)' }}>
+                <p style={{ color: 'var(--text-secondary)' }}>{news}</p>
               </div>
-            </GlassCard>
-          ))
-        ) : (
-          <GlassCard className="p-8 text-center" style={{ color: 'var(--text-secondary)' }}>
-            <p>No stock data available. Waiting for market data to load...</p>
-          </GlassCard>
-        )}
+            ))}
+          </div>
+        </motion.div>
+
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.1 }}
+          className="glass p-6 rounded-2xl"
+        >
+          <h3 className="font-bold gradient-text mb-4">Market Breadth</h3>
+          <div className="space-y-3">
+            <div>
+              <div className="flex justify-between mb-1 text-sm">
+                <span>Advance</span>
+                <span className="text-emerald-400 font-semibold">1,250</span>
+              </div>
+              <div className="w-full bg-white/5 rounded-full h-2">
+                <div className="bg-emerald-500 h-2 rounded-full" style={{ width: '65%' }} />
+              </div>
+            </div>
+            <div>
+              <div className="flex justify-between mb-1 text-sm">
+                <span>Decline</span>
+                <span className="text-rose-400 font-semibold">550</span>
+              </div>
+              <div className="w-full bg-white/5 rounded-full h-2">
+                <div className="bg-rose-500 h-2 rounded-full" style={{ width: '35%' }} />
+              </div>
+            </div>
+          </div>
+        </motion.div>
+
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2 }}
+          className="glass p-6 rounded-2xl"
+        >
+          <h3 className="font-bold gradient-text mb-4">Market Indices</h3>
+          <div className="space-y-2 text-sm">
+            <div className="flex justify-between">
+              <span style={{ color: 'var(--text-secondary)' }}>BSE 500</span>
+              <span className="text-emerald-400 font-semibold">+1.2%</span>
+            </div>
+            <div className="flex justify-between">
+              <span style={{ color: 'var(--text-secondary)' }}>Midcap 150</span>
+              <span className="text-emerald-400 font-semibold">+2.1%</span>
+            </div>
+            <div className="flex justify-between">
+              <span style={{ color: 'var(--text-secondary)' }}>Smallcap 250</span>
+              <span className="text-rose-400 font-semibold">-0.8%</span>
+            </div>
+          </div>
+        </motion.div>
       </div>
     </div>
   );
