@@ -7,13 +7,28 @@ let stocksCache = null;
 let cacheTimestamp = null;
 const CACHE_DURATION = 5 * 60 * 1000;
 
-// Major Indian stocks (Nifty 50 selection) - with NSE exchange suffix for Finnhub
+// Major Indian stocks (Nifty 50 selection)
 const INDIAN_STOCKS = [
-  'RELIANCE.NS', 'TCS.NS', 'HDFC.NS', 'INFY.NS', 'ICICIBANK.NS',
-  'SBIN.NS', 'WIPRO.NS', 'BAJAJFINSV.NS', 'MARUTI.NS', 'HCLTECH.NS',
-  'INDUSINDBK.NS', 'AXISBANK.NS', 'SUNPHARMA.NS', 'LT.NS', 'ASIANPAINT.NS',
-  'DMART.NS', 'JSWSTEEL.NS', 'LTIM.NS', 'NESTLEIND.NS', 'KOTAKBANK.NS',
-  'COALINDIA.NS', 'HINDALCO.NS', 'ADANIPORTS.NS', 'ADANIENT.NS', 'POWERGRID.NS'
+  { symbol: 'RELIANCE', name: 'Reliance Industries' },
+  { symbol: 'TCS', name: 'Tata Consultancy' },
+  { symbol: 'HDFC', name: 'HDFC Bank' },
+  { symbol: 'INFY', name: 'Infosys' },
+  { symbol: 'ICICIBANK', name: 'ICICI Bank' },
+  { symbol: 'SBIN', name: 'State Bank' },
+  { symbol: 'WIPRO', name: 'Wipro' },
+  { symbol: 'MARUTI', name: 'Maruti Suzuki' },
+  { symbol: 'HCLTECH', name: 'HCL Technologies' },
+  { symbol: 'AXISBANK', name: 'Axis Bank' },
+  { symbol: 'SUNPHARMA', name: 'Sun Pharma' },
+  { symbol: 'LT', name: 'Larsen & Toubro' },
+  { symbol: 'ASIANPAINT', name: 'Asian Paints' },
+  { symbol: 'DMART', name: 'DMart' },
+  { symbol: 'JSWSTEEL', name: 'JSW Steel' },
+  { symbol: 'NESTLEIND', name: 'Nestlé India' },
+  { symbol: 'KOTAKBANK', name: 'Kotak Bank' },
+  { symbol: 'COALINDIA', name: 'Coal India' },
+  { symbol: 'HINDALCO', name: 'Hindalco' },
+  { symbol: 'POWERGRID', name: 'Power Grid' }
 ];
 
 // GET top Indian stocks (public - no auth required, rate limited)
@@ -38,16 +53,16 @@ router.get('/crypto', async (req, res) => {
 
     // Fetch quotes for all stocks in parallel
     const quotes = await Promise.all(
-      INDIAN_STOCKS.map(async (symbol) => {
+      INDIAN_STOCKS.map(async (stock) => {
         try {
           const response = await fetch(
-            `https://finnhub.io/api/v1/quote?symbol=${symbol}&token=${apiKey}`
+            `https://finnhub.io/api/v1/quote?symbol=${stock.symbol}&token=${apiKey}`
           );
           if (!response.ok) return null;
           const data = await response.json();
-          return { symbol, ...data };
+          return { symbol: stock.symbol, name: stock.name, ...data };
         } catch (err) {
-          console.error(`Failed to fetch ${symbol}:`, err.message);
+          console.error(`Failed to fetch ${stock.symbol}:`, err.message);
           return null;
         }
       })
@@ -58,14 +73,14 @@ router.get('/crypto', async (req, res) => {
       .filter(q => q && q.c)
       .slice(0, 20) // Limit to 20 stocks
       .map(quote => {
-        const displaySymbol = quote.symbol.replace('.NS', ''); // Remove exchange suffix for display
+        const stockIndex = INDIAN_STOCKS.findIndex(s => s.symbol === quote.symbol);
         return {
           id: quote.symbol,
-          symbol: displaySymbol,
-          name: displaySymbol,
+          symbol: quote.symbol,
+          name: quote.name || quote.symbol,
           currentPrice: quote.c,
           change24h: quote.d !== undefined ? (quote.d / quote.pc) * 100 : 0,
-          marketCapRank: INDIAN_STOCKS.findIndex(s => s === quote.symbol) + 1,
+          marketCapRank: stockIndex + 1,
           sparkline: []
         };
       });
