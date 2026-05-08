@@ -220,6 +220,22 @@ html.light {
   --glass-hover-bg: linear-gradient(135deg, rgba(241, 245, 249, 0.7), rgba(225, 231, 240, 0.6));
 
   --gradient-ambient: linear-gradient(135deg, #F8FAFC 0%, #F1F5F9 25%, #E8EEF6 50%, #F1F5F9 75%, #F8FAFC 100%);
+
+  /* Light mode emotion surfaces - subtle tints for distinction */
+  --emotion-savings-bg: rgba(16, 185, 129, 0.06);
+  --emotion-savings-border: rgba(16, 185, 129, 0.2);
+
+  --emotion-expenses-bg: rgba(225, 29, 72, 0.06);
+  --emotion-expenses-border: rgba(225, 29, 72, 0.2);
+
+  --emotion-investments-bg: rgba(6, 182, 212, 0.06);
+  --emotion-investments-border: rgba(6, 182, 212, 0.2);
+
+  --emotion-goals-bg: rgba(217, 119, 6, 0.06);
+  --emotion-goals-border: rgba(217, 119, 6, 0.2);
+
+  --emotion-analytics-bg: rgba(139, 92, 246, 0.06);
+  --emotion-analytics-border: rgba(139, 92, 246, 0.2);
 }
 
 * {
@@ -1478,6 +1494,32 @@ body {
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
   }
+}
+
+/* Light Mode Emotion Surfaces - Maintain Visual Distinction */
+html.light .surface-savings {
+  background: var(--emotion-savings-bg);
+  border-color: var(--emotion-savings-border);
+}
+
+html.light .surface-expenses {
+  background: var(--emotion-expenses-bg);
+  border-color: var(--emotion-expenses-border);
+}
+
+html.light .surface-investments {
+  background: var(--emotion-investments-bg);
+  border-color: var(--emotion-investments-border);
+}
+
+html.light .surface-goals {
+  background: var(--emotion-goals-bg);
+  border-color: var(--emotion-goals-border);
+}
+
+html.light .surface-analytics {
+  background: var(--emotion-analytics-bg);
+  border-color: var(--emotion-analytics-border);
 }
 
 /* High Contrast Mode */
