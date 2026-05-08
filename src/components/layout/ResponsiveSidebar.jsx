@@ -20,6 +20,18 @@ const secondaryMenu = [
   { path: '/news', label: 'News', icon: Newspaper, id: 'news' },
 ];
 
+const sidebarVariants = {
+  hidden: { x: -280, opacity: 0 },
+  visible: { x: 0, opacity: 1, transition: { duration: 0.3, ease: 'easeInOut' } },
+  exit: { x: -280, opacity: 0, transition: { duration: 0.2 } },
+};
+
+const overlayVariants = {
+  hidden: { opacity: 0 },
+  visible: { opacity: 1, transition: { duration: 0.3 } },
+  exit: { opacity: 0, transition: { duration: 0.2 } },
+};
+
 export default function ResponsiveSidebar() {
   const location = useLocation();
   const { sidebarCollapsed, setSidebarCollapsed } = useApp();
@@ -29,28 +41,34 @@ export default function ResponsiveSidebar() {
 
   const isActive = (path) => location.pathname === path;
 
-  // Desktop sidebar
+  // Desktop sidebar - Premium Design
   const desktopSidebar = (
     <motion.div
       animate={{ width: sidebarCollapsed ? 80 : 256 }}
-      className="hidden md:flex flex-col fixed left-0 top-0 h-screen glass border-r border-white/10 bg-black/40 backdrop-blur-xl z-30 pt-6"
+      className="hidden md:flex flex-col fixed left-0 top-0 h-screen z-30 pt-6"
+      style={{
+        background: 'var(--glass-bg)',
+        backdropFilter: 'var(--glass-blur)',
+        WebkitBackdropFilter: 'var(--glass-blur)',
+        borderRight: '1px solid var(--glass-border)',
+      }}
     >
       {/* Logo */}
       <motion.div
         animate={{ marginX: sidebarCollapsed ? 'auto' : 0 }}
-        className="px-4 mb-8 text-center"
+        className="px-4 mb-10 text-center transition-all duration-300"
       >
-        <p className="text-2xl font-bold gradient-text">💰</p>
+        <p className="text-3xl font-bold gradient-text">💰</p>
         {!sidebarCollapsed && (
-          <p className="text-xs mt-1" style={{ color: 'var(--text-secondary)' }}>Finance Tracker</p>
+          <p className="text-xs mt-2 font-semibold" style={{ color: 'var(--text-secondary)' }}>Finance Tracker</p>
         )}
       </motion.div>
 
       {/* Menu Items */}
-      <nav className="flex-1 px-3 space-y-2 overflow-y-auto">
+      <nav className="flex-1 px-3 space-y-1 overflow-y-auto scroll-smooth">
         {/* Primary Menu - Core Financial Features */}
         <div>
-          {primaryMenu.map((item) => {
+          {primaryMenu.map((item, idx) => {
             const Icon = item.icon;
             const active = isActive(item.path);
 
@@ -58,21 +76,34 @@ export default function ResponsiveSidebar() {
               <Link
                 key={item.id}
                 to={item.path}
-                className={`relative flex items-center gap-3 px-4 py-3 rounded-lg transition-all ${
-                  active
-                    ? 'text-white'
-                    : 'text-gray-400 hover:text-gray-200'
-                }`}
-                style={active ? { background: 'rgba(99, 102, 241, 0.15)' } : {}}
+                className="relative flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 group"
+                style={{
+                  color: active ? 'var(--text-primary)' : 'var(--text-secondary)',
+                  background: active ? 'var(--glass-active-bg)' : 'transparent',
+                  borderColor: active ? 'var(--glass-active-border)' : 'transparent',
+                  border: '1px solid transparent',
+                }}
+                onMouseEnter={(e) => {
+                  if (!active) {
+                    e.currentTarget.style.background = 'var(--glass-hover-bg)';
+                    e.currentTarget.style.borderColor = 'var(--glass-hover-border)';
+                  }
+                }}
+                onMouseLeave={(e) => {
+                  if (!active) {
+                    e.currentTarget.style.background = 'transparent';
+                    e.currentTarget.style.borderColor = 'transparent';
+                  }
+                }}
               >
-                <Icon size={20} className="flex-shrink-0" />
+                <Icon size={20} className="flex-shrink-0 transition-colors duration-200" />
                 {!sidebarCollapsed && (
-                  <span className="text-sm font-medium">{item.label}</span>
+                  <span className="text-sm font-medium transition-colors duration-200">{item.label}</span>
                 )}
                 {active && (
                   <motion.div
                     layoutId="activeSidebar"
-                    className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-8 bg-gradient-to-b from-indigo-500 to-purple-500 rounded-r"
+                    className="absolute left-0 top-1/2 -translate-y-1/2 w-1.5 h-8 bg-gradient-to-b from-indigo-400 to-purple-400 rounded-r"
                   />
                 )}
               </Link>
@@ -82,10 +113,11 @@ export default function ResponsiveSidebar() {
 
         {/* Secondary Menu - Optional Features (Collapsible) */}
         {!sidebarCollapsed && (
-          <div className="pt-2 border-t border-white/10">
+          <div className="pt-4 mt-2 border-t" style={{ borderColor: 'var(--glass-border)' }}>
             <button
               onClick={() => setShowSecondary(!showSecondary)}
-              className="w-full flex items-center justify-between px-4 py-2 rounded-lg text-gray-400 hover:text-gray-200 text-xs font-semibold transition-colors"
+              className="w-full flex items-center justify-between px-4 py-2 rounded-lg text-xs font-semibold transition-all duration-200"
+              style={{ color: 'var(--text-tertiary)' }}
             >
               <span>MORE</span>
               <motion.div
@@ -102,7 +134,7 @@ export default function ResponsiveSidebar() {
                   initial={{ opacity: 0, height: 0 }}
                   animate={{ opacity: 1, height: 'auto' }}
                   exit={{ opacity: 0, height: 0 }}
-                  className="space-y-1 mt-1 overflow-hidden"
+                  className="space-y-1 mt-2 overflow-hidden"
                 >
                   {secondaryMenu.map((item) => {
                     const Icon = item.icon;
@@ -112,12 +144,25 @@ export default function ResponsiveSidebar() {
                       <Link
                         key={item.id}
                         to={item.path}
-                        className={`relative flex items-center gap-3 px-4 py-2 rounded-lg text-xs transition-all ${
-                          active
-                            ? 'text-white'
-                            : 'text-gray-500 hover:text-gray-300'
-                        }`}
-                        style={active ? { background: 'rgba(99, 102, 241, 0.15)' } : {}}
+                        className="relative flex items-center gap-3 px-4 py-2 rounded-lg text-xs transition-all duration-200"
+                        style={{
+                          color: active ? 'var(--text-primary)' : 'var(--text-secondary)',
+                          background: active ? 'var(--glass-active-bg)' : 'transparent',
+                          borderColor: active ? 'var(--glass-active-border)' : 'transparent',
+                          border: '1px solid transparent',
+                        }}
+                        onMouseEnter={(e) => {
+                          if (!active) {
+                            e.currentTarget.style.background = 'var(--glass-hover-bg)';
+                            e.currentTarget.style.borderColor = 'var(--glass-hover-border)';
+                          }
+                        }}
+                        onMouseLeave={(e) => {
+                          if (!active) {
+                            e.currentTarget.style.background = 'transparent';
+                            e.currentTarget.style.borderColor = 'transparent';
+                          }
+                        }}
                       >
                         <Icon size={16} className="flex-shrink-0" />
                         <span className="font-medium">{item.label}</span>
@@ -132,79 +177,153 @@ export default function ResponsiveSidebar() {
       </nav>
 
       {/* Bottom Actions */}
-      <div className="border-t border-white/10 px-3 py-4 space-y-2">
-        <Link
-          to="/profile"
-          className="flex items-center gap-3 px-4 py-3 rounded-lg text-gray-400 hover:text-gray-200 transition-colors"
-        >
-          <User size={20} />
-          {!sidebarCollapsed && <span className="text-sm font-medium">Profile</span>}
-        </Link>
-        <Link
-          to="/settings"
-          className="flex items-center gap-3 px-4 py-3 rounded-lg text-gray-400 hover:text-gray-200 transition-colors"
-        >
-          <Settings size={20} />
-          {!sidebarCollapsed && <span className="text-sm font-medium">Settings</span>}
-        </Link>
-        <button
-          onClick={logout}
-          className="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-rose-400 hover:text-rose-300 transition-colors"
-        >
-          <LogOut size={20} />
-          {!sidebarCollapsed && <span className="text-sm font-medium">Logout</span>}
-        </button>
+      <div className="border-t" style={{ borderColor: 'var(--glass-border)' }}>
+        <div className="px-3 py-4 space-y-2">
+          <Link
+            to="/profile"
+            className="flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200"
+            style={{ color: 'var(--text-secondary)' }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.background = 'var(--glass-hover-bg)';
+              e.currentTarget.style.color = 'var(--text-primary)';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.background = 'transparent';
+              e.currentTarget.style.color = 'var(--text-secondary)';
+            }}
+          >
+            <User size={20} />
+            {!sidebarCollapsed && <span className="text-sm font-medium">Profile</span>}
+          </Link>
+          <Link
+            to="/settings"
+            className="flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200"
+            style={{ color: 'var(--text-secondary)' }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.background = 'var(--glass-hover-bg)';
+              e.currentTarget.style.color = 'var(--text-primary)';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.background = 'transparent';
+              e.currentTarget.style.color = 'var(--text-secondary)';
+            }}
+          >
+            <Settings size={20} />
+            {!sidebarCollapsed && <span className="text-sm font-medium">Settings</span>}
+          </Link>
+          <button
+            onClick={logout}
+            className="w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200"
+            style={{ color: 'var(--color-danger)' }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.background = 'var(--glass-hover-bg)';
+              e.currentTarget.style.color = 'var(--color-danger-light)';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.background = 'transparent';
+              e.currentTarget.style.color = 'var(--color-danger)';
+            }}
+          >
+            <LogOut size={20} />
+            {!sidebarCollapsed && <span className="text-sm font-medium">Logout</span>}
+          </button>
+        </div>
       </div>
 
       {/* Collapse Toggle */}
       <motion.button
-        whileHover={{ scale: 1.05 }}
+        whileHover={{ scale: 1.08 }}
+        whileTap={{ scale: 0.95 }}
         onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
-        className="mx-3 mb-4 p-2 rounded-lg glass hover:bg-white/10 transition-colors"
+        className="mx-3 mb-4 p-2.5 rounded-lg transition-all duration-200"
+        style={{
+          background: 'var(--glass-bg)',
+          border: '1px solid var(--glass-border)',
+          color: 'var(--text-secondary)',
+        }}
+        onMouseEnter={(e) => {
+          e.currentTarget.style.background = 'var(--glass-hover-bg)';
+          e.currentTarget.style.borderColor = 'var(--glass-hover-border)';
+          e.currentTarget.style.color = 'var(--text-primary)';
+        }}
+        onMouseLeave={(e) => {
+          e.currentTarget.style.background = 'var(--glass-bg)';
+          e.currentTarget.style.borderColor = 'var(--glass-border)';
+          e.currentTarget.style.color = 'var(--text-secondary)';
+        }}
       >
         {sidebarCollapsed ? <Menu size={18} /> : <X size={18} />}
       </motion.button>
     </motion.div>
   );
 
-  // Mobile sidebar (drawer)
+  // Mobile sidebar (drawer) - Premium Glassmorphism
   const mobileSidebar = (
     <AnimatePresence>
       {mobileOpen && (
         <>
-          {/* Overlay */}
+          {/* Premium Dark Overlay */}
           <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
+            key="overlay"
+            variants={overlayVariants}
+            initial="hidden"
+            animate="visible"
+            exit="exit"
             onClick={() => setMobileOpen(false)}
-            className="fixed inset-0 bg-black/50 backdrop-blur-sm z-40 md:hidden"
+            className="fixed inset-0 z-40 md:hidden"
+            style={{
+              background: 'var(--overlay-dark)',
+              backdropFilter: 'blur(6px)',
+              WebkitBackdropFilter: 'blur(6px)',
+            }}
           />
 
-          {/* Drawer */}
+          {/* Premium Drawer */}
           <motion.div
-            initial={{ x: -256 }}
-            animate={{ x: 0 }}
-            exit={{ x: -256 }}
-            className="fixed left-0 top-0 w-64 h-screen glass bg-black/40 backdrop-blur-xl z-50 flex flex-col pt-6"
+            key="drawer"
+            variants={sidebarVariants}
+            initial="hidden"
+            animate="visible"
+            exit="exit"
+            className="fixed left-0 top-0 w-72 h-screen z-50 flex flex-col pt-6"
+            style={{
+              background: 'var(--glass-bg)',
+              backdropFilter: 'var(--glass-blur-strong)',
+              WebkitBackdropFilter: 'var(--glass-blur-strong)',
+              borderRight: '1px solid var(--glass-border)',
+              boxShadow: 'var(--shadow-2xl)',
+            }}
           >
             {/* Header */}
-            <div className="px-4 mb-8 flex items-center justify-between">
+            <div className="px-6 mb-8 flex items-center justify-between">
               <div>
-                <p className="text-2xl font-bold gradient-text">💰</p>
-                <p className="text-xs mt-1" style={{ color: 'var(--text-secondary)' }}>Finance Tracker</p>
+                <p className="text-3xl font-bold gradient-text">💰</p>
+                <p className="text-xs mt-1 font-semibold" style={{ color: 'var(--text-secondary)' }}>Finance Tracker</p>
               </div>
               <motion.button
                 whileTap={{ scale: 0.95 }}
                 onClick={() => setMobileOpen(false)}
-                className="p-2 rounded-lg hover:bg-white/10"
+                className="p-2.5 rounded-lg transition-all duration-200"
+                style={{
+                  background: 'var(--glass-bg)',
+                  border: '1px solid var(--glass-border)',
+                  color: 'var(--text-secondary)',
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.background = 'var(--glass-hover-bg)';
+                  e.currentTarget.style.borderColor = 'var(--glass-hover-border)';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.background = 'var(--glass-bg)';
+                  e.currentTarget.style.borderColor = 'var(--glass-border)';
+                }}
               >
                 <X size={20} />
               </motion.button>
             </div>
 
             {/* Menu Items */}
-            <nav className="flex-1 px-3 space-y-1 overflow-y-auto">
+            <nav className="flex-1 px-4 space-y-1.5 overflow-y-auto scroll-smooth">
               {/* Primary Menu */}
               {primaryMenu.map((item, idx) => {
                 const Icon = item.icon;
@@ -213,30 +332,56 @@ export default function ResponsiveSidebar() {
                 return (
                   <motion.div
                     key={item.id}
-                    initial={{ opacity: 0, x: -20 }}
+                    initial={{ opacity: 0, x: -16 }}
                     animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: idx * 0.05 }}
+                    transition={{ delay: idx * 0.08 }}
                   >
                     <Link
                       to={item.path}
                       onClick={() => setMobileOpen(false)}
-                      className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-all ${
-                        active ? 'text-white' : 'text-gray-400'
-                      }`}
-                      style={active ? { background: 'rgba(99, 102, 241, 0.15)' } : {}}
+                      className="flex items-center gap-3 px-4 py-3.5 rounded-lg transition-all duration-200"
+                      style={{
+                        color: active ? 'var(--text-primary)' : 'var(--text-secondary)',
+                        background: active ? 'var(--glass-active-bg)' : 'transparent',
+                        border: `1px solid ${active ? 'var(--glass-active-border)' : 'transparent'}`,
+                      }}
+                      onMouseEnter={(e) => {
+                        if (!active) {
+                          e.currentTarget.style.background = 'var(--glass-hover-bg)';
+                          e.currentTarget.style.borderColor = 'var(--glass-hover-border)';
+                          e.currentTarget.style.color = 'var(--text-primary)';
+                        }
+                      }}
+                      onMouseLeave={(e) => {
+                        if (!active) {
+                          e.currentTarget.style.background = 'transparent';
+                          e.currentTarget.style.borderColor = 'transparent';
+                          e.currentTarget.style.color = 'var(--text-secondary)';
+                        }
+                      }}
                     >
-                      <Icon size={20} />
+                      <Icon size={20} className="flex-shrink-0" />
                       <span className="text-sm font-medium">{item.label}</span>
+                      {active && (
+                        <motion.div
+                          className="ml-auto"
+                          initial={{ scale: 0 }}
+                          animate={{ scale: 1 }}
+                        >
+                          <div className="w-1.5 h-6 rounded-full bg-gradient-to-b from-indigo-400 to-purple-400" />
+                        </motion.div>
+                      )}
                     </Link>
                   </motion.div>
                 );
               })}
 
               {/* Secondary Menu */}
-              <div className="pt-2 mt-2 border-t border-white/10">
+              <div className="pt-4 mt-4" style={{ borderTop: '1px solid var(--glass-border)' }}>
                 <button
                   onClick={() => setShowSecondary(!showSecondary)}
-                  className="w-full flex items-center justify-between px-4 py-2 rounded-lg text-gray-500 hover:text-gray-300 text-xs font-semibold transition-colors"
+                  className="w-full flex items-center justify-between px-4 py-2.5 rounded-lg text-xs font-semibold transition-all duration-200"
+                  style={{ color: 'var(--text-tertiary)' }}
                 >
                   <span>MORE</span>
                   <motion.div
@@ -253,9 +398,9 @@ export default function ResponsiveSidebar() {
                       initial={{ opacity: 0, height: 0 }}
                       animate={{ opacity: 1, height: 'auto' }}
                       exit={{ opacity: 0, height: 0 }}
-                      className="space-y-1 mt-1 overflow-hidden"
+                      className="space-y-1.5 mt-2 overflow-hidden"
                     >
-                      {secondaryMenu.map((item, idx) => {
+                      {secondaryMenu.map((item) => {
                         const Icon = item.icon;
                         const active = isActive(item.path);
 
@@ -264,13 +409,27 @@ export default function ResponsiveSidebar() {
                             key={item.id}
                             to={item.path}
                             onClick={() => setMobileOpen(false)}
-                            className={`flex items-center gap-3 px-4 py-2 rounded-lg text-xs transition-all ${
-                              active ? 'text-white' : 'text-gray-500'
-                            }`}
-                            style={active ? { background: 'rgba(99, 102, 241, 0.15)' } : {}}
+                            className="flex items-center gap-3 px-4 py-2.5 rounded-lg text-xs transition-all duration-200"
+                            style={{
+                              color: active ? 'var(--text-primary)' : 'var(--text-secondary)',
+                              background: active ? 'var(--glass-active-bg)' : 'transparent',
+                              border: `1px solid ${active ? 'var(--glass-active-border)' : 'transparent'}`,
+                            }}
+                            onMouseEnter={(e) => {
+                              if (!active) {
+                                e.currentTarget.style.background = 'var(--glass-hover-bg)';
+                                e.currentTarget.style.borderColor = 'var(--glass-hover-border)';
+                              }
+                            }}
+                            onMouseLeave={(e) => {
+                              if (!active) {
+                                e.currentTarget.style.background = 'transparent';
+                                e.currentTarget.style.borderColor = 'transparent';
+                              }
+                            }}
                           >
-                            <Icon size={16} />
-                            <span className="text-sm font-medium">{item.label}</span>
+                            <Icon size={16} className="flex-shrink-0" />
+                            <span className="font-medium">{item.label}</span>
                           </Link>
                         );
                       })}
@@ -281,33 +440,62 @@ export default function ResponsiveSidebar() {
             </nav>
 
             {/* Bottom Actions */}
-            <div className="border-t border-white/10 px-3 py-4 space-y-2">
-              <Link
-                to="/profile"
-                onClick={() => setMobileOpen(false)}
-                className="flex items-center gap-3 px-4 py-3 rounded-lg text-gray-400 hover:text-gray-200"
-              >
-                <User size={20} />
-                <span className="text-sm font-medium">Profile</span>
-              </Link>
-              <Link
-                to="/settings"
-                onClick={() => setMobileOpen(false)}
-                className="flex items-center gap-3 px-4 py-3 rounded-lg text-gray-400 hover:text-gray-200"
-              >
-                <Settings size={20} />
-                <span className="text-sm font-medium">Settings</span>
-              </Link>
-              <button
-                onClick={() => {
-                  setMobileOpen(false);
-                  logout();
-                }}
-                className="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-rose-400 hover:text-rose-300"
-              >
-                <LogOut size={20} />
-                <span className="text-sm font-medium">Logout</span>
-              </button>
+            <div style={{ borderTop: '1px solid var(--glass-border)' }}>
+              <div className="px-4 py-4 space-y-2">
+                <Link
+                  to="/profile"
+                  onClick={() => setMobileOpen(false)}
+                  className="flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200"
+                  style={{ color: 'var(--text-secondary)' }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.background = 'var(--glass-hover-bg)';
+                    e.currentTarget.style.color = 'var(--text-primary)';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.background = 'transparent';
+                    e.currentTarget.style.color = 'var(--text-secondary)';
+                  }}
+                >
+                  <User size={20} />
+                  <span className="text-sm font-medium">Profile</span>
+                </Link>
+                <Link
+                  to="/settings"
+                  onClick={() => setMobileOpen(false)}
+                  className="flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200"
+                  style={{ color: 'var(--text-secondary)' }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.background = 'var(--glass-hover-bg)';
+                    e.currentTarget.style.color = 'var(--text-primary)';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.background = 'transparent';
+                    e.currentTarget.style.color = 'var(--text-secondary)';
+                  }}
+                >
+                  <Settings size={20} />
+                  <span className="text-sm font-medium">Settings</span>
+                </Link>
+                <button
+                  onClick={() => {
+                    setMobileOpen(false);
+                    logout();
+                  }}
+                  className="w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200"
+                  style={{ color: 'var(--color-danger)' }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.background = 'var(--glass-hover-bg)';
+                    e.currentTarget.style.color = 'var(--color-danger-light)';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.background = 'transparent';
+                    e.currentTarget.style.color = 'var(--color-danger)';
+                  }}
+                >
+                  <LogOut size={20} />
+                  <span className="text-sm font-medium">Logout</span>
+                </button>
+              </div>
             </div>
           </motion.div>
         </>
@@ -315,21 +503,46 @@ export default function ResponsiveSidebar() {
     </AnimatePresence>
   );
 
-  // Mobile header
+  // Mobile header - Premium Design
   const mobileHeader = (
     <motion.div
       initial={{ y: -64 }}
       animate={{ y: 0 }}
-      className="fixed top-0 left-0 right-0 md:hidden glass border-b border-white/10 px-4 py-4 z-30 flex items-center justify-between"
+      transition={{ duration: 0.3 }}
+      className="fixed top-0 left-0 right-0 md:hidden z-30 px-4 py-3"
+      style={{
+        background: 'var(--glass-bg)',
+        backdropFilter: 'var(--glass-blur)',
+        WebkitBackdropFilter: 'var(--glass-blur)',
+        borderBottom: '1px solid var(--glass-border)',
+        boxShadow: 'var(--shadow-md)',
+      }}
     >
-      <p className="text-lg font-bold gradient-text">💰 Finance</p>
-      <motion.button
-        whileTap={{ scale: 0.95 }}
-        onClick={() => setMobileOpen(!mobileOpen)}
-        className="p-2 rounded-lg hover:bg-white/10"
-      >
-        {mobileOpen ? <X size={20} /> : <Menu size={20} />}
-      </motion.button>
+      <div className="flex items-center justify-between h-14">
+        <p className="text-lg font-bold gradient-text">💰 Finance</p>
+        <motion.button
+          whileTap={{ scale: 0.92 }}
+          onClick={() => setMobileOpen(!mobileOpen)}
+          className="p-2.5 rounded-lg transition-all duration-200"
+          style={{
+            background: 'var(--glass-bg)',
+            border: '1px solid var(--glass-border)',
+            color: 'var(--text-secondary)',
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.background = 'var(--glass-hover-bg)';
+            e.currentTarget.style.borderColor = 'var(--glass-hover-border)';
+            e.currentTarget.style.color = 'var(--text-primary)';
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.background = 'var(--glass-bg)';
+            e.currentTarget.style.borderColor = 'var(--glass-border)';
+            e.currentTarget.style.color = 'var(--text-secondary)';
+          }}
+        >
+          {mobileOpen ? <X size={20} /> : <Menu size={20} />}
+        </motion.button>
+      </div>
     </motion.div>
   );
 
