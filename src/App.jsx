@@ -3,10 +3,12 @@ import { HashRouter as Router, Routes, Route, Navigate } from 'react-router-dom'
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { AppProvider, useApp } from './context/AppContext';
 
-// v2.0 - Premium fintech dashboard
+// v2.0 - Premium fintech dashboard with responsive design
 
 // Layout
-import Sidebar from './components/layout/Sidebar';
+import ResponsiveSidebar from './components/layout/ResponsiveSidebar';
+import MobileBottomNav from './components/layout/MobileBottomNav';
+import ResponsiveContainer from './components/layout/ResponsiveContainer';
 
 // Auth Pages
 import Login from './components/Login';
@@ -27,15 +29,31 @@ import Profile from './components/Profile';
 function ProtectedLayout({ children }) {
   const { darkMode, sidebarCollapsed } = useApp();
   return (
-    <div className={`flex min-h-screen transition-colors duration-300 ${
+    <div className={`min-h-screen transition-colors duration-300 ${
       darkMode
         ? 'bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 text-gray-100'
         : 'bg-gradient-to-br from-white via-blue-50 to-white text-gray-900'
     }`}>
-      <Sidebar />
-      <main className={`flex-1 transition-all duration-300 p-6 ${sidebarCollapsed ? 'ml-20' : 'ml-64'}`}>
-        <div className="max-w-7xl mx-auto">{children}</div>
+      <ResponsiveSidebar />
+
+      {/* Desktop main content */}
+      <main className={`hidden md:block transition-all duration-300 pt-6 pb-6 ${
+        sidebarCollapsed ? 'ml-20' : 'ml-64'
+      }`}>
+        <ResponsiveContainer>
+          {children}
+        </ResponsiveContainer>
       </main>
+
+      {/* Mobile main content */}
+      <main className="md:hidden pt-20 pb-24 px-3 sm:px-4">
+        <ResponsiveContainer>
+          {children}
+        </ResponsiveContainer>
+      </main>
+
+      {/* Mobile bottom navigation */}
+      <MobileBottomNav />
     </div>
   );
 }

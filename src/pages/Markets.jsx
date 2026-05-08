@@ -58,20 +58,20 @@ export default function MarketsPage() {
   }
 
   return (
-    <div className="space-y-6 animate-fadeIn">
+    <div className="space-y-4 sm:space-y-6 animate-fadeIn">
       {/* Live Ticker */}
       <LiveMarketTicker stocks={stocks.slice(0, 10)} />
 
       {/* Error State */}
       {error && (
-        <GlassCard className="p-4 border-l-4 border-rose-500 bg-rose-500/10">
-          <p className="text-rose-400 text-sm">⚠️ {error}</p>
+        <GlassCard className="p-3 sm:p-4 border-l-4 border-rose-500 bg-rose-500/10">
+          <p className="text-rose-400 text-xs sm:text-sm">⚠️ {error}</p>
         </GlassCard>
       )}
 
-      {/* Last Updated */}
+      {/* Last Updated & Refresh */}
       {lastUpdated && (
-        <div className="flex justify-between items-center">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
           <p className="text-xs" style={{ color: 'var(--text-secondary)' }}>
             Last updated: {lastUpdated.toLocaleTimeString()}
           </p>
@@ -88,66 +88,70 @@ export default function MarketsPage() {
       {/* Market Hero Section */}
       {overview && <MarketHero overview={overview} />}
 
-      {/* Advanced Chart Section */}
-      <AdvancedChart stocks={stocks} />
-
-      {/* Top Performers Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <CompactStockList title="Top Gainers" stocks={getGainers()} type="gainers" icon={TrendingUp} />
-        <CompactStockList title="Top Losers" stocks={getLosers()} type="losers" icon={TrendingDown} />
-        <CompactStockList title="Most Active" stocks={getMostActive()} type="movers" icon={Activity} />
+      {/* Advanced Chart Section - Hide on small mobile for performance */}
+      <div className="hidden sm:block">
+        <AdvancedChart stocks={stocks} />
       </div>
 
-      {/* Market Heatmap */}
-      <MarketHeatmap />
+      {/* Top Performers Grid - Responsive */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-6">
+        <CompactStockList title="Top Gainers" stocks={getGainers()} type="gainers" icon={TrendingUp} />
+        <CompactStockList title="Top Losers" stocks={getLosers()} type="losers" icon={TrendingDown} />
+        <div className="sm:col-span-2 lg:col-span-1">
+          <CompactStockList title="Most Active" stocks={getMostActive()} type="movers" icon={Activity} />
+        </div>
+      </div>
 
-      {/* Main Content Grid - Stocks + Insights */}
-      <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-        {/* Stock Grid - Takes 3 columns */}
+      {/* Market Heatmap - Hide on small screens */}
+      <div className="hidden md:block">
+        <MarketHeatmap />
+      </div>
+
+      {/* Main Content Grid - Stocks + Insights (Responsive) */}
+      <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 sm:gap-6">
+        {/* Stock Grid */}
         <div className="lg:col-span-3">
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             className="space-y-4"
           >
-            <div>
-              <h2 className="text-2xl font-bold gradient-text mb-4">Market Watchlist</h2>
-              {stocks.length > 0 ? (
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  {stocks.map((stock, idx) => (
-                    <PremiumStockCardV2 key={stock.id} stock={stock} index={idx} />
-                  ))}
-                </div>
-              ) : (
-                <GlassCard className="p-12 text-center" style={{ color: 'var(--text-secondary)' }}>
-                  <p>Loading market data...</p>
-                </GlassCard>
-              )}
-            </div>
+            <h2 className="text-xl sm:text-2xl font-bold gradient-text">Market Watchlist</h2>
+            {stocks.length > 0 ? (
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-3 sm:gap-4">
+                {stocks.map((stock, idx) => (
+                  <PremiumStockCardV2 key={stock.id} stock={stock} index={idx} />
+                ))}
+              </div>
+            ) : (
+              <GlassCard className="p-8 sm:p-12 text-center" style={{ color: 'var(--text-secondary)' }}>
+                <p className="text-sm sm:text-base">Loading market data...</p>
+              </GlassCard>
+            )}
           </motion.div>
         </div>
 
-        {/* Insights Sidebar - Takes 1 column */}
-        <div className="lg:col-span-1">
+        {/* Insights Sidebar - Hidden on mobile */}
+        <div className="hidden lg:block">
           <MarketInsights />
         </div>
       </div>
 
-      {/* Market News & Analytics Section */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      {/* Market News & Analytics - Responsive Grid */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="glass p-6 rounded-2xl"
+          className="glass p-4 sm:p-6 rounded-2xl"
         >
-          <h3 className="font-bold gradient-text mb-4">Market News</h3>
-          <div className="space-y-3">
+          <h3 className="font-bold gradient-text mb-3 sm:mb-4 text-sm sm:text-base">Market News</h3>
+          <div className="space-y-2 sm:space-y-3">
             {[
               'RBI keeps rates steady at 6.5%',
               'Nifty breaks 21,000 resistance',
               'Rupee strengthens against dollar'
             ].map((news, idx) => (
-              <div key={idx} className="text-sm p-3 rounded-lg" style={{ background: 'var(--glass-bg)' }}>
+              <div key={idx} className="text-xs sm:text-sm p-2 sm:p-3 rounded-lg" style={{ background: 'var(--glass-bg)' }}>
                 <p style={{ color: 'var(--text-secondary)' }}>{news}</p>
               </div>
             ))}
@@ -158,12 +162,12 @@ export default function MarketsPage() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1 }}
-          className="glass p-6 rounded-2xl"
+          className="glass p-4 sm:p-6 rounded-2xl"
         >
-          <h3 className="font-bold gradient-text mb-4">Market Breadth</h3>
-          <div className="space-y-3">
+          <h3 className="font-bold gradient-text mb-3 sm:mb-4 text-sm sm:text-base">Market Breadth</h3>
+          <div className="space-y-2 sm:space-y-3">
             <div>
-              <div className="flex justify-between mb-1 text-sm">
+              <div className="flex justify-between mb-1 text-xs sm:text-sm">
                 <span>Advance</span>
                 <span className="text-emerald-400 font-semibold">1,250</span>
               </div>
@@ -172,7 +176,7 @@ export default function MarketsPage() {
               </div>
             </div>
             <div>
-              <div className="flex justify-between mb-1 text-sm">
+              <div className="flex justify-between mb-1 text-xs sm:text-sm">
                 <span>Decline</span>
                 <span className="text-rose-400 font-semibold">550</span>
               </div>
@@ -187,10 +191,10 @@ export default function MarketsPage() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
-          className="glass p-6 rounded-2xl"
+          className="glass p-4 sm:p-6 rounded-2xl sm:col-span-2 lg:col-span-1"
         >
-          <h3 className="font-bold gradient-text mb-4">Market Indices</h3>
-          <div className="space-y-2 text-sm">
+          <h3 className="font-bold gradient-text mb-3 sm:mb-4 text-sm sm:text-base">Market Indices</h3>
+          <div className="space-y-2 text-xs sm:text-sm">
             <div className="flex justify-between">
               <span style={{ color: 'var(--text-secondary)' }}>BSE 500</span>
               <span className="text-emerald-400 font-semibold">+1.2%</span>

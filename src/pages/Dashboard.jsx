@@ -45,29 +45,31 @@ export default function DashboardPage() {
 
   if (loading) {
     return (
-      <div className="space-y-6 animate-fadeIn">
-        <SkeletonLoader height="h-24" count={4} />
+      <div className="space-y-4 sm:space-y-6 animate-fadeIn">
+        <SkeletonLoader height="h-20 sm:h-24" count={3} />
       </div>
     );
   }
 
   return (
-    <div className="space-y-8 animate-fadeIn">
-      {/* Welcome Header */}
-      <div className="space-y-2">
-        <h1 className="text-4xl font-bold gradient-text">Welcome Back! 👋</h1>
-        <p style={{ color: 'var(--text-secondary)' }}>{new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}</p>
+    <div className="space-y-4 sm:space-y-6 lg:space-y-8 animate-fadeIn">
+      {/* Welcome Header - Responsive Typography */}
+      <div className="space-y-1 sm:space-y-2">
+        <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold gradient-text">Welcome Back! 👋</h1>
+        <p className="text-xs sm:text-sm" style={{ color: 'var(--text-secondary)' }}>
+          {new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}
+        </p>
       </div>
 
-      {/* Health Score */}
+      {/* Health Score - Responsive */}
       {healthScore && (
-        <GlassCard className="p-8">
-          <div className="flex items-center justify-between">
+        <GlassCard className="p-4 sm:p-6 lg:p-8">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 sm:gap-6">
             <div>
-              <p className="text-sm mb-2" style={{ color: 'var(--text-secondary)' }}>Financial Health Score</p>
-              <div className="flex items-baseline gap-3">
-                <span className="text-5xl font-bold gradient-text">{healthScore.score}</span>
-                <span className={`px-3 py-1 rounded-full text-sm font-semibold ${
+              <p className="text-xs sm:text-sm mb-2" style={{ color: 'var(--text-secondary)' }}>Financial Health Score</p>
+              <div className="flex items-baseline gap-2 sm:gap-3">
+                <span className="text-3xl sm:text-4xl lg:text-5xl font-bold gradient-text">{healthScore.score}</span>
+                <span className={`px-2 sm:px-3 py-1 rounded-full text-xs sm:text-sm font-semibold ${
                   healthScore.rating === 'Outstanding' ? 'bg-emerald-500/20 text-emerald-400' :
                   healthScore.rating === 'Excellent' ? 'bg-blue-500/20 text-blue-400' :
                   healthScore.rating === 'Good' ? 'bg-indigo-500/20 text-indigo-400' :
@@ -78,39 +80,31 @@ export default function DashboardPage() {
                 </span>
               </div>
             </div>
-            <div className="text-6xl">📊</div>
+            <div className="text-4xl sm:text-5xl lg:text-6xl flex-shrink-0">📊</div>
           </div>
 
-          {/* Score Breakdown */}
+          {/* Score Breakdown - Responsive Grid */}
           {healthScore.breakdown && (
-            <div className="mt-6 grid grid-cols-2 md:grid-cols-5 gap-3">
-              <div className="rounded-lg p-3" style={{ background: 'var(--glass-bg)' }}>
-                <p className="text-xs" style={{ color: 'var(--text-secondary)' }}>Savings Rate</p>
-                <p className="text-lg font-bold text-emerald-400">{healthScore.breakdown.savingsRate || 0} pts</p>
-              </div>
-              <div className="rounded-lg p-3" style={{ background: 'var(--glass-bg)' }}>
-                <p className="text-xs" style={{ color: 'var(--text-secondary)' }}>Expenses</p>
-                <p className="text-lg font-bold text-indigo-400">{healthScore.breakdown.expenseRatio || 0} pts</p>
-              </div>
-              <div className="rounded-lg p-3" style={{ background: 'var(--glass-bg)' }}>
-                <p className="text-xs" style={{ color: 'var(--text-secondary)' }}>Budget</p>
-                <p className="text-lg font-bold text-blue-400">{healthScore.breakdown.budgetAdherence || 0} pts</p>
-              </div>
-              <div className="rounded-lg p-3" style={{ background: 'var(--glass-bg)' }}>
-                <p className="text-xs" style={{ color: 'var(--text-secondary)' }}>Consistency</p>
-                <p className="text-lg font-bold text-purple-400">{healthScore.breakdown.consistency || 0} pts</p>
-              </div>
-              <div className="rounded-lg p-3" style={{ background: 'var(--glass-bg)' }}>
-                <p className="text-xs" style={{ color: 'var(--text-secondary)' }}>Goals</p>
-                <p className="text-lg font-bold text-rose-400">{healthScore.breakdown.goalProgress || 0} pts</p>
-              </div>
+            <div className="mt-4 sm:mt-6 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2 sm:gap-3">
+              {[
+                { label: 'Savings Rate', value: healthScore.breakdown.savingsRate, color: 'text-emerald-400' },
+                { label: 'Expenses', value: healthScore.breakdown.expenseRatio, color: 'text-indigo-400' },
+                { label: 'Budget', value: healthScore.breakdown.budgetAdherence, color: 'text-blue-400' },
+                { label: 'Consistency', value: healthScore.breakdown.consistency, color: 'text-purple-400' },
+                { label: 'Goals', value: healthScore.breakdown.goalProgress, color: 'text-rose-400' },
+              ].map(stat => (
+                <div key={stat.label} className="rounded-lg p-2 sm:p-3" style={{ background: 'var(--glass-bg)' }}>
+                  <p className="text-xs" style={{ color: 'var(--text-secondary)' }}>{stat.label}</p>
+                  <p className={`text-base sm:text-lg font-bold ${stat.color}`}>{stat.value || 0} pts</p>
+                </div>
+              ))}
             </div>
           )}
         </GlassCard>
       )}
 
-      {/* Stat Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+      {/* Stat Cards - Fully Responsive */}
+      <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-3 lg:gap-4">
         <StatCard
           label="Total Income"
           value={`₹${totals.income.toLocaleString()}`}
@@ -134,47 +128,55 @@ export default function DashboardPage() {
         />
       </div>
 
-      {/* Recent Activity & Budget */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      {/* Recent Activity & Budget - Responsive Grid */}
+      <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6">
         {/* Recent Transactions */}
-        <GlassCard className="lg:col-span-2 p-6">
-          <h3 className="text-xl font-bold mb-4 flex items-center gap-2">
-            <span>📋</span> Recent Activity
+        <GlassCard className="md:col-span-2 lg:col-span-3 p-4 sm:p-6">
+          <h3 className="text-lg sm:text-xl font-bold mb-3 sm:mb-4 flex items-center gap-2">
+            <span>📋</span> <span className="hidden sm:inline">Recent Activity</span><span className="sm:hidden">Activity</span>
           </h3>
           {recentTransactions.length > 0 ? (
-            <div className="space-y-3">
+            <div className="space-y-2 sm:space-y-3 max-h-96 overflow-y-auto">
               {recentTransactions.map(tx => (
-                <div key={tx._id} className="flex items-center justify-between p-3 rounded-lg transition-colors" style={{ background: 'var(--glass-bg)' }} onMouseEnter={(e) => e.currentTarget.style.background = 'var(--glass-hover-bg)'} onMouseLeave={(e) => e.currentTarget.style.background = 'var(--glass-bg)'}>
-                  <div className="flex items-center gap-3">
-                    <span className="text-2xl">{tx.category === 'income' || tx.type === 'income' ? '💵' : '💳'}</span>
-                    <div>
-                      <p className="font-medium">{tx.description}</p>
+                <div
+                  key={tx._id}
+                  className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 p-2 sm:p-3 rounded-lg transition-colors"
+                  style={{ background: 'var(--glass-bg)' }}
+                  onMouseEnter={(e) => (e.currentTarget.style.background = 'var(--glass-hover-bg)')}
+                  onMouseLeave={(e) => (e.currentTarget.style.background = 'var(--glass-bg)')}
+                >
+                  <div className="flex items-center gap-2 sm:gap-3 min-w-0">
+                    <span className="text-lg sm:text-2xl flex-shrink-0">{tx.category === 'income' || tx.type === 'income' ? '💵' : '💳'}</span>
+                    <div className="min-w-0">
+                      <p className="font-medium text-xs sm:text-sm truncate">{tx.description}</p>
                       <p className="text-xs" style={{ color: 'var(--text-secondary)' }}>{new Date(tx.date).toLocaleDateString()}</p>
                     </div>
                   </div>
-                  <span className={`font-bold ${tx.type === 'income' ? 'text-emerald-400' : 'text-rose-400'}`}>
+                  <span className={`font-bold text-sm sm:text-base flex-shrink-0 ${tx.type === 'income' ? 'text-emerald-400' : 'text-rose-400'}`}>
                     {tx.type === 'income' ? '+' : '-'}₹{tx.amount.toLocaleString()}
                   </span>
                 </div>
               ))}
             </div>
           ) : (
-            <p className="text-center py-8" style={{ color: 'var(--text-secondary)' }}>No transactions yet. Start tracking your finances!</p>
+            <p className="text-center py-6 sm:py-8 text-xs sm:text-sm" style={{ color: 'var(--text-secondary)' }}>
+              No transactions yet. Start tracking your finances!
+            </p>
           )}
         </GlassCard>
 
-        {/* Budget Overview */}
+        {/* Budget Overview - Responsive */}
         {budgets && budgets.Needs ? (
-          <GlassCard className="p-6">
-            <h3 className="text-xl font-bold mb-4 flex items-center gap-2">
-              <span>💰</span> Budget
+          <GlassCard className="md:col-span-1 p-4 sm:p-6">
+            <h3 className="text-lg sm:text-xl font-bold mb-3 sm:mb-4 flex items-center gap-2">
+              <span>💰</span> <span className="hidden sm:inline">Budget</span>
             </h3>
-            <div className="space-y-4">
+            <div className="space-y-3 sm:space-y-4">
               {['Needs', 'Wants', 'Savings & Investment'].map(cat => (
                 <div key={cat}>
-                  <div className="flex justify-between mb-2">
-                    <span className="text-sm" style={{ color: 'var(--text-secondary)' }}>{cat}</span>
-                    <span className="text-sm font-semibold">₹{Math.round(budgets[cat] || 0).toLocaleString()}</span>
+                  <div className="flex justify-between mb-1 sm:mb-2">
+                    <span className="text-xs sm:text-sm" style={{ color: 'var(--text-secondary)' }}>{cat.replace(' & Investment', '')}</span>
+                    <span className="text-xs sm:text-sm font-semibold">₹{Math.round(budgets[cat] || 0).toLocaleString()}</span>
                   </div>
                   <div className="w-full rounded-full h-2" style={{ background: 'var(--glass-hover-bg)' }}>
                     <div
@@ -189,9 +191,9 @@ export default function DashboardPage() {
             </div>
           </GlassCard>
         ) : (
-          <GlassCard className="p-6">
-            <h3 className="text-xl font-bold mb-4">💰 Budget</h3>
-            <p className="text-center py-4" style={{ color: 'var(--text-secondary)' }}>No budget set yet. Create one to get started!</p>
+          <GlassCard className="md:col-span-1 p-4 sm:p-6">
+            <h3 className="text-lg sm:text-xl font-bold mb-3 sm:mb-4">💰 <span className="hidden sm:inline">Budget</span></h3>
+            <p className="text-center py-4 text-xs sm:text-sm" style={{ color: 'var(--text-secondary)' }}>No budget set yet!</p>
           </GlassCard>
         )}
       </div>

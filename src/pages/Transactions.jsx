@@ -17,33 +17,43 @@ export default function TransactionsPage() {
   };
 
   return (
-    <div className="space-y-6 animate-fadeIn">
-      <div className="flex justify-between items-center">
-        <h1 className="text-3xl font-bold gradient-text">Transactions</h1>
-        <div className="flex gap-3">
-          <button onClick={() => setShowAddIncome(true)} className="btn btn-primary">
-            + Income
+    <div className="space-y-4 sm:space-y-6 animate-fadeIn">
+      {/* Header - Responsive */}
+      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 sm:gap-4">
+        <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold gradient-text">Transactions</h1>
+        <div className="flex gap-2 sm:gap-3">
+          <button
+            onClick={() => setShowAddIncome(true)}
+            className="btn btn-primary btn-sm sm:btn-base flex-1 sm:flex-none"
+          >
+            + <span className="hidden sm:inline">Income</span><span className="sm:hidden">In</span>
           </button>
-          <button onClick={() => setShowAddExpense(true)} className="btn btn-secondary">
-            + Expense
+          <button
+            onClick={() => setShowAddExpense(true)}
+            className="btn btn-secondary btn-sm sm:btn-base flex-1 sm:flex-none"
+          >
+            + <span className="hidden sm:inline">Expense</span><span className="sm:hidden">Out</span>
           </button>
         </div>
       </div>
 
+      {/* Add Income Form */}
       {showAddIncome && (
-        <GlassCard>
+        <GlassCard className="p-4 sm:p-6">
           <AddIncome onAddIncome={handleAddTransaction} />
         </GlassCard>
       )}
 
+      {/* Add Expense Form */}
       {showAddExpense && (
-        <GlassCard>
+        <GlassCard className="p-4 sm:p-6">
           <AddExpense onAddExpense={handleAddTransaction} />
         </GlassCard>
       )}
 
-      <GlassCard>
-        <h2 className="text-xl font-bold mb-4">All Transactions</h2>
+      {/* Transactions List */}
+      <GlassCard className="p-4 sm:p-6">
+        <h2 className="text-lg sm:text-xl font-bold mb-3 sm:mb-4">All Transactions</h2>
         <TransactionList transactions={transactions} onDelete={deleteTransaction} />
       </GlassCard>
     </div>

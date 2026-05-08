@@ -66,16 +66,16 @@ export default function NewsPage() {
   }
 
   return (
-    <div className="space-y-6 animate-fadeIn">
-      <h1 className="text-3xl font-bold gradient-text">Financial News</h1>
+    <div className="space-y-4 sm:space-y-6 animate-fadeIn">
+      <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold gradient-text">Financial News</h1>
 
-      {/* Category Filter */}
-      <div className="flex gap-2 overflow-x-auto pb-2">
+      {/* Category Filter - Horizontal scroll on mobile */}
+      <div className="flex gap-1 sm:gap-2 overflow-x-auto pb-2 -mx-3 px-3 sm:mx-0 sm:px-0">
         {categories.map((cat) => (
           <button
             key={cat}
             onClick={() => handleCategoryChange(cat)}
-            className={`px-4 py-2 rounded-xl font-medium whitespace-nowrap transition-all ${
+            className={`px-3 sm:px-4 py-2 rounded-xl font-medium text-sm whitespace-nowrap transition-all flex-shrink-0 ${
               category === cat
                 ? 'gradient-brand text-white shadow-lg'
                 : 'glass hover:bg-white/20'
@@ -89,17 +89,17 @@ export default function NewsPage() {
 
       {/* Error State */}
       {error && (
-        <GlassCard className="p-4 border-l-4" style={{ borderColor: 'var(--color-danger)' }}>
-          <p style={{ color: 'var(--color-danger)' }}>⚠️ {error}</p>
+        <GlassCard className="p-3 sm:p-4 border-l-4" style={{ borderColor: 'var(--color-danger)' }}>
+          <p className="text-sm sm:text-base" style={{ color: 'var(--color-danger)' }}>⚠️ {error}</p>
         </GlassCard>
       )}
 
-      {/* Articles */}
-      <div className="space-y-4">
+      {/* Articles - Responsive Layout */}
+      <div className="space-y-3 sm:space-y-4">
         {articles.map((article) => (
-          <GlassCard key={article.id} className="p-6 flex gap-4 cursor-pointer hover:bg-white/10">
-            {/* Image or Placeholder */}
-            <div className="w-32 h-32 rounded-lg flex-shrink-0 overflow-hidden">
+          <GlassCard key={article.id} className="p-3 sm:p-4 lg:p-6 flex flex-col sm:flex-row gap-3 sm:gap-4 cursor-pointer hover:bg-white/10 transition-colors">
+            {/* Image or Placeholder - Responsive */}
+            <div className="w-full sm:w-24 lg:w-32 h-40 sm:h-24 lg:h-32 rounded-lg flex-shrink-0 overflow-hidden">
               {article.imageUrl ? (
                 <img
                   src={article.imageUrl}
@@ -107,7 +107,7 @@ export default function NewsPage() {
                   className="w-full h-full object-cover"
                   onError={(e) => {
                     e.target.style.display = 'none';
-                    e.target.nextElementSibling.style.display = 'flex';
+                    if (e.target.nextElementSibling) e.target.nextElementSibling.style.display = 'flex';
                   }}
                 />
               ) : null}
@@ -115,27 +115,27 @@ export default function NewsPage() {
                 className={`w-full h-full bg-gradient-to-br ${categoryGradients[article.category] || categoryGradients.general} flex items-center justify-center`}
                 style={{ display: article.imageUrl ? 'none' : 'flex' }}
               >
-                <span className="text-3xl">📰</span>
+                <span className="text-2xl sm:text-3xl">📰</span>
               </div>
             </div>
 
-            <div className="flex-1">
-              <div className="flex items-start justify-between mb-2">
-                <h3 className="text-lg font-bold line-clamp-2">{article.title}</h3>
-                <Badge variant="info">{article.source}</Badge>
+            <div className="flex-1 min-w-0">
+              <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-2 mb-2">
+                <h3 className="text-base sm:text-lg lg:text-lg font-bold line-clamp-2">{article.title}</h3>
+                <Badge variant="info" className="text-xs flex-shrink-0">{article.source}</Badge>
               </div>
-              <p className="text-sm line-clamp-2 mb-3" style={{ color: 'var(--text-secondary)' }}>
+              <p className="text-xs sm:text-sm line-clamp-2 mb-2 sm:mb-3" style={{ color: 'var(--text-secondary)' }}>
                 {article.description}
               </p>
-              <div className="flex items-center justify-between">
-                <span className="text-xs" style={{ color: 'var(--text-secondary)' }}>
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 text-xs sm:text-sm">
+                <span style={{ color: 'var(--text-secondary)' }}>
                   {new Date(article.pubDate).toLocaleDateString()}
                 </span>
                 <a
                   href={article.link}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-indigo-400 hover:text-indigo-300 text-sm font-semibold"
+                  className="text-indigo-400 hover:text-indigo-300 font-semibold"
                 >
                   Read More →
                 </a>
@@ -146,8 +146,8 @@ export default function NewsPage() {
       </div>
 
       {articles.length === 0 && !error && (
-        <GlassCard className="text-center py-12">
-          <p className="text-lg" style={{ color: 'var(--text-secondary)' }}>
+        <GlassCard className="text-center py-8 sm:py-12">
+          <p className="text-sm sm:text-lg" style={{ color: 'var(--text-secondary)' }}>
             No articles available. Check back soon! 📰
           </p>
         </GlassCard>

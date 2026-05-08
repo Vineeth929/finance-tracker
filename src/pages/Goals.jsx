@@ -68,15 +68,16 @@ export default function GoalsPage() {
   };
 
   return (
-    <div className="space-y-6 animate-fadeIn">
-      <div className="flex justify-between items-center">
-        <h1 className="text-3xl font-bold gradient-text">Savings Goals</h1>
+    <div className="space-y-4 sm:space-y-6 animate-fadeIn">
+      {/* Header - Responsive */}
+      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 sm:gap-4">
+        <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold gradient-text">Savings Goals</h1>
         <button
           onClick={() => {
             setShowAddForm(!showAddForm);
             setError(null);
           }}
-          className="btn btn-primary"
+          className="btn btn-primary btn-sm sm:btn-base"
         >
           {showAddForm ? '✕ Close' : '+ New Goal'}
         </button>
