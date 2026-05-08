@@ -65,30 +65,24 @@ export default function DashboardPage() {
         </div>
 
         {/* Quick Action Buttons - Financial Tracking */}
-        <div className="flex flex-wrap gap-2 sm:gap-3">
+        <div className="flex gap-2 sm:gap-3 flex-wrap">
           <button
             onClick={() => navigate('/transactions')}
-            className="btn btn-primary btn-sm sm:btn-base"
+            className="btn btn-primary btn-sm sm:btn-base flex-1 sm:flex-none"
           >
-            + Income
+            + Add Income
           </button>
           <button
             onClick={() => navigate('/transactions')}
-            className="btn btn-secondary btn-sm sm:btn-base"
+            className="btn btn-secondary btn-sm sm:btn-base flex-1 sm:flex-none"
           >
-            - Expense
+            - Add Expense
           </button>
           <button
             onClick={() => navigate('/budget')}
-            className="btn btn-secondary btn-sm sm:btn-base"
+            className="btn btn-secondary btn-sm sm:btn-base hidden sm:inline-flex"
           >
-            📊 Budget
-          </button>
-          <button
-            onClick={() => navigate('/analytics')}
-            className="btn btn-secondary btn-sm sm:btn-base"
-          >
-            📈 Analytics
+            💰 Budget
           </button>
         </div>
       </div>
@@ -135,20 +129,20 @@ export default function DashboardPage() {
         </GlassCard>
       )}
 
-      {/* Stat Cards - Fully Responsive */}
-      <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-3 lg:gap-4">
+      {/* Financial Summary - Core Stats */}
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3 lg:gap-4">
         <StatCard
-          label="Total Income"
+          label="Income"
           value={`₹${totals.income.toLocaleString()}`}
           icon={{ symbol: '📈', color: 'text-emerald-400' }}
         />
         <StatCard
-          label="Total Expenses"
+          label="Expenses"
           value={`₹${totals.expenses.toLocaleString()}`}
           icon={{ symbol: '💳', color: 'text-rose-400' }}
         />
         <StatCard
-          label="Net Savings"
+          label="Savings"
           value={`₹${totals.savings.toLocaleString()}`}
           change={totals.income > 0 ? (totals.savings / totals.income) * 100 : 0}
           icon={{ symbol: '💰', color: 'text-indigo-400' }}

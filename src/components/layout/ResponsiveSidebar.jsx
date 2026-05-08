@@ -1,25 +1,31 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useApp } from '../../context/AppContext';
-import { Menu, X, BarChart3, TrendingUp, Wallet, Target, Newspaper, Settings, LogOut, User } from 'lucide-react';
+import { Menu, X, BarChart3, TrendingUp, Wallet, Target, Newspaper, Settings, LogOut, User, ChevronDown } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '../../context/AuthContext';
 
-const menuItems = [
+// Primary: Core financial tracking features
+const primaryMenu = [
   { path: '/', label: 'Dashboard', icon: BarChart3, id: 'dashboard' },
-  { path: '/markets', label: 'Markets', icon: TrendingUp, id: 'markets' },
   { path: '/transactions', label: 'Transactions', icon: Wallet, id: 'transactions' },
   { path: '/budget', label: 'Budget', icon: BarChart3, id: 'budget' },
   { path: '/goals', label: 'Goals', icon: Target, id: 'goals' },
-  { path: '/news', label: 'News', icon: Newspaper, id: 'news' },
   { path: '/analytics', label: 'Analytics', icon: TrendingUp, id: 'analytics' },
+];
+
+// Secondary: Optional features (Markets, News)
+const secondaryMenu = [
+  { path: '/markets', label: 'Markets', icon: TrendingUp, id: 'markets' },
+  { path: '/news', label: 'News', icon: Newspaper, id: 'news' },
 ];
 
 export default function ResponsiveSidebar() {
   const location = useLocation();
   const { sidebarCollapsed, setSidebarCollapsed } = useApp();
   const { logout } = useAuth();
-  const [mobileOpen, setMobileOpen] = React.useState(false);
+  const [mobileOpen, setMobileOpen] = useState(false);
+  const [showSecondary, setShowSecondary] = useState(false);
 
   const isActive = (path) => location.pathname === path;
 
@@ -42,34 +48,87 @@ export default function ResponsiveSidebar() {
 
       {/* Menu Items */}
       <nav className="flex-1 px-3 space-y-2 overflow-y-auto">
-        {menuItems.map((item) => {
-          const Icon = item.icon;
-          const active = isActive(item.path);
+        {/* Primary Menu - Core Financial Features */}
+        <div>
+          {primaryMenu.map((item) => {
+            const Icon = item.icon;
+            const active = isActive(item.path);
 
-          return (
-            <Link
-              key={item.id}
-              to={item.path}
-              className={`relative flex items-center gap-3 px-4 py-3 rounded-lg transition-all ${
-                active
-                  ? 'text-white'
-                  : 'text-gray-400 hover:text-gray-200'
-              }`}
-              style={active ? { background: 'rgba(99, 102, 241, 0.15)' } : {}}
+            return (
+              <Link
+                key={item.id}
+                to={item.path}
+                className={`relative flex items-center gap-3 px-4 py-3 rounded-lg transition-all ${
+                  active
+                    ? 'text-white'
+                    : 'text-gray-400 hover:text-gray-200'
+                }`}
+                style={active ? { background: 'rgba(99, 102, 241, 0.15)' } : {}}
+              >
+                <Icon size={20} className="flex-shrink-0" />
+                {!sidebarCollapsed && (
+                  <span className="text-sm font-medium">{item.label}</span>
+                )}
+                {active && (
+                  <motion.div
+                    layoutId="activeSidebar"
+                    className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-8 bg-gradient-to-b from-indigo-500 to-purple-500 rounded-r"
+                  />
+                )}
+              </Link>
+            );
+          })}
+        </div>
+
+        {/* Secondary Menu - Optional Features (Collapsible) */}
+        {!sidebarCollapsed && (
+          <div className="pt-2 border-t border-white/10">
+            <button
+              onClick={() => setShowSecondary(!showSecondary)}
+              className="w-full flex items-center justify-between px-4 py-2 rounded-lg text-gray-400 hover:text-gray-200 text-xs font-semibold transition-colors"
             >
-              <Icon size={20} className="flex-shrink-0" />
-              {!sidebarCollapsed && (
-                <span className="text-sm font-medium">{item.label}</span>
-              )}
-              {active && (
+              <span>MORE</span>
+              <motion.div
+                animate={{ rotate: showSecondary ? 180 : 0 }}
+                transition={{ duration: 0.2 }}
+              >
+                <ChevronDown size={14} />
+              </motion.div>
+            </button>
+
+            <AnimatePresence>
+              {showSecondary && (
                 <motion.div
-                  layoutId="activeSidebar"
-                  className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-8 bg-gradient-to-b from-indigo-500 to-purple-500 rounded-r"
-                />
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: 'auto' }}
+                  exit={{ opacity: 0, height: 0 }}
+                  className="space-y-1 mt-1 overflow-hidden"
+                >
+                  {secondaryMenu.map((item) => {
+                    const Icon = item.icon;
+                    const active = isActive(item.path);
+
+                    return (
+                      <Link
+                        key={item.id}
+                        to={item.path}
+                        className={`relative flex items-center gap-3 px-4 py-2 rounded-lg text-xs transition-all ${
+                          active
+                            ? 'text-white'
+                            : 'text-gray-500 hover:text-gray-300'
+                        }`}
+                        style={active ? { background: 'rgba(99, 102, 241, 0.15)' } : {}}
+                      >
+                        <Icon size={16} className="flex-shrink-0" />
+                        <span className="font-medium">{item.label}</span>
+                      </Link>
+                    );
+                  })}
+                </motion.div>
               )}
-            </Link>
-          );
-        })}
+            </AnimatePresence>
+          </div>
+        )}
       </nav>
 
       {/* Bottom Actions */}
@@ -146,7 +205,8 @@ export default function ResponsiveSidebar() {
 
             {/* Menu Items */}
             <nav className="flex-1 px-3 space-y-1 overflow-y-auto">
-              {menuItems.map((item, idx) => {
+              {/* Primary Menu */}
+              {primaryMenu.map((item, idx) => {
                 const Icon = item.icon;
                 const active = isActive(item.path);
 
@@ -171,6 +231,53 @@ export default function ResponsiveSidebar() {
                   </motion.div>
                 );
               })}
+
+              {/* Secondary Menu */}
+              <div className="pt-2 mt-2 border-t border-white/10">
+                <button
+                  onClick={() => setShowSecondary(!showSecondary)}
+                  className="w-full flex items-center justify-between px-4 py-2 rounded-lg text-gray-500 hover:text-gray-300 text-xs font-semibold transition-colors"
+                >
+                  <span>MORE</span>
+                  <motion.div
+                    animate={{ rotate: showSecondary ? 180 : 0 }}
+                    transition={{ duration: 0.2 }}
+                  >
+                    <ChevronDown size={14} />
+                  </motion.div>
+                </button>
+
+                <AnimatePresence>
+                  {showSecondary && (
+                    <motion.div
+                      initial={{ opacity: 0, height: 0 }}
+                      animate={{ opacity: 1, height: 'auto' }}
+                      exit={{ opacity: 0, height: 0 }}
+                      className="space-y-1 mt-1 overflow-hidden"
+                    >
+                      {secondaryMenu.map((item, idx) => {
+                        const Icon = item.icon;
+                        const active = isActive(item.path);
+
+                        return (
+                          <Link
+                            key={item.id}
+                            to={item.path}
+                            onClick={() => setMobileOpen(false)}
+                            className={`flex items-center gap-3 px-4 py-2 rounded-lg text-xs transition-all ${
+                              active ? 'text-white' : 'text-gray-500'
+                            }`}
+                            style={active ? { background: 'rgba(99, 102, 241, 0.15)' } : {}}
+                          >
+                            <Icon size={16} />
+                            <span className="text-sm font-medium">{item.label}</span>
+                          </Link>
+                        );
+                      })}
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
             </nav>
 
             {/* Bottom Actions */}

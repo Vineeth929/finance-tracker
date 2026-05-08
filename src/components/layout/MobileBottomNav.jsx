@@ -7,6 +7,7 @@ export default function MobileBottomNav() {
   const location = useLocation();
   const navigate = useNavigate();
 
+  // Core financial features only - Markets & News in "More" menu
   const tabs = [
     { path: '/', icon: Home, label: 'Home', id: 'dashboard' },
     { path: '/transactions', icon: Wallet, label: 'Money', id: 'transactions' },
