@@ -82,7 +82,7 @@ export default function Signup() {
   return (
     <div
       className="min-h-screen flex items-center justify-center px-4 py-12 transition-colors duration-300"
-      style={{ background: 'var(--bg-gradient)' }}
+      style={{ background: 'var(--gradient-ambient)' }}
     >
       <motion.div
         variants={containerVariants}
@@ -115,10 +115,10 @@ export default function Signup() {
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, x: -20 }}
               className="p-4 rounded-lg flex items-start gap-3 border-l-4"
-              style={{ borderColor: 'var(--state-struggling-primary)', background: 'var(--state-struggling-bg)' }}
+              style={{ borderColor: 'var(--emotion-expenses)', background: 'var(--emotion-expenses-bg)' }}
             >
               <span className="text-xl">⚠️</span>
-              <span style={{ color: 'var(--state-struggling-primary)' }}>{error}</span>
+              <span style={{ color: 'var(--emotion-expenses)' }}>{error}</span>
             </motion.div>
           )}
 
@@ -173,7 +173,7 @@ export default function Signup() {
                   <motion.span
                     initial={{ scale: 0 }}
                     animate={{ scale: 1 }}
-                    className="text-state-growing-primary"
+                    style={{ color: 'var(--emotion-savings)' }}
                   >
                     <CheckCircle2 size={16} />
                   </motion.span>
@@ -221,7 +221,7 @@ export default function Signup() {
                   <motion.span
                     initial={{ scale: 0 }}
                     animate={{ scale: 1 }}
-                    className="text-state-growing-primary"
+                    style={{ color: 'var(--emotion-savings)' }}
                   >
                     <CheckCircle2 size={16} />
                   </motion.span>
@@ -314,8 +314,8 @@ export default function Signup() {
             </p>
             <Link
               to="/login"
-              className="inline-flex items-center gap-2 px-6 py-2 rounded-lg font-heading text-state-stable-primary hover:text-state-thriving-primary transition"
-              style={{ background: 'var(--state-stable-bg)', border: '1px solid var(--state-stable-border)' }}
+              className="inline-flex items-center gap-2 px-6 py-2 rounded-lg font-heading transition"
+              style={{ background: 'var(--emotion-analytics-bg)', border: '1px solid var(--emotion-analytics-border)', color: 'var(--emotion-analytics)' }}
             >
               🔓 Log In Instead
             </Link>

@@ -8,10 +8,10 @@ import { motion } from 'framer-motion';
 const categories = ['All', 'crypto', 'markets', 'economy', 'business', 'general'];
 
 const categoryConfig = {
-  crypto: { icon: '₿', color: 'var(--state-stable-primary)', label: 'Crypto' },
-  markets: { icon: '📈', color: 'var(--state-growing-primary)', label: 'Markets' },
-  economy: { icon: '💼', color: 'var(--state-cautious-primary)', label: 'Economy' },
-  business: { icon: '🏢', color: 'var(--state-stable-primary)', label: 'Business' },
+  crypto: { icon: '₿', color: 'var(--emotion-investments)', label: 'Crypto' },
+  markets: { icon: '📈', color: 'var(--emotion-goals)', label: 'Markets' },
+  economy: { icon: '💼', color: 'var(--emotion-goals)', label: 'Economy' },
+  business: { icon: '🏢', color: 'var(--emotion-investments)', label: 'Business' },
   general: { icon: '📰', color: 'var(--text-secondary)', label: 'General' },
 };
 
@@ -110,9 +110,9 @@ export default function NewsPage() {
         <div className="flex items-center gap-3">
           <div
             className="p-3 rounded-lg"
-            style={{ background: 'var(--state-growing-bg)' }}
+            style={{ background: 'var(--emotion-goals-bg)' }}
           >
-            <Newspaper size={32} style={{ color: 'var(--state-growing-primary)' }} />
+            <Newspaper size={32} style={{ color: 'var(--emotion-goals)' }} />
           </div>
           <div>
             <h1 className="text-4xl font-display gradient-text">Financial News</h1>
@@ -157,11 +157,11 @@ export default function NewsPage() {
         <motion.div
           initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}
-          className="surface-cautious flex items-start gap-3"
+          className="surface-expenses flex items-start gap-3"
         >
-          <AlertCircle size={24} style={{ color: 'var(--state-cautious-primary)', flexShrink: 0 }} />
+          <AlertCircle size={24} style={{ color: 'var(--emotion-expenses)', flexShrink: 0 }} />
           <div>
-            <p className="font-heading text-state-cautious-primary">Unable to Load News</p>
+            <p className="font-heading" style={{ color: 'var(--emotion-expenses)' }}>Unable to Load News</p>
             <p className="text-sm text-secondary mt-1">{error}</p>
           </div>
         </motion.div>
@@ -218,7 +218,7 @@ export default function NewsPage() {
                   {/* Title & Source */}
                   <div className="space-y-3">
                     <div className="flex items-start gap-2 justify-between">
-                      <h3 className="text-base sm:text-lg font-heading line-clamp-2 group-hover:text-state-growing-primary transition-colors">
+                      <h3 className="text-base sm:text-lg font-heading line-clamp-2 transition-colors" style={{ color: 'var(--text-primary)' }}>
                         {article.title}
                       </h3>
                       <Badge
@@ -248,7 +248,8 @@ export default function NewsPage() {
                       target="_blank"
                       rel="noopener noreferrer"
                       whileHover={{ gap: '0.5rem' }}
-                      className="text-state-stable-primary hover:text-state-growing-primary font-heading text-sm flex items-center gap-1 transition-colors"
+                      className="font-heading text-sm flex items-center gap-1 transition-colors"
+                      style={{ color: 'var(--emotion-investments)' }}
                     >
                       Read More
                       <ExternalLink size={14} />

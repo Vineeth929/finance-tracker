@@ -68,9 +68,9 @@ export default function SettingsPage() {
         <div className="flex items-center gap-3 mb-6">
           <div
             className="p-3 rounded-lg"
-            style={{ background: 'var(--state-stable-bg)' }}
+            style={{ background: 'var(--emotion-analytics-bg)' }}
           >
-            <Palette size={24} style={{ color: 'var(--state-stable-primary)' }} />
+            <Palette size={24} style={{ color: 'var(--emotion-analytics)' }} />
           </div>
           <div>
             <h2 className="text-2xl font-heading">Display Preferences</h2>
@@ -85,11 +85,11 @@ export default function SettingsPage() {
             className="flex items-center justify-between p-4 rounded-xl surface-interactive"
           >
             <div className="flex items-center gap-3">
-              <div className="p-2 rounded-lg" style={{ background: 'var(--bg-surface-2)' }}>
+              <div className="p-2 rounded-lg" style={{ background: 'var(--surface-level-3)' }}>
                 {darkMode ? (
-                  <Moon size={20} style={{ color: 'var(--state-stable-primary)' }} />
+                  <Moon size={20} style={{ color: 'var(--emotion-analytics)' }} />
                 ) : (
-                  <Sun size={20} style={{ color: 'var(--state-cautious-primary)' }} />
+                  <Sun size={20} style={{ color: 'var(--emotion-goals)' }} />
                 )}
               </div>
               <div>
@@ -103,7 +103,7 @@ export default function SettingsPage() {
               onClick={() => setDarkMode(!darkMode)}
               className="relative w-16 h-8 rounded-full transition-all"
               style={{
-                background: darkMode ? 'var(--state-growing-primary)' : 'var(--state-cautious-primary)',
+                background: darkMode ? 'var(--emotion-investments)' : 'var(--emotion-goals)',
               }}
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
@@ -123,9 +123,9 @@ export default function SettingsPage() {
         <div className="flex items-center gap-3 mb-6">
           <div
             className="p-3 rounded-lg"
-            style={{ background: 'var(--state-growing-bg)' }}
+            style={{ background: 'var(--emotion-savings-bg)' }}
           >
-            <Download size={24} style={{ color: 'var(--state-growing-primary)' }} />
+            <Download size={24} style={{ color: 'var(--emotion-savings)' }} />
           </div>
           <div>
             <h2 className="text-2xl font-heading">Data Management</h2>
@@ -176,7 +176,7 @@ export default function SettingsPage() {
                   animate={{ opacity: 1, x: 0 }}
                   exit={{ opacity: 0, x: 10 }}
                   className="text-sm font-medium flex items-center gap-2"
-                  style={{ color: 'var(--state-growing-primary)' }}
+                  style={{ color: 'var(--emotion-savings)' }}
                 >
                   ✓ Downloaded successfully
                 </motion.div>
@@ -194,9 +194,9 @@ export default function SettingsPage() {
         <div className="flex items-center gap-3 mb-6">
           <div
             className="p-3 rounded-lg"
-            style={{ background: 'var(--state-thriving-bg)' }}
+            style={{ background: 'var(--emotion-savings-bg)' }}
           >
-            <Info size={24} style={{ color: 'var(--state-thriving-primary)' }} />
+            <Info size={24} style={{ color: 'var(--emotion-savings)' }} />
           </div>
           <div>
             <h2 className="text-2xl font-heading">About</h2>
@@ -211,7 +211,7 @@ export default function SettingsPage() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
             className="p-4 rounded-lg"
-            style={{ background: 'var(--bg-surface-2)' }}
+            style={{ background: 'var(--surface-level-2)' }}
           >
             <p className="text-lg font-heading gradient-text mb-2">💰 Finance Tracker 2.0</p>
             <p className="text-base text-secondary mb-4">
@@ -233,10 +233,10 @@ export default function SettingsPage() {
             className="p-4 rounded-lg border-t-2"
             style={{
               background: 'var(--bg-surface-2)',
-              borderColor: 'var(--state-stable-primary)',
+              borderColor: 'var(--emotion-analytics)',
             }}
           >
-            <p className="font-heading text-sm mb-3" style={{ color: 'var(--state-stable-primary)' }}>
+            <p className="font-heading text-sm mb-3" style={{ color: 'var(--emotion-analytics)' }}>
               POWERED BY
             </p>
             <div className="text-sm space-y-1" style={{ color: 'var(--text-secondary)' }}>
@@ -253,7 +253,7 @@ export default function SettingsPage() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.4 }}
             className="p-4 rounded-lg"
-            style={{ background: 'var(--bg-surface-2)' }}
+            style={{ background: 'var(--surface-level-2)' }}
           >
             <p className="text-xs text-muted">Version 2.0 • Emotional Design System • © 2026</p>
           </motion.div>
@@ -265,8 +265,8 @@ export default function SettingsPage() {
         variants={itemVariants}
         className="p-6 rounded-xl"
         style={{
-          background: 'linear-gradient(135deg, var(--state-thriving-bg) 0%, var(--state-growing-bg) 100%)',
-          border: '1px solid var(--state-thriving-border)',
+          background: 'linear-gradient(135deg, var(--emotion-savings-bg) 0%, var(--emotion-goals-bg) 100%)',
+          border: '1px solid var(--emotion-savings-border)',
         }}
       >
         <p className="text-center text-base font-heading">

@@ -95,12 +95,12 @@ export default function MarketsPage() {
         <motion.div
           initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}
-          className="surface-cautious"
+          className="surface-expenses"
         >
           <div className="flex items-start gap-3">
             <span className="text-2xl">⚠️</span>
             <div>
-              <p className="font-heading text-state-cautious-primary">Market Data Temporarily Unavailable</p>
+              <p className="font-heading" style={{ color: 'var(--emotion-expenses)' }}>Market Data Temporarily Unavailable</p>
               <p className="text-secondary text-sm mt-1">Using cached data • Refreshing in 30s</p>
             </div>
           </div>
@@ -115,7 +115,7 @@ export default function MarketsPage() {
           className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 surface-interactive p-4"
         >
           <div className="flex items-center gap-2">
-            <Zap size={16} style={{ color: 'var(--state-stable-primary)' }} />
+            <Zap size={16} style={{ color: 'var(--emotion-analytics)' }} />
             <p className="text-sm text-secondary">
               Updated {lastUpdated.toLocaleTimeString()}
             </p>
@@ -150,37 +150,37 @@ export default function MarketsPage() {
           className="surface-card"
         >
           <div className="flex items-center gap-3 mb-6">
-            <BarChart3 size={24} style={{ color: 'var(--state-growing-primary)' }} />
+            <BarChart3 size={24} style={{ color: 'var(--emotion-goals)' }} />
             <h3 className="text-xl font-heading">Market Breadth</h3>
           </div>
           <div className="space-y-5">
             <div>
               <div className="flex justify-between mb-3">
                 <span className="text-secondary font-medium">Advances</span>
-                <span className="font-heading text-state-growing-primary">1,250 (65%)</span>
+                <span className="font-heading" style={{ color: 'var(--emotion-goals)' }}>1,250 (65%)</span>
               </div>
-              <div className="w-full h-3 rounded-full" style={{ background: 'var(--bg-surface-2)' }}>
+              <div className="w-full h-3 rounded-full" style={{ background: 'var(--surface-level-2)' }}>
                 <motion.div
                   initial={{ width: 0 }}
                   animate={{ width: '65%' }}
                   transition={{ duration: 1, delay: 0.3, ease: 'easeOut' }}
                   className="h-full rounded-full"
-                  style={{ background: 'var(--state-growing-primary)' }}
+                  style={{ background: 'var(--emotion-goals)' }}
                 />
               </div>
             </div>
             <div>
               <div className="flex justify-between mb-3">
                 <span className="text-secondary font-medium">Declines</span>
-                <span className="font-heading text-state-struggling-primary">550 (35%)</span>
+                <span className="font-heading" style={{ color: 'var(--emotion-expenses)' }}>550 (35%)</span>
               </div>
-              <div className="w-full h-3 rounded-full" style={{ background: 'var(--bg-surface-2)' }}>
+              <div className="w-full h-3 rounded-full" style={{ background: 'var(--surface-level-2)' }}>
                 <motion.div
                   initial={{ width: 0 }}
                   animate={{ width: '35%' }}
                   transition={{ duration: 1, delay: 0.3, ease: 'easeOut' }}
                   className="h-full rounded-full"
-                  style={{ background: 'var(--state-struggling-primary)' }}
+                  style={{ background: 'var(--emotion-expenses)' }}
                 />
               </div>
             </div>
@@ -194,7 +194,7 @@ export default function MarketsPage() {
           className="surface-card"
         >
           <div className="flex items-center gap-3 mb-6">
-            <BarChart3 size={24} style={{ color: 'var(--state-stable-primary)' }} />
+            <BarChart3 size={24} style={{ color: 'var(--emotion-analytics)' }} />
             <h3 className="text-xl font-heading">Market Indices</h3>
           </div>
           <div className="space-y-4">
@@ -209,13 +209,13 @@ export default function MarketsPage() {
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: 0.3 + i * 0.05 }}
                 className="flex justify-between items-center p-3 rounded-lg"
-                style={{ background: 'var(--bg-surface-2)' }}
+                style={{ background: 'var(--surface-level-2)' }}
               >
                 <span className="font-medium">{idx.name}</span>
                 <span
                   className="font-heading text-base"
                   style={{
-                    color: idx.changeType === 'positive' ? 'var(--state-growing-primary)' : 'var(--state-struggling-primary)'
+                    color: idx.changeType === 'positive' ? 'var(--emotion-goals)' : 'var(--emotion-expenses)'
                   }}
                 >
                   {idx.changeType === 'positive' ? '↑' : '↓'} {Math.abs(idx.change).toFixed(1)}%

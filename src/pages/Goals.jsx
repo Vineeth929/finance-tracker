@@ -140,8 +140,8 @@ export default function GoalsPage() {
 
       {error && (
         <motion.div variants={itemVariants}>
-          <div className="p-4 rounded-lg border-l-4" style={{ borderColor: 'var(--state-struggling-primary)', background: 'var(--state-struggling-bg)' }}>
-            <p className="text-sm" style={{ color: 'var(--state-struggling-primary)' }}>⚠️ {error}</p>
+          <div className="p-4 rounded-lg border-l-4" style={{ borderColor: 'var(--emotion-expenses)', background: 'var(--emotion-expenses-bg)' }}>
+            <p className="text-sm" style={{ color: 'var(--emotion-expenses)' }}>⚠️ {error}</p>
           </div>
         </motion.div>
       )}

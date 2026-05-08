@@ -6,104 +6,120 @@
 
 :root {
   /* ============================================================================
-     PREMIUM DARK FINTECH THEME - Complete Architecture Redesign
+     UNIFIED ATMOSPHERIC COLOR SYSTEM - ONE COHESIVE ENVIRONMENT
      ============================================================================ */
 
-  /* DEEP NAVY COLOR SYSTEM - NOT GRAY */
-  --color-black: #000000;
-  --color-darkest: #07111F;     /* Darkest navy background */
-  --color-darker: #0B1020;       /* Dark navy, app bg */
-  --color-dark: #111827;         /* Elevated surfaces */
-  --color-dark-2: #161D2D;       /* Cards, secondary */
-  --color-dark-3: #1A202C;       /* Hover states */
+  /* ATMOSPHERIC FOUNDATION - Rich, Layered, Deep */
+  /* NOT muddy gray - cinematic depth */
+  --atm-void: #0A0F1F;            /* Deepest: space-like void */
+  --atm-midnight: #0F1629;        /* Deep midnight navy */
+  --atm-obsidian: #141B2F;        /* Rich obsidian layer */
+  --atm-graphite: #1A2138;        /* Graphite blue undertone */
+  --atm-slate: #202847;           /* Atmospheric slate */
+  --atm-twilight: #2A3554;        /* Twilight layer */
 
-  /* PURPLE ACCENT SYSTEM */
-  --color-purple-50: #F8F5FF;
-  --color-purple-100: #EDE9FE;
-  --color-purple-400: #C084FC;
-  --color-purple-500: #A855F7;
-  --color-purple-600: #9333EA;
-  --color-purple-700: #7E22CE;
-  --color-purple-800: #6B21A8;
-  --color-purple-900: #581C87;
+  /* SURFACE HIERARCHY - 5 DISTINCT LEVELS */
+  /* Level 0: Main environment */
+  --surface-level-0: var(--atm-void);
+  /* Level 1: Section backgrounds */
+  --surface-level-1: var(--atm-midnight);
+  /* Level 2: Panel surfaces */
+  --surface-level-2: var(--atm-obsidian);
+  /* Level 3: Interactive elements */
+  --surface-level-3: var(--atm-graphite);
+  /* Level 4: Elevated modals/drawers */
+  --surface-level-4: var(--atm-slate);
 
-  /* PRIMARY BRAND */
-  --brand-primary: #A855F7;       /* Purple - main accent */
-  --brand-secondary: #9333EA;     /* Darker purple */
-  --brand-tertiary: #7C3AED;      /* Deep purple */
+  /* ACCENT ENERGY - Restrained, Intentional, Cohesive */
+  /* Violet: Focus & Intention (Primary) */
+  --accent-violet-dark: #6D28D9;   /* Deep intelligent purple */
+  --accent-violet: #8B5CF6;        /* Restrained electric violet */
+  --accent-violet-light: #A78BFA;  /* Soft violet for subtlety */
 
-  /* STATUS COLORS - Vibrant for fintech */
-  --status-success: #10B981;      /* Emerald green */
-  --status-success-light: #34D399;
-  --status-danger: #EF4444;       /* Bright red */
-  --status-danger-light: #F87171;
-  --status-warning: #F59E0B;      /* Amber */
-  --status-warning-light: #FBBF24;
-  --status-info: #3B82F6;         /* Bright blue */
-  --status-info-light: #60A5FA;
+  /* Cyan: Intelligence & Data */
+  --accent-cyan-dark: #0369A1;     /* Deep cyan intelligence */
+  --accent-cyan: #06B6D4;          /* Muted cyan clarity */
+  --accent-cyan-light: #22D3EE;    /* Soft cyan for subtlety */
 
-  /* BACKGROUND SYSTEM - Proper Layering */
-  --bg-app: #0B1020;                         /* Base app background */
-  --bg-surface-1: #111827;                   /* First elevated surface */
-  --bg-surface-2: #161D2D;                   /* Second elevated surface */
-  --bg-surface-3: #1A202C;                   /* Third elevated surface (cards) */
-  --bg-surface-hover: #202836;               /* Hover state */
-  --bg-surface-active: #242C3C;              /* Active state */
+  /* Emerald: Growth & Progress */
+  --accent-emerald-dark: #047857;  /* Deep growth green */
+  --accent-emerald: #10B981;       /* Calm optimism green */
+  --accent-emerald-light: #34D399; /* Soft emerald for subtlety */
 
-  /* GLASS EFFECTS - Premium but NOT transparent */
-  --glass-opacity-light: rgba(255, 255, 255, 0.05);
-  --glass-opacity-medium: rgba(255, 255, 255, 0.08);
-  --glass-opacity-strong: rgba(255, 255, 255, 0.12);
+  /* Amber: Warmth & Achievement */
+  --accent-amber-dark: #B45309;    /* Deep warm highlight */
+  --accent-amber: #D97706;         /* Intelligent warm tone */
+  --accent-amber-light: #F59E0B;   /* Soft warmth for subtlety */
 
-  --glass-bg: linear-gradient(135deg, rgba(26, 32, 44, 0.4), rgba(22, 29, 45, 0.3));
-  --glass-border: rgba(255, 255, 255, 0.1);
-  --glass-border-hover: rgba(255, 255, 255, 0.15);
-  --glass-border-active: rgba(159, 102, 251, 0.3);
+  /* Rose: Alert & Attention */
+  --accent-rose-dark: #831843;     /* Deep rose tension */
+  --accent-rose: #E11D48;          /* Subtle tension rose */
+  --accent-rose-light: #F43F5E;    /* Soft rose for subtlety */
 
-  --glass-backdrop: blur(12px);
-  --glass-backdrop-strong: blur(16px);
+  /* TEXT HIERARCHY - Unified Across All Pages */
+  --text-primary: #F8FAFC;         /* Primary: almost white */
+  --text-secondary: #CBD5E1;       /* Secondary: soft gray */
+  --text-tertiary: #94A3B8;        /* Tertiary: muted gray */
+  --text-muted: #64748B;           /* Muted: context only */
+  --text-disabled: #475569;        /* Disabled: subdued */
 
-  /* TEXT SYSTEM - Strong contrast */
-  --text-white: #FFFFFF;
-  --text-primary: #F3F4F6;        /* Bright white-ish */
-  --text-secondary: #D1D5DB;      /* Light gray */
-  --text-tertiary: #9CA3AF;       /* Medium gray */
-  --text-muted: #6B7280;          /* Muted gray */
-  --text-disabled: #4B5563;       /* Disabled gray */
+  /* SPECIAL TEXT - Financial Emphasis */
+  --text-accent-violet: var(--accent-violet);
+  --text-accent-emerald: var(--accent-emerald);
+  --text-accent-amber: var(--accent-amber);
+  --text-accent-rose: var(--accent-rose);
 
-  /* BORDERS - Visible but subtle */
-  --border-subtle: rgba(255, 255, 255, 0.05);
-  --border-normal: rgba(255, 255, 255, 0.1);
-  --border-strong: rgba(255, 255, 255, 0.15);
-  --border-accent: rgba(168, 85, 247, 0.3);
-  --border-accent-active: rgba(168, 85, 247, 0.6);
+  /* BORDERS - Atmospheric & Intentional */
+  --border-subtle: rgba(226, 232, 240, 0.06);      /* Almost invisible */
+  --border-soft: rgba(226, 232, 240, 0.12);        /* Gentle separation */
+  --border-normal: rgba(226, 232, 240, 0.18);      /* Clear definition */
+  --border-strong: rgba(226, 232, 240, 0.25);      /* Emphasis */
+  --border-accent: rgba(139, 92, 246, 0.4);        /* Violet accent border */
+  --border-accent-cyan: rgba(6, 182, 212, 0.3);    /* Cyan accent border */
 
-  /* SHADOW SYSTEM - Real depth */
-  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.2);
-  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.3);
-  --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.4);
-  --shadow-xl: 0 12px 32px rgba(0, 0, 0, 0.5);
-  --shadow-2xl: 0 16px 48px rgba(0, 0, 0, 0.6);
+  /* SHADOWS - Cinematic Lighting */
+  --shadow-sm: 0 2px 6px rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.4);
+  --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.5);
+  --shadow-xl: 0 12px 32px rgba(0, 0, 0, 0.6);
+  --shadow-2xl: 0 16px 48px rgba(0, 0, 0, 0.7);
 
-  /* GLOW EFFECTS - Premium fintech feel */
-  --glow-purple: 0 0 20px rgba(168, 85, 247, 0.2);
-  --glow-purple-strong: 0 0 30px rgba(168, 85, 247, 0.4);
-  --glow-success: 0 0 20px rgba(16, 185, 129, 0.15);
-  --glow-danger: 0 0 20px rgba(239, 68, 68, 0.15);
+  /* GLOWS - Emotional Energy */
+  --glow-violet: 0 0 20px rgba(139, 92, 246, 0.25);
+  --glow-violet-strong: 0 0 30px rgba(139, 92, 246, 0.4);
+  --glow-emerald: 0 0 20px rgba(16, 185, 129, 0.2);
+  --glow-cyan: 0 0 20px rgba(6, 182, 212, 0.2);
+  --glow-amber: 0 0 20px rgba(217, 119, 6, 0.15);
+  --glow-rose: 0 0 20px rgba(225, 29, 72, 0.15);
 
-  /* OVERLAYS */
-  --overlay-dark: rgba(0, 0, 0, 0.5);
-  --overlay-darker: rgba(0, 0, 0, 0.7);
-  --overlay-premium: rgba(0, 0, 0, 0.8);
+  /* GLASS EFFECTS - Atmospheric, Not Cheap */
+  --glass-bg: linear-gradient(135deg, rgba(20, 27, 47, 0.5), rgba(26, 33, 56, 0.4));
+  --glass-border: rgba(226, 232, 240, 0.12);
+  --glass-hover-bg: linear-gradient(135deg, rgba(26, 33, 56, 0.6), rgba(32, 40, 71, 0.5));
+  --glass-backdrop: blur(16px);
+  --glass-backdrop-strong: blur(24px);
 
-  /* GRADIENTS */
-  --gradient-brand: linear-gradient(135deg, #A855F7 0%, #9333EA 100%);
-  --gradient-brand-glow: linear-gradient(135deg, #A855F7, #7C3AED);
-  --gradient-success: linear-gradient(135deg, #10B981 0%, #34D399 100%);
-  --gradient-danger: linear-gradient(135deg, #EF4444 0%, #F87171 100%);
-  --gradient-warning: linear-gradient(135deg, #F59E0B 0%, #FBBF24 100%);
-  --gradient-info: linear-gradient(135deg, #3B82F6 0%, #60A5FA 100%);
-  --gradient-dark: linear-gradient(135deg, #0B1020 0%, #111827 50%, #161D2D 100%);
+  /* OVERLAYS - Atmospheric Depth */
+  --overlay-thin: rgba(0, 0, 0, 0.2);
+  --overlay-medium: rgba(0, 0, 0, 0.5);
+  --overlay-strong: rgba(0, 0, 0, 0.75);
+
+  /* BACKGROUND GRADIENTS - Cinematic */
+  --gradient-ambient: linear-gradient(135deg, #0A0F1F 0%, #0F1629 25%, #141B2F 50%, #0F1629 75%, #0A0F1F 100%);
+  --gradient-focus: linear-gradient(135deg, #141B2F 0%, #1A2138 100%);
+  --gradient-accent-violet: linear-gradient(135deg, #6D28D9 0%, #8B5CF6 100%);
+  --gradient-accent-emerald: linear-gradient(135deg, #047857 0%, #10B981 100%);
+  --gradient-accent-cyan: linear-gradient(135deg, #0369A1 0%, #06B6D4 100%);
+  --gradient-accent-amber: linear-gradient(135deg, #B45309 0%, #D97706 100%);
+  --gradient-accent-rose: linear-gradient(135deg, #831843 0%, #E11D48 100%);
+
+  /* Legacy gradient names for backwards compatibility */
+  --gradient-brand: linear-gradient(135deg, #6D28D9 0%, #8B5CF6 100%);
+  --gradient-success: linear-gradient(135deg, #047857 0%, #10B981 100%);
+  --gradient-danger: linear-gradient(135deg, #831843 0%, #E11D48 100%);
+  --gradient-warning: linear-gradient(135deg, #B45309 0%, #D97706 100%);
+  --gradient-info: linear-gradient(135deg, #0369A1 0%, #06B6D4 100%);
+  --gradient-dark: var(--gradient-ambient);
 
   /* SPACING */
   --spacing-xs: 0.25rem;
@@ -121,98 +137,89 @@
   --radius-2xl: 1.5rem;
   --radius-3xl: 2rem;
 
-  /* TRANSITIONS */
+  /* TRANSITIONS - Smooth, Intentional */
   --transition-fast: 100ms cubic-bezier(0.4, 0, 0.2, 1);
   --transition-base: 200ms cubic-bezier(0.4, 0, 0.2, 1);
   --transition-slow: 300ms cubic-bezier(0.4, 0, 0.2, 1);
 
   /* ============================================================================
-     FINANCIAL HEARTBEAT STATES - Emotional Colors for All Pages
+     EMOTIONAL COLOR PSYCHOLOGY - Intentional Financial Communication
      ============================================================================ */
 
-  /* Thriving State - Exuberant Growth (Purple/Gold) */
-  --state-thriving-primary: #A855F7;
-  --state-thriving-secondary: #EC4899;
-  --state-thriving-accent: #F59E0B;
-  --state-thriving-bg: rgba(168, 85, 247, 0.08);
-  --state-thriving-border: rgba(168, 85, 247, 0.3);
-  --state-thriving-glow: 0 0 30px rgba(168, 85, 247, 0.3);
+  /* Savings: Calm Optimism */
+  --emotion-savings: var(--accent-emerald);
+  --emotion-savings-bg: rgba(16, 185, 129, 0.08);
+  --emotion-savings-border: rgba(16, 185, 129, 0.25);
 
-  /* Growing State - Positive Momentum (Emerald/Teal) */
-  --state-growing-primary: #10B981;
-  --state-growing-secondary: #34D399;
-  --state-growing-accent: #0D9488;
-  --state-growing-bg: rgba(16, 185, 129, 0.08);
-  --state-growing-border: rgba(16, 185, 129, 0.3);
-  --state-growing-glow: 0 0 30px rgba(16, 185, 129, 0.3);
+  /* Expenses: Subtle Tension */
+  --emotion-expenses: var(--accent-rose);
+  --emotion-expenses-bg: rgba(225, 29, 72, 0.08);
+  --emotion-expenses-border: rgba(225, 29, 72, 0.25);
 
-  /* Stable State - Healthy Foundation (Indigo/Blue) */
-  --state-stable-primary: #3B82F6;
-  --state-stable-secondary: #60A5FA;
-  --state-stable-accent: #1E40AF;
-  --state-stable-bg: rgba(59, 130, 246, 0.08);
-  --state-stable-border: rgba(59, 130, 246, 0.3);
-  --state-stable-glow: 0 0 30px rgba(59, 130, 246, 0.2);
+  /* Investments: Intelligent Energy */
+  --emotion-investments: var(--accent-cyan);
+  --emotion-investments-bg: rgba(6, 182, 212, 0.08);
+  --emotion-investments-border: rgba(6, 182, 212, 0.25);
 
-  /* Cautious State - Attention Needed (Amber/Orange) */
-  --state-cautious-primary: #F59E0B;
-  --state-cautious-secondary: #FBBF24;
-  --state-cautious-accent: #D97706;
-  --state-cautious-bg: rgba(245, 158, 11, 0.08);
-  --state-cautious-border: rgba(245, 158, 11, 0.3);
-  --state-cautious-glow: 0 0 30px rgba(245, 158, 11, 0.2);
+  /* Goals: Motivational Warmth */
+  --emotion-goals: var(--accent-amber);
+  --emotion-goals-bg: rgba(217, 119, 6, 0.08);
+  --emotion-goals-border: rgba(217, 119, 6, 0.25);
 
-  /* Struggling State - Requires Focus (Rose/Red) */
-  --state-struggling-primary: #EF4444;
-  --state-struggling-secondary: #F87171;
-  --state-struggling-accent: #DC2626;
-  --state-struggling-bg: rgba(239, 68, 68, 0.08);
-  --state-struggling-border: rgba(239, 68, 68, 0.3);
-  --state-struggling-glow: 0 0 30px rgba(239, 68, 68, 0.2);
+  /* Analytics: Clarity & Focus */
+  --emotion-analytics: var(--accent-violet);
+  --emotion-analytics-bg: rgba(139, 92, 246, 0.08);
+  --emotion-analytics-border: rgba(139, 92, 246, 0.25);
 
   /* ============================================================================
-     SURFACE VARIANTS - Unified Surface Architecture
+     BACKWARDS COMPATIBILITY - State Color Variables (Deprecated)
+     Map old state system to new emotion system
      ============================================================================ */
 
-  /* Surface elevation levels for consistent layering */
-  --surface-base: var(--bg-app);
-  --surface-1: var(--bg-surface-1);
-  --surface-2: var(--bg-surface-2);
-  --surface-3: var(--bg-surface-3);
+  --state-thriving-primary: var(--accent-emerald);
+  --state-thriving-bg: rgba(16, 185, 129, 0.08);
+  --state-thriving-border: rgba(16, 185, 129, 0.25);
 
-  /* Interactive surfaces */
-  --surface-interactive: var(--bg-surface-2);
-  --surface-interactive-hover: var(--bg-surface-3);
-  --surface-interactive-active: var(--bg-surface-active);
+  --state-growing-primary: var(--accent-amber);
+  --state-growing-bg: rgba(217, 119, 6, 0.08);
+  --state-growing-border: rgba(217, 119, 6, 0.25);
 
-  /* Card surfaces with proper elevation */
-  --surface-card: var(--bg-surface-3);
-  --surface-card-elevated: var(--bg-surface-3);
+  --state-stable-primary: var(--accent-violet);
+  --state-stable-bg: rgba(139, 92, 246, 0.08);
+  --state-stable-border: rgba(139, 92, 246, 0.25);
 
-  /* Modal and overlay surfaces */
-  --surface-modal: rgba(7, 17, 31, 0.95);
-  --surface-modal-border: rgba(255, 255, 255, 0.1);
+  --state-cautious-primary: var(--accent-amber);
+  --state-cautious-bg: rgba(217, 119, 6, 0.08);
+  --state-cautious-border: rgba(217, 119, 6, 0.25);
+
+  --state-struggling-primary: var(--accent-rose);
+  --state-struggling-bg: rgba(225, 29, 72, 0.08);
+  --state-struggling-border: rgba(225, 29, 72, 0.25);
 }
 
 html.light {
-  /* Light mode - professional clean fintech */
-  --bg-app: #F9FAFB;
-  --bg-surface-1: #FFFFFF;
-  --bg-surface-2: #F3F4F6;
-  --bg-surface-3: #EEEFF4;
-  --bg-surface-hover: #E5E7EB;
-  --bg-surface-active: #D1D5DB;
+  /* Light mode - maintains unified atmospheric harmony */
+  --surface-level-0: #F8FAFC;
+  --surface-level-1: #F1F5F9;
+  --surface-level-2: #E8EEF6;
+  --surface-level-3: #E1E7F0;
+  --surface-level-4: #FFFFFF;
 
-  --text-primary: #111827;
-  --text-secondary: #374151;
-  --text-tertiary: #6B7280;
-  --text-muted: #9CA3AF;
+  --text-primary: #0F172A;
+  --text-secondary: #334155;
+  --text-tertiary: #64748B;
+  --text-muted: #94A3B8;
+  --text-disabled: #CBD5E1;
 
-  --border-subtle: rgba(107, 114, 128, 0.1);
-  --border-normal: rgba(107, 114, 128, 0.2);
-  --border-strong: rgba(107, 114, 128, 0.3);
+  --border-subtle: rgba(15, 23, 42, 0.08);
+  --border-soft: rgba(15, 23, 42, 0.12);
+  --border-normal: rgba(15, 23, 42, 0.18);
+  --border-strong: rgba(15, 23, 42, 0.25);
 
-  --gradient-dark: linear-gradient(135deg, #F9FAFB 0%, #FFFFFF 50%, #F3F4F6 100%);
+  --glass-bg: linear-gradient(135deg, rgba(248, 250, 252, 0.6), rgba(241, 245, 249, 0.5));
+  --glass-hover-bg: linear-gradient(135deg, rgba(241, 245, 249, 0.7), rgba(225, 231, 240, 0.6));
+
+  --gradient-ambient: linear-gradient(135deg, #F8FAFC 0%, #F1F5F9 25%, #E8EEF6 50%, #F1F5F9 75%, #F8FAFC 100%);
 }
 
 * {
@@ -230,7 +237,7 @@ html.light {
 }
 
 body {
-  background: var(--gradient-dark);
+  background: var(--gradient-ambient);
   color: var(--text-primary);
   background-attachment: fixed;
   transition: background-color var(--transition-slow), color var(--transition-slow);
@@ -438,9 +445,9 @@ body {
   animation: shimmer 2.5s infinite;
   background: linear-gradient(
     90deg,
-    var(--bg-surface-2) 0%,
-    var(--bg-surface-3) 50%,
-    var(--bg-surface-2) 100%
+    var(--surface-level-2) 0%,
+    var(--surface-level-3) 50%,
+    var(--surface-level-2) 100%
   );
   background-size: 1200px 100%;
 }
@@ -529,60 +536,118 @@ body {
   position: absolute;
   inset: 0;
   border-radius: var(--radius-xl);
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0) 100%);
+  background: linear-gradient(135deg, rgba(248, 250, 252, 0.05) 0%, rgba(248, 250, 252, 0) 100%);
   pointer-events: none;
 }
 
 .glass:hover {
-  border-color: var(--glass-border-hover);
+  border-color: var(--border-soft);
   box-shadow: var(--shadow-lg);
   transform: translateY(-2px);
+  background: var(--glass-hover-bg);
 }
 
 .glass:active,
 .glass.active {
-  border-color: var(--border-accent-active);
-  box-shadow: var(--shadow-lg), var(--glow-purple);
-  background: linear-gradient(135deg, rgba(26, 32, 44, 0.6), rgba(22, 29, 45, 0.5));
+  border-color: var(--border-accent);
+  box-shadow: var(--shadow-lg), var(--glow-violet);
+  background: var(--glass-hover-bg);
 }
 
 .glass-elevated {
-  background: linear-gradient(135deg, rgba(22, 29, 45, 0.8), rgba(17, 24, 39, 0.7));
+  background: var(--surface-level-3);
   backdrop-filter: var(--glass-backdrop-strong);
   -webkit-backdrop-filter: var(--glass-backdrop-strong);
-  border: 1px solid var(--border-normal);
+  border: 1px solid var(--border-soft);
   border-radius: var(--radius-xl);
-  box-shadow: var(--shadow-xl), var(--glow-purple);
+  box-shadow: var(--shadow-xl);
   transition: all var(--transition-slow);
 }
 
 .glass-elevated:hover {
-  border-color: var(--border-accent);
-  box-shadow: var(--shadow-2xl), var(--glow-purple-strong);
+  border-color: var(--border-normal);
+  box-shadow: var(--shadow-2xl);
   transform: translateY(-4px);
 }
 
 /* ============================================================================
-   SURFACE VARIANTS - Unified Emotional Surfaces
+   SURFACE HIERARCHY - 5 Unified Levels Across All Pages
    ============================================================================ */
 
-.surface-elevated {
-  background: var(--bg-surface-1);
+.surface-level-0 {
+  background: var(--surface-level-0);
+}
+
+.surface-level-1 {
+  background: var(--surface-level-1);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-sm);
+  transition: all var(--transition-base);
+}
+
+.surface-level-1:hover {
+  border-color: var(--border-soft);
+  box-shadow: var(--shadow-md);
+  transform: translateY(-1px);
+}
+
+.surface-level-2 {
+  background: var(--surface-level-2);
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius-xl);
+  padding: var(--spacing-lg);
+  box-shadow: var(--shadow-md);
+  transition: all var(--transition-base);
+}
+
+.surface-level-2:hover {
+  border-color: var(--border-normal);
+  box-shadow: var(--shadow-lg);
+  transform: translateY(-2px);
+}
+
+.surface-level-3 {
+  background: var(--surface-level-3);
   border: 1px solid var(--border-normal);
+  border-radius: var(--radius-xl);
+  padding: var(--spacing-lg);
+  box-shadow: var(--shadow-lg);
+  transition: all var(--transition-base);
+}
+
+.surface-level-3:hover {
+  border-color: var(--border-strong);
+  box-shadow: var(--shadow-xl);
+  transform: translateY(-3px);
+}
+
+.surface-level-4 {
+  background: var(--surface-level-4);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-xl);
+  padding: var(--spacing-lg);
+  box-shadow: var(--shadow-xl);
+}
+
+/* Legacy names for backwards compatibility */
+.surface-elevated {
+  background: var(--surface-level-2);
+  border: 1px solid var(--border-soft);
   border-radius: var(--radius-xl);
   box-shadow: var(--shadow-md);
   transition: all var(--transition-base);
 }
 
 .surface-elevated:hover {
-  border-color: var(--border-accent);
+  border-color: var(--border-normal);
   box-shadow: var(--shadow-lg);
   transform: translateY(-2px);
 }
 
 .surface-card {
-  background: var(--bg-surface-3);
-  border: 1px solid var(--border-normal);
+  background: var(--surface-level-2);
+  border: 1px solid var(--border-soft);
   border-radius: var(--radius-xl);
   padding: var(--spacing-lg);
   box-shadow: var(--shadow-md);
@@ -590,14 +655,14 @@ body {
 }
 
 .surface-card:hover {
-  border-color: var(--border-accent);
+  border-color: var(--border-normal);
   box-shadow: var(--shadow-lg);
   transform: translateY(-2px);
 }
 
 .surface-interactive {
-  background: var(--bg-surface-2);
-  border: 1px solid var(--border-normal);
+  background: var(--surface-level-2);
+  border: 1px solid var(--border-soft);
   border-radius: var(--radius-lg);
   padding: var(--spacing-md);
   cursor: pointer;
@@ -605,63 +670,95 @@ body {
 }
 
 .surface-interactive:hover {
-  background: var(--bg-surface-3);
-  border-color: var(--border-accent);
+  background: var(--surface-level-3);
+  border-color: var(--border-normal);
 }
 
 .surface-interactive:active {
-  background: var(--bg-surface-active);
-  border-color: var(--border-accent-active);
-}
-
-/* State-specific surfaces - Financial Heartbeat Awareness */
-.surface-thriving {
-  background: var(--state-thriving-bg);
-  border: 1px solid var(--state-thriving-border);
-  border-radius: var(--radius-xl);
-  padding: var(--spacing-lg);
-  box-shadow: var(--state-thriving-glow), var(--shadow-md);
-}
-
-.surface-growing {
-  background: var(--state-growing-bg);
-  border: 1px solid var(--state-growing-border);
-  border-radius: var(--radius-xl);
-  padding: var(--spacing-lg);
-  box-shadow: var(--state-growing-glow), var(--shadow-md);
-}
-
-.surface-stable {
-  background: var(--state-stable-bg);
-  border: 1px solid var(--state-stable-border);
-  border-radius: var(--radius-xl);
-  padding: var(--spacing-lg);
-  box-shadow: var(--state-stable-glow), var(--shadow-md);
-}
-
-.surface-cautious {
-  background: var(--state-cautious-bg);
-  border: 1px solid var(--state-cautious-border);
-  border-radius: var(--radius-xl);
-  padding: var(--spacing-lg);
-  box-shadow: var(--state-cautious-glow), var(--shadow-md);
-}
-
-.surface-struggling {
-  background: var(--state-struggling-bg);
-  border: 1px solid var(--state-struggling-border);
-  border-radius: var(--radius-xl);
-  padding: var(--spacing-lg);
-  box-shadow: var(--state-struggling-glow), var(--shadow-md);
+  border-color: var(--border-strong);
 }
 
 /* ============================================================================
-   CARDS - Premium Elevated Surfaces
+   EMOTION SURFACES - Color Psychology for Financial States
+   ============================================================================ */
+
+.surface-savings {
+  background: var(--emotion-savings-bg);
+  border: 1px solid var(--emotion-savings-border);
+  border-radius: var(--radius-xl);
+  padding: var(--spacing-lg);
+  box-shadow: var(--glow-emerald), var(--shadow-md);
+  transition: all var(--transition-base);
+}
+
+.surface-savings:hover {
+  border-color: var(--emotion-savings);
+  box-shadow: var(--glow-emerald), var(--shadow-lg);
+}
+
+.surface-expenses {
+  background: var(--emotion-expenses-bg);
+  border: 1px solid var(--emotion-expenses-border);
+  border-radius: var(--radius-xl);
+  padding: var(--spacing-lg);
+  box-shadow: var(--glow-rose), var(--shadow-md);
+  transition: all var(--transition-base);
+}
+
+.surface-expenses:hover {
+  border-color: var(--emotion-expenses);
+  box-shadow: var(--glow-rose), var(--shadow-lg);
+}
+
+.surface-investments {
+  background: var(--emotion-investments-bg);
+  border: 1px solid var(--emotion-investments-border);
+  border-radius: var(--radius-xl);
+  padding: var(--spacing-lg);
+  box-shadow: var(--glow-cyan), var(--shadow-md);
+  transition: all var(--transition-base);
+}
+
+.surface-investments:hover {
+  border-color: var(--emotion-investments);
+  box-shadow: var(--glow-cyan), var(--shadow-lg);
+}
+
+.surface-goals {
+  background: var(--emotion-goals-bg);
+  border: 1px solid var(--emotion-goals-border);
+  border-radius: var(--radius-xl);
+  padding: var(--spacing-lg);
+  box-shadow: var(--glow-amber), var(--shadow-md);
+  transition: all var(--transition-base);
+}
+
+.surface-goals:hover {
+  border-color: var(--emotion-goals);
+  box-shadow: var(--glow-amber), var(--shadow-lg);
+}
+
+.surface-analytics {
+  background: var(--emotion-analytics-bg);
+  border: 1px solid var(--emotion-analytics-border);
+  border-radius: var(--radius-xl);
+  padding: var(--spacing-lg);
+  box-shadow: var(--glow-violet), var(--shadow-md);
+  transition: all var(--transition-base);
+}
+
+.surface-analytics:hover {
+  border-color: var(--emotion-analytics);
+  box-shadow: var(--glow-violet), var(--shadow-lg);
+}
+
+/* ============================================================================
+   CARDS - Unified Financial Panels
    ============================================================================ */
 
 .card {
-  background: var(--bg-surface-3);
-  border: 1px solid var(--border-normal);
+  background: var(--surface-level-2);
+  border: 1px solid var(--border-soft);
   border-radius: var(--radius-xl);
   padding: var(--spacing-lg);
   box-shadow: var(--shadow-md);
@@ -674,28 +771,28 @@ body {
   content: '';
   position: absolute;
   inset: 0;
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.03) 0%, transparent 100%);
+  background: linear-gradient(135deg, rgba(248, 250, 252, 0.04) 0%, transparent 100%);
   pointer-events: none;
   border-radius: var(--radius-xl);
 }
 
 .card:hover {
-  border-color: var(--border-accent);
+  border-color: var(--border-normal);
   box-shadow: var(--shadow-lg);
   transform: translateY(-2px);
-  background: var(--bg-surface-hover);
 }
 
 .card-sm {
-  background: var(--bg-surface-2);
+  background: var(--surface-level-1);
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-lg);
   padding: var(--spacing-md);
   box-shadow: var(--shadow-sm);
+  transition: all var(--transition-fast);
 }
 
 .card-sm:hover {
-  border-color: var(--border-normal);
+  border-color: var(--border-soft);
   box-shadow: var(--shadow-md);
   transform: translateY(-1px);
 }
@@ -705,7 +802,7 @@ body {
 }
 
 .card-flat {
-  background: var(--bg-surface-2);
+  background: var(--surface-level-1);
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-xl);
   padding: var(--spacing-lg);
@@ -713,8 +810,8 @@ body {
 }
 
 .card-flat:hover {
-  background: var(--bg-surface-3);
-  border-color: var(--border-normal);
+  background: var(--surface-level-2);
+  border-color: var(--border-soft);
 }
 
 /* ============================================================================
@@ -751,7 +848,7 @@ body {
 }
 
 /* ============================================================================
-   BUTTONS - Premium Fintech Implementation
+   BUTTONS - Unified Accent System
    ============================================================================ */
 
 .btn {
@@ -776,7 +873,7 @@ body {
   content: '';
   position: absolute;
   inset: 0;
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, transparent 100%);
+  background: linear-gradient(135deg, rgba(248, 250, 252, 0.1) 0%, transparent 100%);
   pointer-events: none;
 }
 
@@ -797,59 +894,60 @@ body {
   box-shadow: none !important;
 }
 
-/* Primary Button - Purple gradient */
+/* Primary Button - Violet (Restrained, Intentional) */
 .btn-primary {
-  background: var(--gradient-brand);
+  background: var(--gradient-accent-violet);
   color: white;
   font-weight: 700;
-  box-shadow: var(--glow-purple), var(--shadow-md);
+  box-shadow: var(--glow-violet), var(--shadow-md);
 }
 
 .btn-primary:hover {
-  box-shadow: var(--glow-purple-strong), var(--shadow-lg);
+  box-shadow: var(--glow-violet-strong), var(--shadow-lg);
 }
 
 .btn-primary:active {
-  box-shadow: var(--glow-purple), var(--shadow-md);
+  box-shadow: var(--glow-violet), var(--shadow-md);
 }
 
-/* Secondary Button - Glass effect */
+/* Secondary Button - Atmospheric Glass */
 .btn-secondary {
-  background: var(--bg-surface-2);
-  border: 1.5px solid var(--border-normal);
+  background: var(--surface-level-2);
+  border: 1.5px solid var(--border-soft);
   color: var(--text-primary);
   transition: all var(--transition-fast);
 }
 
 .btn-secondary:hover {
-  border-color: var(--brand-primary);
-  background: var(--bg-surface-3);
-  color: var(--text-white);
-  box-shadow: var(--glow-purple), var(--shadow-md);
+  border-color: var(--accent-violet);
+  background: var(--surface-level-3);
+  box-shadow: var(--glow-violet), var(--shadow-md);
 }
 
-/* Danger Button - Red gradient */
+/* Danger Button - Rose (Alert) */
 .btn-danger {
-  background: var(--gradient-danger);
+  background: var(--accent-rose);
   color: white;
   font-weight: 700;
-  box-shadow: var(--glow-danger), var(--shadow-md);
+  box-shadow: var(--glow-rose), var(--shadow-md);
 }
 
 .btn-danger:hover {
-  box-shadow: var(--glow-danger), var(--shadow-lg);
+  background: var(--accent-rose-dark);
+  box-shadow: var(--glow-rose), var(--shadow-lg);
 }
 
-/* Success Button - Green gradient */
+/* Success Button - Emerald (Calm Optimism) */
 .btn-success {
-  background: var(--gradient-success);
+  background: var(--accent-emerald);
   color: white;
   font-weight: 700;
-  box-shadow: var(--glow-success), var(--shadow-md);
+  box-shadow: var(--glow-emerald), var(--shadow-md);
 }
 
 .btn-success:hover {
-  box-shadow: var(--glow-success), var(--shadow-lg);
+  background: var(--accent-emerald-dark);
+  box-shadow: var(--glow-emerald), var(--shadow-lg);
 }
 
 .btn-sm {
@@ -877,8 +975,8 @@ body {
 .input {
   width: 100%;
   padding: 0.75rem 1rem;
-  background: var(--bg-surface-2);
-  border: 1px solid var(--border-normal);
+  background: var(--surface-level-2);
+  border: 1px solid var(--border-soft);
   border-radius: var(--radius-lg);
   color: var(--text-primary);
   font-size: 0.9375rem;
@@ -891,27 +989,27 @@ body {
 
 .input:focus {
   outline: none;
-  background: var(--bg-surface-3);
-  border-color: var(--brand-primary);
-  box-shadow: 0 0 0 3px rgba(168, 85, 247, 0.1), var(--glow-purple);
+  background: var(--surface-level-3);
+  border-color: var(--accent-violet);
+  box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1), var(--glow-violet);
 }
 
 .input:hover:not(:focus) {
-  background: var(--bg-surface-2);
+  background: var(--surface-level-2);
   border-color: var(--border-accent);
 }
 
 .input:disabled {
   opacity: 0.5;
   cursor: not-allowed;
-  background: var(--bg-surface-1);
+  background: var(--surface-level-1);
 }
 
 .select {
   width: 100%;
   padding: 0.75rem 1rem;
-  background: var(--bg-surface-2);
-  border: 1px solid var(--border-normal);
+  background: var(--surface-level-2);
+  border: 1px solid var(--border-soft);
   border-radius: var(--radius-lg);
   color: var(--text-primary);
   font-size: 0.9375rem;
@@ -921,13 +1019,13 @@ body {
 
 .select:focus {
   outline: none;
-  background: var(--bg-surface-3);
-  border-color: var(--brand-primary);
-  box-shadow: 0 0 0 3px rgba(168, 85, 247, 0.1), var(--glow-purple);
+  background: var(--surface-level-3);
+  border-color: var(--accent-violet);
+  box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1), var(--glow-violet);
 }
 
 .select:hover:not(:focus) {
-  background: var(--bg-surface-2);
+  background: var(--surface-level-2);
   border-color: var(--border-accent);
 }
 
@@ -944,7 +1042,7 @@ body {
 
 .label.required::after {
   content: ' *';
-  color: var(--status-danger);
+  color: var(--accent-rose);
 }
 
 /* ============================================================================
@@ -968,42 +1066,42 @@ body {
 
 .badge-success {
   background: rgba(16, 185, 129, 0.15);
-  color: #34D399;
+  color: var(--accent-emerald-light);
   border-color: rgba(16, 185, 129, 0.4);
 }
 
 .badge-success:hover {
   background: rgba(16, 185, 129, 0.25);
-  box-shadow: var(--glow-success);
+  box-shadow: var(--glow-emerald);
 }
 
 .badge-danger {
-  background: rgba(239, 68, 68, 0.15);
-  color: #F87171;
-  border-color: rgba(239, 68, 68, 0.4);
+  background: rgba(225, 29, 72, 0.15);
+  color: var(--accent-rose-light);
+  border-color: rgba(225, 29, 72, 0.4);
 }
 
 .badge-danger:hover {
-  background: rgba(239, 68, 68, 0.25);
-  box-shadow: var(--glow-danger);
+  background: rgba(225, 29, 72, 0.25);
+  box-shadow: var(--glow-rose);
 }
 
 .badge-warning {
-  background: rgba(245, 158, 11, 0.15);
-  color: #FBBF24;
-  border-color: rgba(245, 158, 11, 0.4);
+  background: rgba(217, 119, 6, 0.15);
+  color: var(--accent-amber-light);
+  border-color: rgba(217, 119, 6, 0.4);
 }
 
 .badge-info {
-  background: rgba(59, 130, 246, 0.15);
-  color: #60A5FA;
-  border-color: rgba(59, 130, 246, 0.4);
+  background: rgba(6, 182, 212, 0.15);
+  color: var(--accent-cyan-light);
+  border-color: rgba(6, 182, 212, 0.4);
 }
 
 .badge-primary {
-  background: rgba(168, 85, 247, 0.15);
-  color: #C084FC;
-  border-color: rgba(168, 85, 247, 0.4);
+  background: rgba(139, 92, 246, 0.15);
+  color: var(--accent-violet-light);
+  border-color: rgba(139, 92, 246, 0.4);
 }
 
 /* ============================================================================
@@ -1011,7 +1109,7 @@ body {
    ============================================================================ */
 
 .stat-card {
-  background: var(--bg-surface-3);
+  background: var(--surface-level-3);
   border: 1px solid var(--border-normal);
   border-radius: var(--radius-xl);
   padding: var(--spacing-lg);
@@ -1035,15 +1133,15 @@ body {
 .stat-card:hover {
   border-color: var(--border-accent);
   transform: translateY(-4px);
-  box-shadow: var(--shadow-lg), var(--glow-purple);
-  background: var(--bg-surface-hover);
+  box-shadow: var(--shadow-lg), var(--glow-violet);
+  background: var(--surface-level-4);
 }
 
 .stat-value {
   font-size: 2.25rem;
   font-weight: 800;
   letter-spacing: -0.02em;
-  background: var(--gradient-brand);
+  background: var(--gradient-accent-violet);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -1068,11 +1166,11 @@ body {
 }
 
 .stat-change.positive {
-  color: #34D399;
+  color: var(--accent-emerald-light);
 }
 
 .stat-change.negative {
-  color: #F87171;
+  color: var(--accent-rose-light);
 }
 
 /* ============================================================================
@@ -1097,7 +1195,7 @@ body {
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: var(--brand-primary);
+  background: var(--accent-violet);
   border: 3px solid transparent;
   background-clip: content-box;
 }

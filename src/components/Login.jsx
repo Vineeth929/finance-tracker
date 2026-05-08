@@ -53,7 +53,7 @@ export default function Login() {
   return (
     <div
       className="min-h-screen flex items-center justify-center px-4 py-12 transition-colors duration-300"
-      style={{ background: 'var(--bg-gradient)' }}
+      style={{ background: 'var(--gradient-ambient)' }}
     >
       <motion.div
         variants={containerVariants}
@@ -86,10 +86,10 @@ export default function Login() {
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, x: -20 }}
               className="p-4 rounded-lg flex items-start gap-3 border-l-4"
-              style={{ borderColor: 'var(--state-struggling-primary)', background: 'var(--state-struggling-bg)' }}
+              style={{ borderColor: 'var(--emotion-expenses)', background: 'var(--emotion-expenses-bg)' }}
             >
               <span className="text-xl">⚠️</span>
-              <span style={{ color: 'var(--state-struggling-primary)' }}>{error}</span>
+              <span style={{ color: 'var(--emotion-expenses)' }}>{error}</span>
             </motion.div>
           )}
 
@@ -154,7 +154,8 @@ export default function Login() {
               </label>
               <Link
                 to="/forgot-password"
-                className="text-state-stable-primary hover:text-state-growing-primary font-medium transition"
+                className="font-medium transition"
+                style={{ color: 'var(--emotion-analytics)' }}
               >
                 Forgot password?
               </Link>
@@ -205,8 +206,8 @@ export default function Login() {
             </p>
             <Link
               to="/signup"
-              className="inline-flex items-center gap-2 px-6 py-2 rounded-lg font-heading text-state-growing-primary hover:text-state-thriving-primary transition"
-              style={{ background: 'var(--state-growing-bg)', border: '1px solid var(--state-growing-border)' }}
+              className="inline-flex items-center gap-2 px-6 py-2 rounded-lg font-heading transition"
+              style={{ background: 'var(--emotion-goals-bg)', border: '1px solid var(--emotion-goals-border)', color: 'var(--emotion-goals)' }}
             >
               ✨ Create Account
             </Link>
@@ -218,11 +219,11 @@ export default function Login() {
           variants={itemVariants}
           className="mt-8 p-5 rounded-xl border-l-4"
           style={{
-            borderColor: 'var(--state-stable-primary)',
-            background: 'var(--state-stable-bg)',
+            borderColor: 'var(--emotion-analytics)',
+            background: 'var(--emotion-analytics-bg)',
           }}
         >
-          <p className="font-heading text-state-stable-primary mb-2">💡 Quick Demo</p>
+          <p className="font-heading mb-2" style={{ color: 'var(--emotion-analytics)' }}>💡 Quick Demo</p>
           <p className="text-sm text-secondary">
             <span className="block">Email: <code className="bg-black/30 px-2 py-1 rounded">demo@example.com</code></span>
             <span className="block mt-1">Password: <code className="bg-black/30 px-2 py-1 rounded">demo123</code></span>
