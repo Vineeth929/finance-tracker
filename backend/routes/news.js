@@ -5,10 +5,18 @@ const Parser = require('rss-parser');
 const parser = new Parser({
   customFields: {
     item: [
-      ['media:thumbnail', 'mediaImage']
+      ['media:thumbnail', 'mediaThumbnail'],
+      ['media:content', 'mediaContent'],
+      ['enclosure', 'enclosure'],
     ]
   }
 });
+
+function extractImgFromHtml(html) {
+  if (!html) return null;
+  const match = html.match(/<img[^>]+src=["']([^"']+)["']/i);
+  return match ? match[1] : null;
+}
 
 // RSS feed sources
 const feeds = {
@@ -64,9 +72,16 @@ router.get('/', async (req, res) => {
             id: `${source}_${item.guid || item.link}`,
             source: source.charAt(0).toUpperCase() + source.slice(1),
             title: item.title,
-            description: item.contentSnippet || item.summary,
+            description: item.contentSnippet || item.summary || '',
             link: item.link,
-            imageUrl: item.mediaImage?.url || null,
+            imageUrl:
+              item.mediaThumbnail?.$ ? item.mediaThumbnail.$.url :
+              item.mediaThumbnail?.url ||
+              item.mediaContent?.$ ? item.mediaContent.$.url :
+              item.mediaContent?.url ||
+              (item.enclosure?.type?.startsWith('image/') ? item.enclosure.url : null) ||
+              extractImgFromHtml(item.content || item['content:encoded']) ||
+              null,
             pubDate: item.pubDate,
             category: categorizeArticle(item)
           });
@@ -156,9 +171,16 @@ setTimeout(async () => {
             id: `${source}_${item.guid || item.link}`,
             source: source.charAt(0).toUpperCase() + source.slice(1),
             title: item.title,
-            description: item.contentSnippet || item.summary,
+            description: item.contentSnippet || item.summary || '',
             link: item.link,
-            imageUrl: item.mediaImage?.url || null,
+            imageUrl:
+              item.mediaThumbnail?.$ ? item.mediaThumbnail.$.url :
+              item.mediaThumbnail?.url ||
+              item.mediaContent?.$ ? item.mediaContent.$.url :
+              item.mediaContent?.url ||
+              (item.enclosure?.type?.startsWith('image/') ? item.enclosure.url : null) ||
+              extractImgFromHtml(item.content || item['content:encoded']) ||
+              null,
             pubDate: item.pubDate,
             category: categorizeArticle(item)
           });

@@ -56,7 +56,7 @@ export default function DashboardPage() {
       {/* Welcome Header */}
       <div className="space-y-2">
         <h1 className="text-4xl font-bold gradient-text">Welcome Back! 👋</h1>
-        <p className="text-gray-400">{new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}</p>
+        <p style={{ color: 'var(--text-secondary)' }}>{new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}</p>
       </div>
 
       {/* Health Score */}
@@ -64,7 +64,7 @@ export default function DashboardPage() {
         <GlassCard className="p-8">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-gray-400 text-sm mb-2">Financial Health Score</p>
+              <p className="text-sm mb-2" style={{ color: 'var(--text-secondary)' }}>Financial Health Score</p>
               <div className="flex items-baseline gap-3">
                 <span className="text-5xl font-bold gradient-text">{healthScore.score}</span>
                 <span className={`px-3 py-1 rounded-full text-sm font-semibold ${
@@ -84,24 +84,24 @@ export default function DashboardPage() {
           {/* Score Breakdown */}
           {healthScore.breakdown && (
             <div className="mt-6 grid grid-cols-2 md:grid-cols-5 gap-3">
-              <div className="bg-white/5 rounded-lg p-3">
-                <p className="text-xs text-gray-400">Savings Rate</p>
+              <div className="rounded-lg p-3" style={{ background: 'var(--glass-bg)' }}>
+                <p className="text-xs" style={{ color: 'var(--text-secondary)' }}>Savings Rate</p>
                 <p className="text-lg font-bold text-emerald-400">{healthScore.breakdown.savingsRate || 0} pts</p>
               </div>
-              <div className="bg-white/5 rounded-lg p-3">
-                <p className="text-xs text-gray-400">Expenses</p>
+              <div className="rounded-lg p-3" style={{ background: 'var(--glass-bg)' }}>
+                <p className="text-xs" style={{ color: 'var(--text-secondary)' }}>Expenses</p>
                 <p className="text-lg font-bold text-indigo-400">{healthScore.breakdown.expenseRatio || 0} pts</p>
               </div>
-              <div className="bg-white/5 rounded-lg p-3">
-                <p className="text-xs text-gray-400">Budget</p>
+              <div className="rounded-lg p-3" style={{ background: 'var(--glass-bg)' }}>
+                <p className="text-xs" style={{ color: 'var(--text-secondary)' }}>Budget</p>
                 <p className="text-lg font-bold text-blue-400">{healthScore.breakdown.budgetAdherence || 0} pts</p>
               </div>
-              <div className="bg-white/5 rounded-lg p-3">
-                <p className="text-xs text-gray-400">Consistency</p>
+              <div className="rounded-lg p-3" style={{ background: 'var(--glass-bg)' }}>
+                <p className="text-xs" style={{ color: 'var(--text-secondary)' }}>Consistency</p>
                 <p className="text-lg font-bold text-purple-400">{healthScore.breakdown.consistency || 0} pts</p>
               </div>
-              <div className="bg-white/5 rounded-lg p-3">
-                <p className="text-xs text-gray-400">Goals</p>
+              <div className="rounded-lg p-3" style={{ background: 'var(--glass-bg)' }}>
+                <p className="text-xs" style={{ color: 'var(--text-secondary)' }}>Goals</p>
                 <p className="text-lg font-bold text-rose-400">{healthScore.breakdown.goalProgress || 0} pts</p>
               </div>
             </div>
@@ -144,12 +144,12 @@ export default function DashboardPage() {
           {recentTransactions.length > 0 ? (
             <div className="space-y-3">
               {recentTransactions.map(tx => (
-                <div key={tx._id} className="flex items-center justify-between p-3 bg-white/5 rounded-lg hover:bg-white/10 transition-colors">
+                <div key={tx._id} className="flex items-center justify-between p-3 rounded-lg transition-colors" style={{ background: 'var(--glass-bg)' }} onMouseEnter={(e) => e.currentTarget.style.background = 'var(--glass-hover-bg)'} onMouseLeave={(e) => e.currentTarget.style.background = 'var(--glass-bg)'}>
                   <div className="flex items-center gap-3">
                     <span className="text-2xl">{tx.category === 'income' || tx.type === 'income' ? '💵' : '💳'}</span>
                     <div>
                       <p className="font-medium">{tx.description}</p>
-                      <p className="text-xs text-gray-400">{new Date(tx.date).toLocaleDateString()}</p>
+                      <p className="text-xs" style={{ color: 'var(--text-secondary)' }}>{new Date(tx.date).toLocaleDateString()}</p>
                     </div>
                   </div>
                   <span className={`font-bold ${tx.type === 'income' ? 'text-emerald-400' : 'text-rose-400'}`}>
@@ -159,7 +159,7 @@ export default function DashboardPage() {
               ))}
             </div>
           ) : (
-            <p className="text-gray-400 text-center py-8">No transactions yet. Start tracking your finances!</p>
+            <p className="text-center py-8" style={{ color: 'var(--text-secondary)' }}>No transactions yet. Start tracking your finances!</p>
           )}
         </GlassCard>
 
@@ -173,10 +173,10 @@ export default function DashboardPage() {
               {['Needs', 'Wants', 'Savings & Investment'].map(cat => (
                 <div key={cat}>
                   <div className="flex justify-between mb-2">
-                    <span className="text-sm text-gray-300">{cat}</span>
+                    <span className="text-sm" style={{ color: 'var(--text-secondary)' }}>{cat}</span>
                     <span className="text-sm font-semibold">₹{Math.round(budgets[cat] || 0).toLocaleString()}</span>
                   </div>
-                  <div className="w-full bg-white/10 rounded-full h-2">
+                  <div className="w-full rounded-full h-2" style={{ background: 'var(--glass-hover-bg)' }}>
                     <div
                       className="h-2 rounded-full bg-gradient-to-r from-indigo-600 to-purple-600"
                       style={{
@@ -191,7 +191,7 @@ export default function DashboardPage() {
         ) : (
           <GlassCard className="p-6">
             <h3 className="text-xl font-bold mb-4">💰 Budget</h3>
-            <p className="text-gray-400 text-center py-4">No budget set yet. Create one to get started!</p>
+            <p className="text-center py-4" style={{ color: 'var(--text-secondary)' }}>No budget set yet. Create one to get started!</p>
           </GlassCard>
         )}
       </div>
@@ -204,7 +204,7 @@ export default function DashboardPage() {
           </h3>
           <div className="space-y-3">
             {insights.insights.map((insight, i) => (
-              <div key={i} className="p-4 bg-white/5 rounded-lg border border-white/10 flex items-start gap-3">
+              <div key={i} className="p-4 rounded-lg flex items-start gap-3" style={{ background: 'var(--glass-bg)', borderColor: 'var(--glass-border)', borderWidth: '1px' }}>
                 <span className={`text-2xl ${
                   insight.type === 'alert' ? '⚠️' :
                   insight.type === 'warning' ? '🔸' :

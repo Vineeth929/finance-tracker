@@ -4,7 +4,7 @@ export default function SkeletonLoader({ width = 'w-full', height = 'h-4', count
       {Array.from({ length: count }).map((_, i) => (
         <div
           key={i}
-          className={`animate-shimmer bg-gradient-to-r from-slate-700 via-slate-600 to-slate-700 rounded-lg ${width} ${circle ? 'rounded-full' : ''} ${height}`}
+          className={`animate-shimmer glass rounded-lg ${width} ${circle ? 'rounded-full' : ''} ${height}`}
         />
       ))}
     </>

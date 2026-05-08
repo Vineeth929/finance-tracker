@@ -33,62 +33,60 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center px-4 py-12">
+    <div
+      className="min-h-screen flex items-center justify-center px-4 py-12 transition-colors duration-300"
+      style={{ background: 'var(--bg-gradient)' }}
+    >
       <div className="w-full max-w-md">
         {/* Header */}
         <div className="text-center mb-8">
-          <h1 className="text-3xl sm:text-4xl font-bold text-blue-600 mb-2">
-            💰 Finance Tracker
-          </h1>
-          <p className="text-gray-600 dark:text-gray-400">
+          <h1 className="text-4xl font-bold gradient-text mb-2">💰 Finance Tracker</h1>
+          <p style={{ color: 'var(--text-secondary)' }}>
             Welcome back! Log in to your account
           </p>
         </div>
 
         {/* Login Card */}
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6 sm:p-8">
+        <div className="glass p-8">
           {/* Error Message */}
           {error && (
-            <div className="mb-6 p-4 bg-red-100 dark:bg-red-900/30 border border-red-400 text-red-800 dark:text-red-200 rounded-lg flex items-center gap-2">
+            <div className="mb-6 p-4 rounded-lg flex items-center gap-2 border-l-4" style={{ borderColor: 'var(--color-danger)', background: `color-mix(in srgb, var(--color-danger) 10%, transparent)` }}>
               <span>⚠️</span>
-              <span>{error}</span>
+              <span style={{ color: 'var(--color-danger)' }}>{error}</span>
             </div>
           )}
 
-          <form onSubmit={handleLogin} className="space-y-4">
+          <form onSubmit={handleLogin} className="space-y-5">
             {/* Email Input */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                Email Address
-              </label>
+              <label className="label">Email Address</label>
               <input
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="you@example.com"
-                className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+                className="input"
                 disabled={loading}
               />
             </div>
 
             {/* Password Input */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                Password
-              </label>
+              <label className="label">Password</label>
               <div className="relative">
                 <input
                   type={showPassword ? 'text' : 'password'}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="••••••••"
-                  className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+                  className="input"
                   disabled={loading}
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300"
+                  className="absolute right-3 top-1/2 transform -translate-y-1/2 transition-opacity"
+                  style={{ opacity: 0.6 }}
                 >
                   {showPassword ? '👁️' : '👁️‍🗨️'}
                 </button>
@@ -97,16 +95,16 @@ export default function Login() {
 
             {/* Remember Me & Forgot Password */}
             <div className="flex items-center justify-between text-sm">
-              <label className="flex items-center gap-2 text-gray-700 dark:text-gray-300">
+              <label className="flex items-center gap-2" style={{ color: 'var(--text-secondary)' }}>
                 <input
                   type="checkbox"
-                  className="w-4 h-4 border border-gray-300 dark:border-gray-600 rounded accent-blue-600"
+                  className="w-4 h-4 rounded accent-indigo-500"
                 />
                 Remember me
               </label>
               <Link
                 to="/forgot-password"
-                className="text-blue-600 hover:text-blue-700 dark:hover:text-blue-500 transition"
+                className="text-indigo-400 hover:text-indigo-300 transition"
               >
                 Forgot password?
               </Link>
@@ -116,7 +114,7 @@ export default function Login() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white font-medium py-2 px-4 rounded-lg transition flex items-center justify-center gap-2 mt-6"
+              className="w-full btn btn-primary justify-center mt-6"
             >
               {loading ? (
                 <>
@@ -132,21 +130,21 @@ export default function Login() {
           {/* Divider */}
           <div className="relative my-6">
             <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-t border-gray-300 dark:border-gray-600"></div>
+              <div style={{ width: '100%', height: '1px', background: 'var(--glass-border)' }} />
             </div>
             <div className="relative flex justify-center text-sm">
-              <span className="px-2 bg-white dark:bg-gray-800 text-gray-500 dark:text-gray-400">
+              <span className="px-2" style={{ background: 'var(--bg-gradient)', color: 'var(--text-secondary)' }}>
                 or
               </span>
             </div>
           </div>
 
           {/* Signup Link */}
-          <p className="text-center text-gray-600 dark:text-gray-400">
+          <p className="text-center" style={{ color: 'var(--text-secondary)' }}>
             Don't have an account?{' '}
             <Link
               to="/signup"
-              className="text-blue-600 hover:text-blue-700 dark:hover:text-blue-500 font-medium transition"
+              className="text-indigo-400 hover:text-indigo-300 font-medium transition"
             >
               Sign up here
             </Link>
@@ -154,8 +152,11 @@ export default function Login() {
         </div>
 
         {/* Demo Info */}
-        <div className="mt-6 p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg">
-          <p className="text-sm text-blue-800 dark:text-blue-300">
+        <div
+          className="mt-6 p-4 rounded-lg border-l-4"
+          style={{ borderColor: 'var(--color-info)', background: `color-mix(in srgb, var(--color-info) 10%, transparent)` }}
+        >
+          <p className="text-sm" style={{ color: 'var(--color-info)' }}>
             <strong>Demo Account:</strong><br />
             Email: demo@example.com<br />
             Password: demo123

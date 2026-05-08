@@ -25,7 +25,7 @@ import SettingsPage from './pages/Settings';
 import Profile from './components/Profile';
 
 function ProtectedLayout({ children }) {
-  const { darkMode } = useApp();
+  const { darkMode, sidebarCollapsed } = useApp();
   return (
     <div className={`flex min-h-screen transition-colors duration-300 ${
       darkMode
@@ -33,7 +33,7 @@ function ProtectedLayout({ children }) {
         : 'bg-gradient-to-br from-white via-blue-50 to-white text-gray-900'
     }`}>
       <Sidebar />
-      <main className="flex-1 ml-64 transition-all duration-300 p-6">
+      <main className={`flex-1 transition-all duration-300 p-6 ${sidebarCollapsed ? 'ml-20' : 'ml-64'}`}>
         <div className="max-w-7xl mx-auto">{children}</div>
       </main>
     </div>

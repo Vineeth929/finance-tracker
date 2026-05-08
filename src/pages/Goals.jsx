@@ -179,28 +179,28 @@ export default function GoalsPage() {
                 </div>
 
                 {goal.description && (
-                  <p className="text-sm text-gray-400 mb-4 line-clamp-2">{goal.description}</p>
+                  <p className="text-sm mb-4 line-clamp-2" style={{ color: 'var(--text-secondary)' }}>{goal.description}</p>
                 )}
 
                 {/* Progress Bar */}
                 <div className="mb-4">
                   <div className="flex justify-between mb-2 text-sm">
-                    <span className="text-gray-300">Progress</span>
+                    <span style={{ color: 'var(--text-secondary)' }}>Progress</span>
                     <span className="font-semibold">
                       ₹{formatCurrency(goal.currentAmount || 0)} / ₹{formatCurrency(goal.targetAmount || 0)}
                     </span>
                   </div>
-                  <div className="w-full bg-white/10 rounded-full h-2">
+                  <div className="w-full rounded-full h-2" style={{ background: 'var(--glass-hover-bg)' }}>
                     <div
                       className="h-2 rounded-full bg-gradient-to-r from-emerald-500 to-teal-500 transition-all duration-300"
                       style={{ width: `${Math.min(progress, 100)}%` }}
                     />
                   </div>
-                  <p className="text-xs text-gray-400 mt-2">{Math.round(progress)}% Complete</p>
+                  <p className="text-xs mt-2" style={{ color: 'var(--text-secondary)' }}>{Math.round(progress)}% Complete</p>
                 </div>
 
                 {goal.deadline && (
-                  <p className="text-xs text-gray-400 mb-4">
+                  <p className="text-xs mb-4" style={{ color: 'var(--text-secondary)' }}>
                     📅 Deadline: {new Date(goal.deadline).toLocaleDateString()}
                   </p>
                 )}
@@ -219,7 +219,7 @@ export default function GoalsPage() {
         <GlassCard className="text-center py-12">
           <div className="space-y-3">
             <p className="text-4xl">🎯</p>
-            <p className="text-gray-400 text-lg">No goals yet. Create one to start saving towards your dreams!</p>
+            <p className="text-lg" style={{ color: 'var(--text-secondary)' }}>No goals yet. Create one to start saving towards your dreams!</p>
             <button
               onClick={() => setShowAddForm(true)}
               className="btn btn-primary inline-block mt-4"

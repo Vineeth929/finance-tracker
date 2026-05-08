@@ -36,16 +36,15 @@ export default function SettingsPage() {
       <GlassCard className="p-6">
         <h2 className="text-xl font-bold mb-6">Display Preferences</h2>
         <div className="space-y-4">
-          <div className="flex items-center justify-between p-4 bg-white/5 rounded-lg">
+          <div className="flex items-center justify-between p-4 rounded-lg" style={{ background: 'var(--glass-bg)' }}>
             <div>
               <p className="font-medium">Dark Mode</p>
-              <p className="text-sm text-gray-400">Easier on the eyes</p>
+              <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>Easier on the eyes</p>
             </div>
             <button
               onClick={() => setDarkMode(!darkMode)}
-              className={`relative w-14 h-8 rounded-full transition-colors ${
-                darkMode ? 'bg-indigo-600' : 'bg-gray-600'
-              }`}
+              className="relative w-14 h-8 rounded-full transition-colors"
+              style={{ background: darkMode ? 'var(--color-brand-primary)' : 'var(--glass-border)' }}
             >
               <div
                 className={`absolute top-1 w-6 h-6 bg-white rounded-full transition-transform ${
@@ -61,9 +60,9 @@ export default function SettingsPage() {
       <GlassCard className="p-6">
         <h2 className="text-xl font-bold mb-6">Data Management</h2>
         <div className="space-y-4">
-          <div className="p-4 bg-white/5 rounded-lg">
+          <div className="p-4 rounded-lg" style={{ background: 'var(--glass-bg)' }}>
             <p className="font-medium mb-2">Export Your Data</p>
-            <p className="text-sm text-gray-400 mb-4">Download all your transactions and budgets as a JSON file</p>
+            <p className="text-sm mb-4" style={{ color: 'var(--text-secondary)' }}>Download all your transactions and budgets as a JSON file</p>
             <button
               onClick={handleExportData}
               disabled={exportLoading}
@@ -78,10 +77,10 @@ export default function SettingsPage() {
       {/* About */}
       <GlassCard className="p-6">
         <h2 className="text-xl font-bold mb-6">About</h2>
-        <div className="space-y-3 text-sm text-gray-400">
+        <div className="space-y-3 text-sm" style={{ color: 'var(--text-secondary)' }}>
           <p>💰 Finance Tracker v2.0</p>
           <p>A modern, intelligent fintech dashboard for personal finance management</p>
-          <p className="pt-3 border-t border-white/10">
+          <p className="pt-3 border-t" style={{ borderColor: 'var(--glass-border)' }}>
             Powered by React, Node.js, MongoDB, and free APIs (CoinGecko, RSS)
           </p>
         </div>
