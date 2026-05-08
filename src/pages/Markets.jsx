@@ -28,8 +28,14 @@ export default function MarketsPage() {
   const fetchMarkets = async () => {
     try {
       const [stocksData, overviewData] = await Promise.all([
-        api.getMarkets(),
-        api.getMarketOverview(),
+        api.getMarkets().catch(err => {
+          console.error('Markets fetch error:', err);
+          return { cryptos: [] };
+        }),
+        api.getMarketOverview().catch(err => {
+          console.error('Overview fetch error:', err);
+          return null;
+        }),
       ]);
       setStocks(stocksData?.cryptos || []);
       setOverview(overviewData || null);
@@ -37,7 +43,9 @@ export default function MarketsPage() {
       setError(null);
     } catch (err) {
       console.error('Failed to fetch markets:', err);
-      setError('Unable to fetch market data');
+      setError('Market data temporarily unavailable. Using cached data.');
+      setStocks([]);
+      setOverview(null);
     } finally {
       setLoading(false);
     }

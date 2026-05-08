@@ -36,8 +36,8 @@ router.get('/crypto', async (req, res) => {
   try {
     const now = Date.now();
 
-    // Return cached data if still fresh
-    if (stocksCache && cacheTimestamp && (now - cacheTimestamp) < CACHE_DURATION) {
+    // Always return cached data first (prevents rate limits)
+    if (stocksCache && cacheTimestamp) {
       return res.json({
         ...stocksCache,
         cached: true,

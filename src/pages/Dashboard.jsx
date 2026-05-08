@@ -35,15 +35,18 @@ export default function DashboardPage() {
   };
 
   const calculateTotals = () => {
-    const income = transactions.filter(t => t.type === 'income').reduce((sum, t) => sum + t.amount, 0);
-    const expenses = transactions.filter(t => t.type === 'expense').reduce((sum, t) => sum + t.amount, 0);
+    if (!transactions || transactions.length === 0) {
+      return { income: 0, expenses: 0, savings: 0 };
+    }
+    const income = transactions.filter(t => t?.type === 'income').reduce((sum, t) => sum + (t?.amount || 0), 0);
+    const expenses = transactions.filter(t => t?.type === 'expense').reduce((sum, t) => sum + (t?.amount || 0), 0);
     const savings = income - expenses;
     return { income, expenses, savings };
   };
 
   const totals = calculateTotals();
-  const recentTransactions = transactions.slice(0, 5);
-  const completedGoals = goals.filter(g => g.status === 'Completed').length;
+  const recentTransactions = transactions && transactions.length > 0 ? transactions.slice(0, 5) : [];
+  const completedGoals = goals && goals.length > 0 ? goals.filter(g => g?.status === 'Completed').length : 0;
 
   if (loading) {
     return (
@@ -192,28 +195,32 @@ export default function DashboardPage() {
         </GlassCard>
 
         {/* Budget Overview - Responsive */}
-        {budgets && budgets.Needs ? (
+        {budgets && budgets.Needs && Object.keys(budgets).length > 0 ? (
           <GlassCard className="md:col-span-1 p-4 sm:p-6">
             <h3 className="text-lg sm:text-xl font-bold mb-3 sm:mb-4 flex items-center gap-2">
               <span>💰</span> <span className="hidden sm:inline">Budget</span>
             </h3>
             <div className="space-y-3 sm:space-y-4">
-              {['Needs', 'Wants', 'Savings & Investment'].map(cat => (
-                <div key={cat}>
-                  <div className="flex justify-between mb-1 sm:mb-2">
-                    <span className="text-xs sm:text-sm" style={{ color: 'var(--text-secondary)' }}>{cat.replace(' & Investment', '')}</span>
-                    <span className="text-xs sm:text-sm font-semibold">₹{Math.round(budgets[cat] || 0).toLocaleString()}</span>
+              {['Needs', 'Wants', 'Savings & Investment'].map(cat => {
+                const budgetVal = budgets[cat] || 0;
+                const total = (budgets['Needs'] || 0) + (budgets['Wants'] || 0) + (budgets['Savings & Investment'] || 0);
+                const percentage = total > 0 ? (budgetVal / total) * 100 : 0;
+
+                return (
+                  <div key={cat}>
+                    <div className="flex justify-between mb-1 sm:mb-2">
+                      <span className="text-xs sm:text-sm" style={{ color: 'var(--text-secondary)' }}>{cat.replace(' & Investment', '')}</span>
+                      <span className="text-xs sm:text-sm font-semibold">₹{Math.round(budgetVal).toLocaleString()}</span>
+                    </div>
+                    <div className="w-full rounded-full h-2" style={{ background: 'var(--glass-hover-bg)' }}>
+                      <div
+                        className="h-2 rounded-full bg-gradient-to-r from-indigo-600 to-purple-600"
+                        style={{ width: `${Math.min(percentage, 100)}%` }}
+                      />
+                    </div>
                   </div>
-                  <div className="w-full rounded-full h-2" style={{ background: 'var(--glass-hover-bg)' }}>
-                    <div
-                      className="h-2 rounded-full bg-gradient-to-r from-indigo-600 to-purple-600"
-                      style={{
-                        width: `${Math.min(((budgets[cat] || 0) / Math.max(budgets['Needs'] + budgets['Wants'] + budgets['Savings & Investment'], 1)) * 100, 100)}%`
-                      }}
-                    />
-                  </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           </GlassCard>
         ) : (
