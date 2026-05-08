@@ -26,11 +26,9 @@ export default function MobileBottomNav() {
       transition={{ duration: 0.3 }}
       className="fixed bottom-0 left-0 right-0 md:hidden z-40 px-3 py-2.5"
       style={{
-        background: 'var(--glass-bg)',
-        backdropFilter: 'var(--glass-blur)',
-        WebkitBackdropFilter: 'var(--glass-blur)',
-        borderTop: '1px solid var(--glass-border)',
-        boxShadow: '0 -4px 12px var(--overlay-dark)',
+        background: 'linear-gradient(180deg, var(--bg-surface-2) 0%, var(--bg-surface-1) 100%)',
+        borderTop: '1.5px solid var(--border-accent)',
+        boxShadow: '0 -8px 24px rgba(0, 0, 0, 0.5)',
       }}
     >
       <div className="flex justify-around items-center gap-1">

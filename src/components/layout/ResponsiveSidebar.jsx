@@ -41,16 +41,15 @@ export default function ResponsiveSidebar() {
 
   const isActive = (path) => location.pathname === path;
 
-  // Desktop sidebar - Premium Design
+  // Desktop sidebar - Dark Fintech Premium
   const desktopSidebar = (
     <motion.div
       animate={{ width: sidebarCollapsed ? 80 : 256 }}
       className="hidden md:flex flex-col fixed left-0 top-0 h-screen z-30 pt-6"
       style={{
-        background: 'var(--glass-bg)',
-        backdropFilter: 'var(--glass-blur)',
-        WebkitBackdropFilter: 'var(--glass-blur)',
-        borderRight: '1px solid var(--glass-border)',
+        background: 'linear-gradient(180deg, var(--bg-surface-1) 0%, var(--bg-surface-2) 100%)',
+        borderRight: '1.5px solid var(--border-accent)',
+        boxShadow: 'inset -1px 0 0 var(--border-subtle)',
       }}
     >
       {/* Logo */}
@@ -278,7 +277,7 @@ export default function ResponsiveSidebar() {
             }}
           />
 
-          {/* Premium Drawer */}
+          {/* Premium Dark Drawer */}
           <motion.div
             key="drawer"
             variants={sidebarVariants}
@@ -287,11 +286,11 @@ export default function ResponsiveSidebar() {
             exit="exit"
             className="fixed left-0 top-0 w-72 h-screen z-50 flex flex-col pt-6"
             style={{
-              background: 'var(--glass-bg)',
-              backdropFilter: 'var(--glass-blur-strong)',
-              WebkitBackdropFilter: 'var(--glass-blur-strong)',
-              borderRight: '1px solid var(--glass-border)',
-              boxShadow: 'var(--shadow-2xl)',
+              background: 'linear-gradient(180deg, var(--bg-surface-2) 0%, var(--bg-surface-3) 100%)',
+              backdropFilter: 'var(--glass-backdrop-strong)',
+              WebkitBackdropFilter: 'var(--glass-backdrop-strong)',
+              borderRight: '1.5px solid var(--border-accent)',
+              boxShadow: '8px 0 32px rgba(0, 0, 0, 0.6)',
             }}
           >
             {/* Header */}
@@ -503,7 +502,7 @@ export default function ResponsiveSidebar() {
     </AnimatePresence>
   );
 
-  // Mobile header - Premium Design
+  // Mobile header - Dark Fintech Premium
   const mobileHeader = (
     <motion.div
       initial={{ y: -64 }}
@@ -511,11 +510,9 @@ export default function ResponsiveSidebar() {
       transition={{ duration: 0.3 }}
       className="fixed top-0 left-0 right-0 md:hidden z-30 px-4 py-3"
       style={{
-        background: 'var(--glass-bg)',
-        backdropFilter: 'var(--glass-blur)',
-        WebkitBackdropFilter: 'var(--glass-blur)',
-        borderBottom: '1px solid var(--glass-border)',
-        boxShadow: 'var(--shadow-md)',
+        background: 'linear-gradient(180deg, var(--bg-surface-1) 0%, var(--bg-surface-2) 100%)',
+        borderBottom: '1.5px solid var(--border-accent)',
+        boxShadow: '0 4px 16px rgba(0, 0, 0, 0.4)',
       }}
     >
       <div className="flex items-center justify-between h-14">
