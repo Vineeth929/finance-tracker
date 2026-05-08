@@ -635,13 +635,27 @@ body {
   background: var(--surface-level-2);
   border: 1px solid var(--border-soft);
   border-radius: var(--radius-xl);
-  box-shadow: var(--shadow-md);
+  box-shadow:
+    var(--shadow-md),
+    inset 0 1px 0 rgba(248, 250, 252, 0.06);
   transition: all var(--transition-base);
+  position: relative;
+}
+
+.surface-elevated::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: var(--radius-xl);
+  background: linear-gradient(135deg, rgba(139, 92, 246, 0.02) 0%, transparent 100%);
+  pointer-events: none;
 }
 
 .surface-elevated:hover {
   border-color: var(--border-normal);
-  box-shadow: var(--shadow-lg);
+  box-shadow:
+    var(--shadow-lg),
+    inset 0 1px 0 rgba(248, 250, 252, 0.1);
   transform: translateY(-2px);
 }
 
@@ -650,13 +664,27 @@ body {
   border: 1px solid var(--border-soft);
   border-radius: var(--radius-xl);
   padding: var(--spacing-lg);
-  box-shadow: var(--shadow-md);
+  box-shadow:
+    var(--shadow-md),
+    inset 0 1px 0 rgba(248, 250, 252, 0.06);
   transition: all var(--transition-base);
+  position: relative;
+}
+
+.surface-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: var(--radius-xl);
+  background: linear-gradient(135deg, rgba(139, 92, 246, 0.02) 0%, transparent 100%);
+  pointer-events: none;
 }
 
 .surface-card:hover {
   border-color: var(--border-normal);
-  box-shadow: var(--shadow-lg);
+  box-shadow:
+    var(--shadow-lg),
+    inset 0 1px 0 rgba(248, 250, 252, 0.1);
   transform: translateY(-2px);
 }
 
@@ -679,77 +707,165 @@ body {
 }
 
 /* ============================================================================
-   EMOTION SURFACES - Color Psychology for Financial States
+   EMOTION SURFACES - Unified Atmospheric with Infused Emotional Accents
    ============================================================================ */
 
+/* ALL emotion surfaces share the SAME rich atmospheric base */
+/* Emotional colors INFUSE the surface through:
+   - Subtle border/edge accents (NOT tinted backgrounds)
+   - Embedded glow and lighting
+   - Layered ambient shadows with emotional color tint
+   - Responsive environmental presence on interaction
+   - No flat color overlays */
+
 .surface-savings {
-  background: var(--emotion-savings-bg);
-  border: 1px solid var(--emotion-savings-border);
+  background: var(--surface-level-2);
+  border: 1px solid var(--border-soft);
   border-radius: var(--radius-xl);
   padding: var(--spacing-lg);
-  box-shadow: var(--glow-emerald), var(--shadow-md);
+  box-shadow:
+    var(--shadow-md),
+    inset 0 1px 0 rgba(16, 185, 129, 0.15);
   transition: all var(--transition-base);
+  position: relative;
+}
+
+.surface-savings::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: var(--radius-xl);
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.04) 0%, transparent 100%);
+  pointer-events: none;
 }
 
 .surface-savings:hover {
-  border-color: var(--emotion-savings);
-  box-shadow: var(--glow-emerald), var(--shadow-lg);
+  border-color: var(--border-normal);
+  box-shadow:
+    0 4px 12px rgba(16, 185, 129, 0.15),
+    var(--shadow-lg),
+    inset 0 1px 0 rgba(16, 185, 129, 0.25);
+  transform: translateY(-2px);
 }
 
 .surface-expenses {
-  background: var(--emotion-expenses-bg);
-  border: 1px solid var(--emotion-expenses-border);
+  background: var(--surface-level-2);
+  border: 1px solid var(--border-soft);
   border-radius: var(--radius-xl);
   padding: var(--spacing-lg);
-  box-shadow: var(--glow-rose), var(--shadow-md);
+  box-shadow:
+    var(--shadow-md),
+    inset 0 1px 0 rgba(225, 29, 72, 0.15);
   transition: all var(--transition-base);
+  position: relative;
+}
+
+.surface-expenses::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: var(--radius-xl);
+  background: linear-gradient(135deg, rgba(225, 29, 72, 0.04) 0%, transparent 100%);
+  pointer-events: none;
 }
 
 .surface-expenses:hover {
-  border-color: var(--emotion-expenses);
-  box-shadow: var(--glow-rose), var(--shadow-lg);
+  border-color: var(--border-normal);
+  box-shadow:
+    0 4px 12px rgba(225, 29, 72, 0.15),
+    var(--shadow-lg),
+    inset 0 1px 0 rgba(225, 29, 72, 0.25);
+  transform: translateY(-2px);
 }
 
 .surface-investments {
-  background: var(--emotion-investments-bg);
-  border: 1px solid var(--emotion-investments-border);
+  background: var(--surface-level-2);
+  border: 1px solid var(--border-soft);
   border-radius: var(--radius-xl);
   padding: var(--spacing-lg);
-  box-shadow: var(--glow-cyan), var(--shadow-md);
+  box-shadow:
+    var(--shadow-md),
+    inset 0 1px 0 rgba(6, 182, 212, 0.15);
   transition: all var(--transition-base);
+  position: relative;
+}
+
+.surface-investments::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: var(--radius-xl);
+  background: linear-gradient(135deg, rgba(6, 182, 212, 0.04) 0%, transparent 100%);
+  pointer-events: none;
 }
 
 .surface-investments:hover {
-  border-color: var(--emotion-investments);
-  box-shadow: var(--glow-cyan), var(--shadow-lg);
+  border-color: var(--border-normal);
+  box-shadow:
+    0 4px 12px rgba(6, 182, 212, 0.15),
+    var(--shadow-lg),
+    inset 0 1px 0 rgba(6, 182, 212, 0.25);
+  transform: translateY(-2px);
 }
 
 .surface-goals {
-  background: var(--emotion-goals-bg);
-  border: 1px solid var(--emotion-goals-border);
+  background: var(--surface-level-2);
+  border: 1px solid var(--border-soft);
   border-radius: var(--radius-xl);
   padding: var(--spacing-lg);
-  box-shadow: var(--glow-amber), var(--shadow-md);
+  box-shadow:
+    var(--shadow-md),
+    inset 0 1px 0 rgba(217, 119, 6, 0.15);
   transition: all var(--transition-base);
+  position: relative;
+}
+
+.surface-goals::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: var(--radius-xl);
+  background: linear-gradient(135deg, rgba(217, 119, 6, 0.04) 0%, transparent 100%);
+  pointer-events: none;
 }
 
 .surface-goals:hover {
-  border-color: var(--emotion-goals);
-  box-shadow: var(--glow-amber), var(--shadow-lg);
+  border-color: var(--border-normal);
+  box-shadow:
+    0 4px 12px rgba(217, 119, 6, 0.15),
+    var(--shadow-lg),
+    inset 0 1px 0 rgba(217, 119, 6, 0.25);
+  transform: translateY(-2px);
 }
 
 .surface-analytics {
-  background: var(--emotion-analytics-bg);
-  border: 1px solid var(--emotion-analytics-border);
+  background: var(--surface-level-2);
+  border: 1px solid var(--border-soft);
   border-radius: var(--radius-xl);
   padding: var(--spacing-lg);
-  box-shadow: var(--glow-violet), var(--shadow-md);
+  box-shadow:
+    var(--shadow-md),
+    inset 0 1px 0 rgba(139, 92, 246, 0.15);
   transition: all var(--transition-base);
+  position: relative;
+}
+
+.surface-analytics::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: var(--radius-xl);
+  background: linear-gradient(135deg, rgba(139, 92, 246, 0.04) 0%, transparent 100%);
+  pointer-events: none;
 }
 
 .surface-analytics:hover {
-  border-color: var(--emotion-analytics);
-  box-shadow: var(--glow-violet), var(--shadow-lg);
+  border-color: var(--border-normal);
+  box-shadow:
+    0 4px 12px rgba(139, 92, 246, 0.15),
+    var(--shadow-lg),
+    inset 0 1px 0 rgba(139, 92, 246, 0.25);
+  transform: translateY(-2px);
 }
 
 /* ============================================================================
@@ -761,7 +877,9 @@ body {
   border: 1px solid var(--border-soft);
   border-radius: var(--radius-xl);
   padding: var(--spacing-lg);
-  box-shadow: var(--shadow-md);
+  box-shadow:
+    var(--shadow-md),
+    inset 0 1px 0 rgba(248, 250, 252, 0.06);
   transition: all var(--transition-base);
   position: relative;
   overflow: hidden;
@@ -771,14 +889,16 @@ body {
   content: '';
   position: absolute;
   inset: 0;
-  background: linear-gradient(135deg, rgba(248, 250, 252, 0.04) 0%, transparent 100%);
+  background: linear-gradient(135deg, rgba(139, 92, 246, 0.02) 0%, transparent 100%);
   pointer-events: none;
   border-radius: var(--radius-xl);
 }
 
 .card:hover {
   border-color: var(--border-normal);
-  box-shadow: var(--shadow-lg);
+  box-shadow:
+    var(--shadow-lg),
+    inset 0 1px 0 rgba(248, 250, 252, 0.1);
   transform: translateY(-2px);
 }
 
@@ -1109,15 +1229,17 @@ body {
    ============================================================================ */
 
 .stat-card {
-  background: var(--surface-level-3);
-  border: 1px solid var(--border-normal);
+  background: var(--surface-level-2);
+  border: 1px solid var(--border-soft);
   border-radius: var(--radius-xl);
   padding: var(--spacing-lg);
   display: flex;
   flex-direction: column;
   gap: var(--spacing-md);
   transition: all var(--transition-base);
-  box-shadow: var(--shadow-md);
+  box-shadow:
+    var(--shadow-md),
+    inset 0 1px 0 rgba(139, 92, 246, 0.08);
   position: relative;
   overflow: hidden;
 }
@@ -1126,15 +1248,17 @@ body {
   content: '';
   position: absolute;
   inset: 0;
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.03) 0%, transparent 100%);
+  background: linear-gradient(135deg, rgba(139, 92, 246, 0.03) 0%, transparent 100%);
   pointer-events: none;
 }
 
 .stat-card:hover {
-  border-color: var(--border-accent);
+  border-color: var(--border-normal);
   transform: translateY(-4px);
-  box-shadow: var(--shadow-lg), var(--glow-violet);
-  background: var(--surface-level-4);
+  box-shadow:
+    0 8px 24px rgba(139, 92, 246, 0.12),
+    var(--shadow-lg),
+    inset 0 1px 0 rgba(139, 92, 246, 0.15);
 }
 
 .stat-value {
