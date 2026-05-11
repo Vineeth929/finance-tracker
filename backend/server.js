@@ -85,6 +85,13 @@ try {
   console.error('❌ Failed to load insights routes:', err.message);
 }
 
+try {
+  app.use('/api/meta', require('./routes/meta'));
+  console.log('✅ Meta routes loaded');
+} catch (err) {
+  console.error('❌ Failed to load meta routes:', err.message);
+}
+
 // Catch-all 404 handler
 app.use((req, res) => {
   res.status(404).json({

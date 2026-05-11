@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { useApp } from '../context/AppContext';
+import { useGoalCategories } from '../hooks/useGoalCategories';
 import GlassCard from '../components/ui/GlassCard';
 import Badge from '../components/ui/Badge';
 import ProgressAnimation from '../components/ui/ProgressAnimation';
 import MilestoneCard from '../components/ui/MilestoneCard';
 import CuriosityWidget from '../components/ui/CuriosityWidget';
+import SkeletonLoader from '../components/ui/SkeletonLoader';
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -29,6 +31,8 @@ const itemVariants = {
 
 export default function GoalsPage() {
   const { goals = [], addGoal, deleteGoal } = useApp();
+  const { categories, loading: categoriesLoading, error: categoriesError, validateCategory, getValidCategoryIds } = useGoalCategories();
+
   const [showAddForm, setShowAddForm] = useState(false);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -37,10 +41,18 @@ export default function GoalsPage() {
     description: '',
     targetAmount: '',
     deadline: '',
-    category: 'Other',
+    category: categories.length > 0 ? categories[0].id : '', // Use first category from API as default
   });
 
-  const validCategories = ['Travel', 'Education', 'Home', 'Vehicle', 'Investment', 'Retirement', 'Emergency Fund', 'Other'];
+  // Update formData category when categories load
+  React.useEffect(() => {
+    if (categories.length > 0 && !formData.category) {
+      setFormData(prev => ({
+        ...prev,
+        category: categories[0].id
+      }));
+    }
+  }, [categories]);
 
   const handleAddGoal = async (e) => {
     e.preventDefault();
@@ -54,9 +66,16 @@ export default function GoalsPage() {
       if (!formData.targetAmount || parseFloat(formData.targetAmount) <= 0) {
         throw new Error('Target amount must be greater than 0');
       }
-      if (!validCategories.includes(formData.category)) {
-        throw new Error(`Invalid category: ${formData.category}. Must be one of: ${validCategories.join(', ')}`);
+
+      // Validate category against dynamically fetched categories
+      if (!validateCategory(formData.category)) {
+        const validIds = getValidCategoryIds();
+        throw new Error(`Invalid category: "${formData.category}". Valid categories: ${validIds.join(', ')}`);
       }
+
+      // Log for debugging
+      console.log('📝 Creating goal with category:', formData.category);
+      console.log('Available categories:', categories.map(c => c.id).join(', '));
 
       await addGoal({
         ...formData,
@@ -65,17 +84,18 @@ export default function GoalsPage() {
         status: 'Active',
       });
 
+      // Reset form to first category
       setFormData({
         title: '',
         description: '',
         targetAmount: '',
         deadline: '',
-        category: 'Other',
+        category: categories.length > 0 ? categories[0].id : '',
       });
       setShowAddForm(false);
     } catch (err) {
       setError(err.message);
-      console.error('Failed to add goal:', err);
+      console.error('❌ Failed to add goal:', err);
     } finally {
       setLoading(false);
     }
@@ -110,6 +130,16 @@ export default function GoalsPage() {
   const totalCurrentAmount = goals.reduce((sum, g) => sum + (g?.currentAmount || 0), 0);
   const overallProgress = totalTargetAmount > 0 ? (totalCurrentAmount / totalTargetAmount) * 100 : 0;
 
+  // Show loading skeleton while categories are fetching
+  if (categoriesLoading) {
+    return (
+      <div className="space-y-4 sm:space-y-6 animate-fadeIn">
+        <SkeletonLoader height="h-20 sm:h-24" count={1} />
+        <SkeletonLoader height="h-96" count={1} />
+      </div>
+    );
+  }
+
   return (
     <motion.div
       className="space-y-4 sm:space-y-6 animate-fadeIn"
@@ -127,7 +157,7 @@ export default function GoalsPage() {
             Savings Goals 🎯
           </h1>
           <p className="text-xs sm:text-sm mt-1" style={{ color: 'var(--text-secondary)' }}>
-            Turn your dreams into reality
+            Turn your dreams into reality {categoriesLoading && '(Loading categories...)'}
           </p>
         </div>
         <motion.button
@@ -138,11 +168,13 @@ export default function GoalsPage() {
           className="btn btn-primary btn-sm sm:btn-base"
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.98 }}
+          disabled={categoriesLoading || categories.length === 0}
         >
           {showAddForm ? '✕ Close' : '+ New Goal'}
         </motion.button>
       </motion.div>
 
+      {/* Error Messages */}
       {error && (
         <motion.div variants={itemVariants}>
           <div className="p-4 rounded-lg border-l-4" style={{ borderColor: 'var(--emotion-expenses)', background: 'var(--emotion-expenses-bg)' }}>
@@ -151,119 +183,135 @@ export default function GoalsPage() {
         </motion.div>
       )}
 
+      {/* Category Loading Error */}
+      {categoriesError && (
+        <motion.div variants={itemVariants}>
+          <div className="p-4 rounded-lg border-l-4" style={{ borderColor: 'var(--emotion-expenses)', background: 'var(--emotion-expenses-bg)' }}>
+            <p className="text-sm" style={{ color: 'var(--emotion-expenses)' }}>
+              ⚠️ Could not load goal categories. {categoriesError}
+            </p>
+          </div>
+        </motion.div>
+      )}
+
+      {/* Create Goal Form */}
       {showAddForm && (
         <motion.div variants={itemVariants}>
           <GlassCard className="p-6">
             <h2 className="text-xl font-bold mb-4">Create New Goal</h2>
-            <form onSubmit={handleAddGoal} className="space-y-4">
-              <div>
-                <label className="label">Goal Title *</label>
-                <input
-                  type="text"
-                  placeholder="e.g., Emergency Fund, Vacation"
-                  value={formData.title}
-                  onChange={(e) =>
-                    setFormData({ ...formData, title: e.target.value })
-                  }
-                  className="input"
-                  required
-                  disabled={loading}
-                />
+            {categories.length === 0 ? (
+              <div className="text-center py-6">
+                <p style={{ color: 'var(--text-secondary)' }}>Loading categories...</p>
               </div>
-
-              <div>
-                <label className="label">Description</label>
-                <textarea
-                  placeholder="What is this goal for?"
-                  value={formData.description}
-                  onChange={(e) =>
-                    setFormData({ ...formData, description: e.target.value })
-                  }
-                  className="input"
-                  rows="3"
-                  disabled={loading}
-                />
-              </div>
-
-              <div>
-                <label className="label">Category</label>
-                <select
-                  value={formData.category}
-                  onChange={(e) =>
-                    setFormData({ ...formData, category: e.target.value })
-                  }
-                  className="input"
-                  disabled={loading}
-                  style={{ background: 'var(--surface-level-2)', color: 'var(--text-primary)' }}
-                >
-                  <option value="Travel">✈️ Travel</option>
-                  <option value="Education">📚 Education</option>
-                  <option value="Home">🏠 Home</option>
-                  <option value="Vehicle">🚗 Vehicle</option>
-                  <option value="Investment">💼 Investment</option>
-                  <option value="Retirement">🏖️ Retirement</option>
-                  <option value="Emergency Fund">🚨 Emergency Fund</option>
-                  <option value="Other">📌 Other</option>
-                </select>
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
+            ) : (
+              <form onSubmit={handleAddGoal} className="space-y-4">
                 <div>
-                  <label className="label">Target Amount *</label>
+                  <label className="label">Goal Title *</label>
                   <input
-                    type="number"
-                    placeholder="₹0"
-                    value={formData.targetAmount}
+                    type="text"
+                    placeholder="e.g., Emergency Fund, Vacation"
+                    value={formData.title}
                     onChange={(e) =>
-                      setFormData({ ...formData, targetAmount: e.target.value })
+                      setFormData({ ...formData, title: e.target.value })
                     }
                     className="input"
-                    min="0"
-                    step="100"
                     required
                     disabled={loading}
                   />
                 </div>
 
                 <div>
-                  <label className="label">Deadline</label>
-                  <input
-                    type="date"
-                    value={formData.deadline}
+                  <label className="label">Description</label>
+                  <textarea
+                    placeholder="What is this goal for?"
+                    value={formData.description}
                     onChange={(e) =>
-                      setFormData({ ...formData, deadline: e.target.value })
+                      setFormData({ ...formData, description: e.target.value })
                     }
                     className="input"
+                    rows="3"
                     disabled={loading}
                   />
                 </div>
-              </div>
 
-              <div className="flex gap-3">
-                <motion.button
-                  type="submit"
-                  className="btn btn-primary flex-1"
-                  disabled={loading}
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                >
-                  {loading ? 'Creating...' : 'Create Goal'}
-                </motion.button>
-                <motion.button
-                  type="button"
-                  onClick={() => {
-                    setShowAddForm(false);
-                    setError(null);
-                  }}
-                  className="btn btn-secondary flex-1"
-                  disabled={loading}
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                >
-                  Cancel
-                </motion.button>
-              </div>
-            </form>
+                <div>
+                  <label className="label">Category *</label>
+                  <select
+                    value={formData.category}
+                    onChange={(e) =>
+                      setFormData({ ...formData, category: e.target.value })
+                    }
+                    className="input"
+                    disabled={loading}
+                    style={{ background: 'var(--surface-level-2)', color: 'var(--text-primary)' }}
+                    required
+                  >
+                    {categories.map(category => (
+                      <option key={category.id} value={category.id}>
+                        {category.icon} {category.label}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="label">Target Amount *</label>
+                    <input
+                      type="number"
+                      placeholder="₹0"
+                      value={formData.targetAmount}
+                      onChange={(e) =>
+                        setFormData({ ...formData, targetAmount: e.target.value })
+                      }
+                      className="input"
+                      min="0"
+                      step="100"
+                      required
+                      disabled={loading}
+                    />
+                  </div>
+
+                  <div>
+                    <label className="label">Deadline</label>
+                    <input
+                      type="date"
+                      value={formData.deadline}
+                      onChange={(e) =>
+                        setFormData({ ...formData, deadline: e.target.value })
+                      }
+                      className="input"
+                      disabled={loading}
+                    />
+                  </div>
+                </div>
+
+                <div className="flex gap-3">
+                  <motion.button
+                    type="submit"
+                    className="btn btn-primary flex-1"
+                    disabled={loading}
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                  >
+                    {loading ? 'Creating...' : 'Create Goal'}
+                  </motion.button>
+                  <motion.button
+                    type="button"
+                    onClick={() => {
+                      setShowAddForm(false);
+                      setError(null);
+                    }}
+                    className="btn btn-secondary flex-1"
+                    disabled={loading}
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                  >
+                    Cancel
+                  </motion.button>
+                </div>
+              </form>
+            )}
           </GlassCard>
         </motion.div>
       )}
@@ -448,6 +496,7 @@ export default function GoalsPage() {
                 className="btn btn-primary"
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.98 }}
+                disabled={categoriesLoading || categories.length === 0}
               >
                 + Create Your First Goal
               </motion.button>

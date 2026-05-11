@@ -19,8 +19,9 @@ const goalSchema = new mongoose.Schema({
   },
   category: {
     type: String,
-    enum: ['Travel', 'Education', 'Home', 'Vehicle', 'Investment', 'Retirement', 'Emergency Fund', 'Other'],
-    default: 'Other'
+    required: true,
+    // Validation happens in route middleware, not schema enum
+    // This allows dynamic category validation
   },
   targetAmount: {
     type: Number,
