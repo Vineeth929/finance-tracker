@@ -40,6 +40,8 @@ export default function GoalsPage() {
     category: 'Other',
   });
 
+  const validCategories = ['Travel', 'Education', 'Home', 'Vehicle', 'Investment', 'Retirement', 'Emergency Fund', 'Other'];
+
   const handleAddGoal = async (e) => {
     e.preventDefault();
     setError(null);
@@ -51,6 +53,9 @@ export default function GoalsPage() {
       }
       if (!formData.targetAmount || parseFloat(formData.targetAmount) <= 0) {
         throw new Error('Target amount must be greater than 0');
+      }
+      if (!validCategories.includes(formData.category)) {
+        throw new Error(`Invalid category: ${formData.category}. Must be one of: ${validCategories.join(', ')}`);
       }
 
       await addGoal({
@@ -178,6 +183,28 @@ export default function GoalsPage() {
                   rows="3"
                   disabled={loading}
                 />
+              </div>
+
+              <div>
+                <label className="label">Category</label>
+                <select
+                  value={formData.category}
+                  onChange={(e) =>
+                    setFormData({ ...formData, category: e.target.value })
+                  }
+                  className="input"
+                  disabled={loading}
+                  style={{ background: 'var(--surface-level-2)', color: 'var(--text-primary)' }}
+                >
+                  <option value="Travel">✈️ Travel</option>
+                  <option value="Education">📚 Education</option>
+                  <option value="Home">🏠 Home</option>
+                  <option value="Vehicle">🚗 Vehicle</option>
+                  <option value="Investment">💼 Investment</option>
+                  <option value="Retirement">🏖️ Retirement</option>
+                  <option value="Emergency Fund">🚨 Emergency Fund</option>
+                  <option value="Other">📌 Other</option>
+                </select>
               </div>
 
               <div className="grid grid-cols-2 gap-4">
