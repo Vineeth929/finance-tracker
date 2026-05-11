@@ -55,8 +55,7 @@ const goalCategorySchema = new mongoose.Schema({
   timestamps: true,
 });
 
-// Ensure we can query by id efficiently
-goalCategorySchema.index({ id: 1 });
+// Ensure we can query by isActive efficiently (id index created by unique: true)
 goalCategorySchema.index({ isActive: 1 });
 
 module.exports = mongoose.model('GoalCategory', goalCategorySchema);
