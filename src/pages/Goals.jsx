@@ -37,7 +37,7 @@ export default function GoalsPage() {
     description: '',
     targetAmount: '',
     deadline: '',
-    category: 'General',
+    category: 'Other',
   });
 
   const handleAddGoal = async (e) => {
@@ -65,7 +65,7 @@ export default function GoalsPage() {
         description: '',
         targetAmount: '',
         deadline: '',
-        category: 'General',
+        category: 'Other',
       });
       setShowAddForm(false);
     } catch (err) {
