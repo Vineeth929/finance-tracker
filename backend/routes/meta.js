@@ -50,6 +50,38 @@ router.get('/goal-categories/:id', async (req, res) => {
   }
 });
 
+// GET diagnostic info (for debugging)
+router.get('/debug/categories', async (req, res) => {
+  try {
+    const allCategories = await GoalCategory.find()
+      .select('id label isActive')
+      .lean();
+    const activeCategories = await GoalCategory.find({ isActive: true })
+      .select('id label')
+      .lean();
+
+    res.json({
+      success: true,
+      debug: {
+        totalCategories: allCategories.length,
+        activeCategories: activeCategories.length,
+        all: allCategories.map(c => ({
+          id: c.id,
+          label: c.label,
+          active: c.isActive !== false ? '✓' : '✗'
+        })),
+        activeCategoryIds: activeCategories.map(c => c.id),
+        note: 'This endpoint is for debugging only. Check if categories are seeded and marked as active.'
+      }
+    });
+  } catch (err) {
+    res.status(500).json({
+      error: 'Debug endpoint error',
+      message: err.message
+    });
+  }
+});
+
 // Validate category ID (used by other routes)
 async function validateCategory(categoryId) {
   const category = await GoalCategory.findOne({ id: categoryId, isActive: true });

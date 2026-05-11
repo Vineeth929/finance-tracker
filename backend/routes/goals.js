@@ -8,15 +8,52 @@ const { protect } = require('../middleware/auth');
 async function validateCategoryExists(req, res, next) {
   if (req.body.category) {
     try {
-      const category = await GoalCategory.findOne({ id: req.body.category, isActive: true });
-      if (!category) {
+      // Normalize the category ID (trim whitespace, lowercase)
+      const categoryId = (req.body.category || '').trim().toLowerCase();
+
+      if (!categoryId) {
         return res.status(400).json({
-          error: `Invalid category: "${req.body.category}". Category does not exist or is inactive.`
+          error: 'Category ID cannot be empty'
         });
       }
+
+      console.log(`🔍 Validating category: "${categoryId}"`);
+
+      // Find active category
+      const category = await GoalCategory.findOne({ id: categoryId, isActive: true }).lean();
+
+      if (!category) {
+        // Get list of available categories for helpful error message
+        const availableCategories = await GoalCategory.find({ isActive: true }).select('id label').lean();
+        const availableIds = availableCategories.map(c => c.id);
+
+        console.warn(`❌ Category not found or inactive: "${categoryId}"`);
+        console.warn(`📋 Available categories: ${availableIds.join(', ')}`);
+
+        if (availableIds.length === 0) {
+          return res.status(400).json({
+            error: 'No active categories available. Please seed the database with categories.',
+            availableCategories: [],
+            receivedCategory: categoryId
+          });
+        }
+
+        return res.status(400).json({
+          error: `Invalid category: "${categoryId}". Category does not exist or is inactive.`,
+          availableCategories: availableIds,
+          receivedCategory: categoryId,
+          hint: 'Valid categories are: ' + availableIds.join(', ')
+        });
+      }
+
+      console.log(`✅ Category validated: "${categoryId}" (${category.label})`);
       req.validCategory = category;
     } catch (err) {
-      return res.status(500).json({ error: 'Error validating category' });
+      console.error('❌ Error validating category:', err.message);
+      return res.status(500).json({
+        error: 'Error validating category',
+        details: err.message
+      });
     }
   }
   next();

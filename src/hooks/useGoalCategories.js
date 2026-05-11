@@ -27,6 +27,7 @@ export function useGoalCategories() {
         const { data, timestamp } = JSON.parse(cached);
         if (Date.now() - timestamp < CACHE_DURATION) {
           console.log('📦 Using cached goal categories');
+          console.log(`   Categories: ${data.map(c => c.id).join(', ')}`);
           setCategories(data);
           setLoading(false);
           return;
@@ -38,13 +39,25 @@ export function useGoalCategories() {
       const response = await fetch('/api/meta/goal-categories');
 
       if (!response.ok) {
-        throw new Error(`Failed to fetch categories: ${response.status}`);
+        const errorText = await response.text();
+        throw new Error(`API error ${response.status}: ${errorText}`);
       }
 
       const data = await response.json();
+      console.log('📋 API Response:', data);
 
       if (!data.success) {
-        throw new Error(data.error || 'Failed to fetch categories');
+        throw new Error(data.error || 'API returned success: false');
+      }
+
+      // Validate response structure
+      if (!Array.isArray(data.categories)) {
+        throw new Error('Invalid API response: categories is not an array');
+      }
+
+      if (data.categories.length === 0) {
+        console.warn('⚠️  API returned 0 categories. Database might not be seeded yet.');
+        throw new Error('No categories found in database. Please seed categories first.');
       }
 
       // Cache the response
@@ -54,12 +67,25 @@ export function useGoalCategories() {
       }));
 
       console.log(`✅ Loaded ${data.categories.length} goal categories from API`);
-      console.log('Available categories:', data.categories.map(c => `${c.icon} ${c.label}`).join(', '));
+      console.table(data.categories.map(c => ({
+        ID: c.id,
+        Label: c.label,
+        Icon: c.icon,
+        Active: c.isActive !== false ? '✓' : '✗'
+      })));
 
-      setCategories(data.categories);
+      // Filter to only active categories
+      const activeCategories = data.categories.filter(c => c.isActive !== false);
+      console.log(`📍 Active categories: ${activeCategories.map(c => `${c.icon} ${c.label}`).join(', ')}`);
+
+      if (activeCategories.length === 0) {
+        throw new Error('No active categories found. Check isActive field in database.');
+      }
+
+      setCategories(activeCategories);
       setError(null);
     } catch (err) {
-      console.error('❌ Error fetching goal categories:', err);
+      console.error('❌ Error fetching goal categories:', err.message);
       setError(err.message);
 
       // Fallback: Try to use cached data even if stale
@@ -67,9 +93,11 @@ export function useGoalCategories() {
       if (cached) {
         const { data } = JSON.parse(cached);
         console.warn('⚠️  Using stale cached categories due to fetch error');
-        setCategories(data);
+        const activeCategories = data.filter(c => c.isActive !== false);
+        setCategories(activeCategories);
       } else {
-        // Last resort: Return empty categories
+        // Last resort: Return empty categories with clear error
+        console.error('🔴 No cached categories available. Goal creation will fail.');
         setCategories([]);
       }
     } finally {

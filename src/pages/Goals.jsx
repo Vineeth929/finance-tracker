@@ -41,16 +41,17 @@ export default function GoalsPage() {
     description: '',
     targetAmount: '',
     deadline: '',
-    category: categories.length > 0 ? categories[0].id : '', // Use first category from API as default
+    category: '', // Will be set once categories load
   });
 
   // Update formData category when categories load
   React.useEffect(() => {
-    if (categories.length > 0 && !formData.category) {
+    if (categories.length > 0) {
       setFormData(prev => ({
         ...prev,
-        category: categories[0].id
+        category: prev.category || categories[0].id // Use first category if not set
       }));
+      console.log('✅ Form initialized with first category:', categories[0].id);
     }
   }, [categories]);
 
@@ -60,22 +61,44 @@ export default function GoalsPage() {
     setLoading(true);
 
     try {
+      // Validation 1: Check if categories are loaded
+      if (categories.length === 0) {
+        throw new Error('Categories are not available yet. Please wait for them to load, or refresh the page.');
+      }
+
+      // Validation 2: Check category is selected
+      if (!formData.category || formData.category.trim() === '') {
+        throw new Error('Please select a goal category');
+      }
+
+      // Validation 3: Check title
       if (!formData.title.trim()) {
         throw new Error('Goal title is required');
       }
+
+      // Validation 4: Check amount
       if (!formData.targetAmount || parseFloat(formData.targetAmount) <= 0) {
         throw new Error('Target amount must be greater than 0');
       }
 
-      // Validate category against dynamically fetched categories
-      if (!validateCategory(formData.category)) {
-        const validIds = getValidCategoryIds();
+      // Validation 5: Check category is valid and active
+      const selectedCategory = categories.find(c => c.id === formData.category);
+      if (!selectedCategory) {
+        const validIds = categories.map(c => c.id);
         throw new Error(`Invalid category: "${formData.category}". Valid categories: ${validIds.join(', ')}`);
       }
 
+      if (selectedCategory.isActive === false) {
+        throw new Error(`Category "${selectedCategory.label}" is inactive. Please select another.`);
+      }
+
       // Log for debugging
-      console.log('📝 Creating goal with category:', formData.category);
-      console.log('Available categories:', categories.map(c => c.id).join(', '));
+      console.log('✅ Form validation passed');
+      console.log('📝 Creating goal with:');
+      console.log('   Title:', formData.title);
+      console.log('   Category ID:', formData.category);
+      console.log('   Category Label:', selectedCategory.label);
+      console.log('   Amount:', formData.targetAmount);
 
       await addGoal({
         ...formData,
@@ -187,8 +210,18 @@ export default function GoalsPage() {
       {categoriesError && (
         <motion.div variants={itemVariants}>
           <div className="p-4 rounded-lg border-l-4" style={{ borderColor: 'var(--emotion-expenses)', background: 'var(--emotion-expenses-bg)' }}>
-            <p className="text-sm" style={{ color: 'var(--emotion-expenses)' }}>
-              ⚠️ Could not load goal categories. {categoriesError}
+            <p className="text-sm font-bold mb-2" style={{ color: 'var(--emotion-expenses)' }}>
+              🔴 Could not load goal categories
+            </p>
+            <p className="text-sm mb-2" style={{ color: 'var(--emotion-expenses)' }}>
+              {categoriesError}
+            </p>
+            <p className="text-xs" style={{ color: 'var(--emotion-expenses)' }}>
+              <strong>Troubleshooting:</strong><br/>
+              1. Make sure the backend seed script has been run: <code>node backend/seeds/seedGoalCategories.js</code><br/>
+              2. Check that the database has GoalCategory documents<br/>
+              3. Try refreshing the page<br/>
+              4. Clear browser cache: <code>sessionStorage.removeItem('goalCategories')</code>
             </p>
           </div>
         </motion.div>
@@ -199,9 +232,28 @@ export default function GoalsPage() {
         <motion.div variants={itemVariants}>
           <GlassCard className="p-6">
             <h2 className="text-xl font-bold mb-4">Create New Goal</h2>
-            {categories.length === 0 ? (
-              <div className="text-center py-6">
-                <p style={{ color: 'var(--text-secondary)' }}>Loading categories...</p>
+            {categoriesLoading ? (
+              <div className="text-center py-8">
+                <p className="animate-pulse" style={{ color: 'var(--text-secondary)' }}>
+                  ⏳ Loading categories from server...
+                </p>
+              </div>
+            ) : categories.length === 0 ? (
+              <div className="text-center py-8 p-4 rounded-lg" style={{ background: 'var(--emotion-expenses-bg)' }}>
+                <p className="font-bold mb-3" style={{ color: 'var(--emotion-expenses)' }}>
+                  ❌ No categories available
+                </p>
+                <p className="text-sm mb-3" style={{ color: 'var(--emotion-expenses)' }}>
+                  The database has no active goal categories. This typically means:
+                </p>
+                <ul className="text-sm text-left max-w-md mx-auto space-y-2 mb-4" style={{ color: 'var(--emotion-expenses)' }}>
+                  <li>• The seed script hasn't been run yet</li>
+                  <li>• All categories are marked as inactive (isActive: false)</li>
+                  <li>• Database connection issue</li>
+                </ul>
+                <p className="text-xs font-mono" style={{ color: 'var(--emotion-expenses)' }}>
+                  Run: <code className="bg-black/20 px-2 py-1 rounded">node backend/seeds/seedGoalCategories.js</code>
+                </p>
               </div>
             ) : (
               <form onSubmit={handleAddGoal} className="space-y-4">
