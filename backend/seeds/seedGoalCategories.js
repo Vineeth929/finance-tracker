@@ -115,11 +115,16 @@ async function seedCategories() {
 
     await mongoose.connection.close();
     console.log('\n✅ Seed complete!');
-    process.exit(0);
+    return true;
   } catch (err) {
     console.error('❌ Seed failed:', err.message);
-    process.exit(1);
+    return false;
   }
 }
 
-seedCategories();
+// Only run as standalone script if called directly
+if (require.main === module) {
+  seedCategories().then(success => {
+    process.exit(success ? 0 : 1);
+  });
+}
