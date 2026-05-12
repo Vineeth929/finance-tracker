@@ -21,17 +21,15 @@ export class ErrorBoundary extends React.Component {
   }
 
   componentDidCatch(error, errorInfo) {
-    // Log error for debugging
-    console.error('Error caught by boundary:', error);
-    console.error('Error info:', errorInfo);
+    console.error('❌ [ERROR_BOUNDARY] Error caught by boundary:', error?.message || error);
+    console.error('   Error type:', error?.constructor?.name);
+    console.error('   Component stack:', errorInfo?.componentStack);
+    console.error('   Full error:', error);
 
-    // Update state with error details
     this.setState({
       error,
       errorInfo,
     });
-
-    // Could also log to external service here
   }
 
   handleReset = () => {

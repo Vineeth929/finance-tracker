@@ -70,7 +70,10 @@ function AppContent() {
   const { isAuthenticated } = useAuth();
   const { darkMode } = useApp();
 
+  console.log('🔍 [APPCONTENT] Render - authLoading:', authLoading, 'isAuthenticated:', isAuthenticated);
+
   if (authLoading) {
+    console.log('⏳ [APPCONTENT] Still loading auth, showing spinner...');
     return (
       <div className={`min-h-screen flex items-center justify-center ${
         darkMode
@@ -84,6 +87,8 @@ function AppContent() {
       </div>
     );
   }
+
+  console.log('✅ [APPCONTENT] Auth loaded, rendering routes...');
 
   return (
     <Routes>
@@ -113,6 +118,7 @@ function AppContent() {
 }
 
 export default function App() {
+  console.log('🚀 [APP] Root App component rendering...');
   return (
     <ErrorBoundary>
       <Router>
