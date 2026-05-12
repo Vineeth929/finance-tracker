@@ -1,4 +1,5 @@
-import React, { createContext, useContext, useEffect, useState } from 'react';
+import React, { createContext, useContext, useEffect, useState, useMemo } from 'react';
+import { createAPIClient } from '../api/client';
 
 const AppContext = createContext();
 
@@ -36,35 +37,13 @@ export const AppProvider = ({ children }) => {
     }
   };
 
-  const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
-
-  const api = async (endpoint, options = {}) => {
-    const token = localStorage.getItem('authToken');
-    const response = await fetch(`${apiUrl}${endpoint}`, {
-      ...options,
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: token ? `Bearer ${token}` : '',
-        ...options.headers,
-      },
-    });
-    if (!response.ok) {
-      let errorMessage = `API error: ${response.statusText}`;
-      try {
-        const errorData = await response.json();
-        errorMessage = errorData.error || errorData.message || errorMessage;
-      } catch (e) {
-        // Fall back to statusText if response isn't JSON
-      }
-      throw new Error(errorMessage);
-    }
-    return response.json();
-  };
+  // Create API client once and memoize
+  const apiClient = useMemo(() => createAPIClient(), []);
 
   const fetchTransactions = async () => {
     try {
       setLoading(true);
-      const data = await api('/transactions');
+      const data = await apiClient.transactions.list();
       setTransactions(data || []);
     } catch (err) {
       setError(err.message);
@@ -76,7 +55,7 @@ export const AppProvider = ({ children }) => {
 
   const fetchBudgets = async () => {
     try {
-      const data = await api('/budgets');
+      const data = await apiClient.budgets.list();
       setBudgets(data || { Needs: 0, Wants: 0, 'Savings & Investment': 0 });
     } catch (err) {
       console.error('Failed to fetch budgets:', err);
@@ -86,7 +65,7 @@ export const AppProvider = ({ children }) => {
 
   const fetchGoals = async () => {
     try {
-      const data = await api('/goals');
+      const data = await apiClient.goals.list();
       setGoals(data || []);
     } catch (err) {
       console.error('Failed to fetch goals:', err);
@@ -97,10 +76,7 @@ export const AppProvider = ({ children }) => {
 
   const addTransaction = async (transaction) => {
     try {
-      const newTx = await api('/transactions', {
-        method: 'POST',
-        body: JSON.stringify(transaction),
-      });
+      const newTx = await apiClient.transactions.create(transaction);
       setTransactions([newTx, ...transactions]);
       return newTx;
     } catch (err) {
@@ -111,7 +87,7 @@ export const AppProvider = ({ children }) => {
 
   const deleteTransaction = async (id) => {
     try {
-      await api(`/transactions/${id}`, { method: 'DELETE' });
+      await apiClient.transactions.delete(id);
       setTransactions(transactions.filter(t => t._id !== id));
     } catch (err) {
       setError(err.message);
@@ -121,10 +97,7 @@ export const AppProvider = ({ children }) => {
 
   const updateBudget = async (budget) => {
     try {
-      const updated = await api('/budgets', {
-        method: 'PUT',
-        body: JSON.stringify(budget),
-      });
+      const updated = await apiClient.budgets.update(budget);
       setBudgets(updated);
       return updated;
     } catch (err) {
@@ -135,10 +108,7 @@ export const AppProvider = ({ children }) => {
 
   const addGoal = async (goal) => {
     try {
-      const newGoal = await api('/goals', {
-        method: 'POST',
-        body: JSON.stringify(goal),
-      });
+      const newGoal = await apiClient.goals.create(goal);
       setGoals([...goals, newGoal]);
       return newGoal;
     } catch (err) {
@@ -149,10 +119,7 @@ export const AppProvider = ({ children }) => {
 
   const updateGoal = async (id, updates) => {
     try {
-      const updated = await api(`/goals/${id}`, {
-        method: 'PUT',
-        body: JSON.stringify(updates),
-      });
+      const updated = await apiClient.goals.update(id, updates);
       setGoals(goals.map(g => g._id === id ? updated : g));
       return updated;
     } catch (err) {
@@ -163,10 +130,7 @@ export const AppProvider = ({ children }) => {
 
   const addGoalProgress = async (id, amount) => {
     try {
-      const updated = await api(`/goals/${id}/add-progress`, {
-        method: 'PUT',
-        body: JSON.stringify({ amount }),
-      });
+      const updated = await apiClient.goals.addProgress(id, amount);
       setGoals(goals.map(g => g._id === id ? updated : g));
       return updated;
     } catch (err) {
@@ -177,7 +141,7 @@ export const AppProvider = ({ children }) => {
 
   const deleteGoal = async (id) => {
     try {
-      await api(`/goals/${id}`, { method: 'DELETE' });
+      await apiClient.goals.delete(id);
       setGoals(goals.filter(g => g._id !== id));
     } catch (err) {
       setError(err.message);
@@ -194,14 +158,8 @@ export const AppProvider = ({ children }) => {
     localStorage.removeItem('authToken');
   };
 
-  useEffect(() => {
-    const token = localStorage.getItem('authToken');
-    if (token) {
-      fetchTransactions();
-      fetchBudgets();
-      fetchGoals();
-    }
-  }, []);
+  // Data initialization is now handled by useInitializeApp hook
+  // This ensures auth is verified before data is fetched (no race condition)
 
   useEffect(() => {
     if (darkMode) {
@@ -230,7 +188,6 @@ export const AppProvider = ({ children }) => {
     setSidebarCollapsed,
     loading,
     error,
-    api,
     fetchTransactions,
     fetchBudgets,
     fetchGoals,
@@ -242,7 +199,6 @@ export const AppProvider = ({ children }) => {
     addGoalProgress,
     deleteGoal,
     logout,
-    apiUrl,
   };
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;

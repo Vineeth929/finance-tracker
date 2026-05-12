@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { useApp } from '../context/AppContext';
+import { useModals } from '../context/ModalContext';
 import GlassCard from '../components/ui/GlassCard';
 import AddIncome from '../components/AddIncome';
 import AddExpense from '../components/AddExpense';
@@ -8,7 +9,6 @@ import TransactionList from '../components/TransactionList';
 import NarrativeChart from '../components/ui/NarrativeChart';
 import CuriosityWidget from '../components/ui/CuriosityWidget';
 import ConfirmDialog from '../components/ui/ConfirmDialog';
-import Toast from '../components/ui/Toast';
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -32,6 +32,7 @@ const itemVariants = {
 
 export default function TransactionsPage() {
   const { transactions, addTransaction, deleteTransaction } = useApp();
+  const { showToast } = useModals();
   const [showAddIncome, setShowAddIncome] = useState(false);
   const [showAddExpense, setShowAddExpense] = useState(false);
 
@@ -41,13 +42,6 @@ export default function TransactionsPage() {
     type: null, // 'add-income', 'add-expense', 'delete'
     data: null,
     isLoading: false
-  });
-
-  // Toast notification state
-  const [toast, setToast] = useState({
-    isOpen: false,
-    message: '',
-    type: 'success'
   });
 
   const handleAddTransaction = async (tx) => {
@@ -63,20 +57,15 @@ export default function TransactionsPage() {
     setConfirmDialog(prev => ({ ...prev, isLoading: true }));
     try {
       await addTransaction(confirmDialog.data);
-      setToast({
-        isOpen: true,
-        message: `Transaction added: ₹${confirmDialog.data.amount.toLocaleString('en-IN')} ${confirmDialog.data.type === 'income' ? 'income' : 'expense'}`,
-        type: 'success'
-      });
+      showToast(
+        `Transaction added: ₹${confirmDialog.data.amount.toLocaleString('en-IN')} ${confirmDialog.data.type === 'income' ? 'income' : 'expense'}`,
+        'success'
+      );
       setShowAddIncome(false);
       setShowAddExpense(false);
       setConfirmDialog({ isOpen: false, type: null, data: null, isLoading: false });
     } catch (err) {
-      setToast({
-        isOpen: true,
-        message: `Failed to add transaction: ${err.message}`,
-        type: 'error'
-      });
+      showToast(`Failed to add transaction: ${err.message}`, 'error');
       console.error('Failed to add transaction:', err);
     } finally {
       setConfirmDialog(prev => ({ ...prev, isLoading: false }));
@@ -96,18 +85,10 @@ export default function TransactionsPage() {
     setConfirmDialog(prev => ({ ...prev, isLoading: true }));
     try {
       await deleteTransaction(confirmDialog.data.id);
-      setToast({
-        isOpen: true,
-        message: 'Transaction deleted',
-        type: 'success'
-      });
+      showToast('Transaction deleted', 'success');
       setConfirmDialog({ isOpen: false, type: null, data: null, isLoading: false });
     } catch (err) {
-      setToast({
-        isOpen: true,
-        message: `Failed to delete transaction: ${err.message}`,
-        type: 'error'
-      });
+      showToast(`Failed to delete transaction: ${err.message}`, 'error');
       console.error('Failed to delete transaction:', err);
     } finally {
       setConfirmDialog(prev => ({ ...prev, isLoading: false }));
@@ -320,13 +301,6 @@ export default function TransactionsPage() {
         />
       )}
 
-      {/* Success/Error Toast Notification */}
-      <Toast
-        isOpen={toast.isOpen}
-        message={toast.message}
-        type={toast.type}
-        onClose={() => setToast({ ...toast, isOpen: false })}
-      />
     </motion.div>
   );
 }

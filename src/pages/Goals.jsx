@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { useApp } from '../context/AppContext';
+import { useModals } from '../context/ModalContext';
 import { useGoalCategories } from '../hooks/useGoalCategories';
 import GlassCard from '../components/ui/GlassCard';
 import Badge from '../components/ui/Badge';
@@ -9,7 +10,6 @@ import MilestoneCard from '../components/ui/MilestoneCard';
 import CuriosityWidget from '../components/ui/CuriosityWidget';
 import SkeletonLoader from '../components/ui/SkeletonLoader';
 import ConfirmDialog from '../components/ui/ConfirmDialog';
-import Toast from '../components/ui/Toast';
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -33,6 +33,7 @@ const itemVariants = {
 
 export default function GoalsPage() {
   const { goals = [], addGoal, deleteGoal } = useApp();
+  const { showToast } = useModals();
   const { categories, loading: categoriesLoading, error: categoriesError, validateCategory, getValidCategoryIds } = useGoalCategories();
 
   const [showAddForm, setShowAddForm] = useState(false);
@@ -52,13 +53,6 @@ export default function GoalsPage() {
     type: null, // 'create' or 'delete'
     data: null,
     isLoading: false
-  });
-
-  // Toast notification state
-  const [toast, setToast] = useState({
-    isOpen: false,
-    message: '',
-    type: 'success'
   });
 
   // Update formData category when categories load
@@ -133,11 +127,7 @@ export default function GoalsPage() {
       });
 
       // Show success toast
-      setToast({
-        isOpen: true,
-        message: `Goal "${goalData.title}" created successfully! 🎯`,
-        type: 'success'
-      });
+      showToast(`Goal "${goalData.title}" created successfully! 🎯`, 'success');
 
       // Reset form
       setFormData({
@@ -152,11 +142,7 @@ export default function GoalsPage() {
       setConfirmDialog({ isOpen: false, type: null, data: null, isLoading: false });
     } catch (err) {
       setError(err.message);
-      setToast({
-        isOpen: true,
-        message: `Failed to create goal: ${err.message}`,
-        type: 'error'
-      });
+      showToast(`Failed to create goal: ${err.message}`, 'error');
       console.error('❌ Failed to add goal:', err);
     } finally {
       setConfirmDialog(prev => ({ ...prev, isLoading: false }));
@@ -177,20 +163,12 @@ export default function GoalsPage() {
     setConfirmDialog(prev => ({ ...prev, isLoading: true }));
     try {
       await deleteGoal(confirmDialog.data.id);
-      setToast({
-        isOpen: true,
-        message: 'Goal deleted successfully',
-        type: 'success'
-      });
+      showToast('Goal deleted successfully', 'success');
       setConfirmDialog({ isOpen: false, type: null, data: null, isLoading: false });
     } catch (err) {
       const errorMsg = `Failed to delete goal: ${err.message}`;
       setError(errorMsg);
-      setToast({
-        isOpen: true,
-        message: errorMsg,
-        type: 'error'
-      });
+      showToast(errorMsg, 'error');
       console.error('Failed to delete goal:', err);
     } finally {
       setConfirmDialog(prev => ({ ...prev, isLoading: false }));
@@ -681,13 +659,6 @@ export default function GoalsPage() {
         />
       )}
 
-      {/* Success/Error Toast Notification */}
-      <Toast
-        isOpen={toast.isOpen}
-        message={toast.message}
-        type={toast.type}
-        onClose={() => setToast({ ...toast, isOpen: false })}
-      />
     </motion.div>
   );
 }

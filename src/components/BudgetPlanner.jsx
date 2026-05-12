@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
 import { calculateBudgetStatus } from '../utils/calculations';
+import { useModals } from '../context/ModalContext';
 import ConfirmDialog from './ui/ConfirmDialog';
-import Toast from './ui/Toast';
 
 const CATEGORIES = ['Needs', 'Wants', 'Savings & Investment'];
 
 export default function BudgetPlanner({ transactions, budgets, onBudgetChange, selectedMonth }) {
+  const { showToast } = useModals();
   const [editingCategory, setEditingCategory] = useState(null);
   const [inputValue, setInputValue] = useState('');
   const [confirmDialog, setConfirmDialog] = useState({
@@ -13,12 +14,6 @@ export default function BudgetPlanner({ transactions, budgets, onBudgetChange, s
     category: null,
     newAmount: 0,
     isLoading: false
-  });
-
-  const [toast, setToast] = useState({
-    isOpen: false,
-    message: '',
-    type: 'success'
   });
 
   const safeBudgets = budgets || { Needs: 0, Wants: 0, 'Savings & Investment': 0 };
@@ -45,19 +40,11 @@ export default function BudgetPlanner({ transactions, budgets, onBudgetChange, s
     try {
       const { category, newAmount } = confirmDialog;
       await onBudgetChange({ ...safeBudgets, [category]: newAmount });
-      setToast({
-        isOpen: true,
-        message: `${category} budget updated to ₹${newAmount.toLocaleString('en-IN')}`,
-        type: 'success'
-      });
+      showToast(`${category} budget updated to ₹${newAmount.toLocaleString('en-IN')}`, 'success');
       setEditingCategory(null);
       setConfirmDialog({ isOpen: false, category: null, newAmount: 0, isLoading: false });
     } catch (err) {
-      setToast({
-        isOpen: true,
-        message: `Failed to update budget: ${err.message}`,
-        type: 'error'
-      });
+      showToast(`Failed to update budget: ${err.message}`, 'error');
       console.error('Failed to update budget:', err);
     } finally {
       setConfirmDialog(prev => ({ ...prev, isLoading: false }));
@@ -124,13 +111,6 @@ export default function BudgetPlanner({ transactions, budgets, onBudgetChange, s
         isLoading={confirmDialog.isLoading}
       />
 
-      {/* Success/Error Toast Notification */}
-      <Toast
-        isOpen={toast.isOpen}
-        message={toast.message}
-        type={toast.type}
-        onClose={() => setToast({ ...toast, isOpen: false })}
-      />
     </div>
   );
 }

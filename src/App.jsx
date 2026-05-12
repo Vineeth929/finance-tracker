@@ -2,6 +2,11 @@ import React from 'react';
 import { HashRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { AppProvider, useApp } from './context/AppContext';
+import { ModalProvider } from './context/ModalContext';
+import { ErrorBoundary } from './components/ErrorBoundary';
+import GlobalToastRenderer from './components/ui/GlobalToastRenderer';
+import GlobalModalRenderer from './components/GlobalModalRenderer';
+import { useInitializeApp } from './hooks/useInitializeApp';
 
 // v2.0 - Premium fintech dashboard with responsive design
 
@@ -59,10 +64,11 @@ function ProtectedLayout({ children }) {
 }
 
 function AppContent() {
-  const { isAuthenticated, loading } = useAuth();
+  const { authLoading } = useInitializeApp();
+  const { isAuthenticated } = useAuth();
   const { darkMode } = useApp();
 
-  if (loading) {
+  if (authLoading) {
     return (
       <div className={`min-h-screen flex items-center justify-center ${
         darkMode
@@ -106,12 +112,18 @@ function AppContent() {
 
 export default function App() {
   return (
-    <Router>
-      <AuthProvider>
-        <AppProvider>
-          <AppContent />
-        </AppProvider>
-      </AuthProvider>
-    </Router>
+    <ErrorBoundary>
+      <Router>
+        <AuthProvider>
+          <ModalProvider>
+            <AppProvider>
+              <GlobalToastRenderer />
+              <GlobalModalRenderer />
+              <AppContent />
+            </AppProvider>
+          </ModalProvider>
+        </AuthProvider>
+      </Router>
+    </ErrorBoundary>
   );
 }

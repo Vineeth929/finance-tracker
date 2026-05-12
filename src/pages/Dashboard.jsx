@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { useApp } from '../context/AppContext';
-import { api } from '../hooks/useApi';
+import { createAPIClient } from '../api/client';
 import { useNavigate } from 'react-router-dom';
 import { useFinancialHeartbeat } from '../hooks/useFinancialHeartbeat';
 import AmbientBackground from '../components/ui/AmbientBackground';
@@ -37,6 +37,7 @@ export default function DashboardPage() {
   const { transactions, budgets, goals } = useApp();
   const navigate = useNavigate();
   const heartbeat = useFinancialHeartbeat();
+  const apiClient = useMemo(() => createAPIClient(), []);
   const [healthScore, setHealthScore] = useState(null);
   const [insights, setInsights] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -49,11 +50,11 @@ export default function DashboardPage() {
     try {
       setLoading(true);
       const [scoreData, insightsData] = await Promise.all([
-        api.getHealthScore().catch(err => {
+        apiClient.insights.healthScore().catch(err => {
           console.error('Failed to fetch health score:', err);
           return null;
         }),
-        api.getSpendingInsights().catch(err => {
+        apiClient.insights.spending().catch(err => {
           console.error('Failed to fetch insights:', err);
           return null;
         }),

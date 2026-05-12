@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import { api } from '../hooks/useApi';
+import React, { useEffect, useState, useMemo } from 'react';
+import { createAPIClient } from '../api/client';
 import SkeletonLoader from '../components/ui/SkeletonLoader';
 import Badge from '../components/ui/Badge';
 import { Newspaper, TrendingUp, AlertCircle, ExternalLink } from 'lucide-react';
@@ -24,6 +24,7 @@ const categoryGradients = {
 };
 
 export default function NewsPage() {
+  const apiClient = useMemo(() => createAPIClient(), []);
   const [articles, setArticles] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -37,7 +38,7 @@ export default function NewsPage() {
     try {
       setLoading(true);
       setError(null);
-      const data = await api.getNews();
+      const data = await apiClient.news.list();
       setArticles(data.articles || []);
     } catch (err) {
       setError('Failed to load news. Please try again later.');
@@ -55,7 +56,7 @@ export default function NewsPage() {
       try {
         setLoading(true);
         setError(null);
-        const data = await api.getNewsByCategory(cat);
+        const data = await apiClient.news.byCategory(cat);
         setArticles(data.articles || []);
       } catch (err) {
         setError('Failed to load category. Please try again.');

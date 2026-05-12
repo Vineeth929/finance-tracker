@@ -1,5 +1,5 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
-import { api } from '../hooks/useApi';
+import React, { createContext, useContext, useState, useEffect, useMemo } from 'react';
+import { createAPIClient } from '../api/client';
 
 const AuthContext = createContext();
 
@@ -7,6 +7,9 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+
+  // Create API client once
+  const apiClient = useMemo(() => createAPIClient(), []);
 
   // Check if user is logged in on mount
   useEffect(() => {
@@ -21,7 +24,7 @@ export const AuthProvider = ({ children }) => {
   const verifyToken = async (token) => {
     try {
       setLoading(true);
-      const response = await api.getUser(token);
+      const response = await apiClient.auth.getUser(token);
       if (response) {
         setUser(response);
         setError(null);
@@ -40,7 +43,7 @@ export const AuthProvider = ({ children }) => {
       setLoading(true);
       setError(null);
 
-      const response = await api.signup(fullName, email, password, confirmPassword);
+      const response = await apiClient.auth.signup(fullName, email, password, confirmPassword);
 
       if (response.token) {
         localStorage.setItem('authToken', response.token);
@@ -48,7 +51,7 @@ export const AuthProvider = ({ children }) => {
         return { success: true, data: response };
       }
     } catch (err) {
-      const message = err.response?.data?.message || 'Signup failed';
+      const message = err.message || 'Signup failed';
       setError(message);
       return { success: false, error: message };
     } finally {
@@ -61,7 +64,7 @@ export const AuthProvider = ({ children }) => {
       setLoading(true);
       setError(null);
 
-      const response = await api.login(email, password);
+      const response = await apiClient.auth.login(email, password);
 
       if (response.token) {
         localStorage.setItem('authToken', response.token);
@@ -69,7 +72,7 @@ export const AuthProvider = ({ children }) => {
         return { success: true, data: response };
       }
     } catch (err) {
-      const message = err.response?.data?.message || 'Login failed';
+      const message = err.message || 'Login failed';
       setError(message);
       return { success: false, error: message };
     } finally {
@@ -88,11 +91,11 @@ export const AuthProvider = ({ children }) => {
       setLoading(true);
       setError(null);
 
-      const response = await api.updateProfile(fullName, avatar, preferences);
+      const response = await apiClient.auth.updateProfile(fullName, avatar, preferences);
       setUser(response.user);
       return { success: true, data: response };
     } catch (err) {
-      const message = err.response?.data?.message || 'Profile update failed';
+      const message = err.message || 'Profile update failed';
       setError(message);
       return { success: false, error: message };
     } finally {
@@ -105,7 +108,7 @@ export const AuthProvider = ({ children }) => {
       setLoading(true);
       setError(null);
 
-      const response = await api.updatePassword(oldPassword, newPassword, confirmPassword);
+      const response = await apiClient.auth.updatePassword(oldPassword, newPassword, confirmPassword);
 
       if (response.token) {
         localStorage.setItem('authToken', response.token);
@@ -113,7 +116,7 @@ export const AuthProvider = ({ children }) => {
 
       return { success: true, message: response.message };
     } catch (err) {
-      const message = err.response?.data?.message || 'Password update failed';
+      const message = err.message || 'Password update failed';
       setError(message);
       return { success: false, error: message };
     } finally {

@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import { api } from '../hooks/useApi';
+import React, { useEffect, useState, useMemo } from 'react';
+import { createAPIClient } from '../api/client';
 import SkeletonLoader from '../components/ui/SkeletonLoader';
 import GlassCard from '../components/ui/GlassCard';
 import LiveMarketTicker from '../components/markets/LiveMarketTicker';
@@ -13,6 +13,7 @@ import { TrendingUp, TrendingDown, Activity, BarChart3, Zap } from 'lucide-react
 import { motion } from 'framer-motion';
 
 export default function MarketsPage() {
+  const apiClient = useMemo(() => createAPIClient(), []);
   const [stocks, setStocks] = useState([]);
   const [overview, setOverview] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -28,11 +29,11 @@ export default function MarketsPage() {
   const fetchMarkets = async () => {
     try {
       const [stocksData, overviewData] = await Promise.all([
-        api.getMarkets().catch(err => {
+        apiClient.markets.crypto().catch(err => {
           console.error('Markets fetch error:', err);
           return { cryptos: [] };
         }),
-        api.getMarketOverview().catch(err => {
+        apiClient.markets.overview().catch(err => {
           console.error('Overview fetch error:', err);
           return null;
         }),
