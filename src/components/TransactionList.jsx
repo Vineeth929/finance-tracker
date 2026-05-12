@@ -53,12 +53,8 @@ export default function TransactionList({ transactions, onDelete }) {
                 {tx.type === 'income' ? '+' : '-'}₹{tx.amount.toFixed(2)}
               </p>
               <button
-                onClick={() => {
-                  if (confirm('Delete this transaction?')) {
-                    onDelete(tx.id);
-                  }
-                }}
-                className="btn btn-secondary text-red-600 dark:text-red-400 px-2 py-1 text-sm"
+                onClick={() => onDelete(tx._id, tx)}
+                className="btn btn-secondary text-red-600 dark:text-red-400 px-2 py-1 text-sm hover:opacity-80 transition-opacity"
               >
                 ❌
               </button>

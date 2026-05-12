@@ -8,6 +8,7 @@ import ProgressAnimation from '../components/ui/ProgressAnimation';
 import MilestoneCard from '../components/ui/MilestoneCard';
 import CuriosityWidget from '../components/ui/CuriosityWidget';
 import SkeletonLoader from '../components/ui/SkeletonLoader';
+import ConfirmDialog from '../components/ui/ConfirmDialog';
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -44,6 +45,14 @@ export default function GoalsPage() {
     category: '', // Will be set once categories load
   });
 
+  // Confirm dialog state
+  const [confirmDialog, setConfirmDialog] = useState({
+    isOpen: false,
+    type: null, // 'create' or 'delete'
+    data: null,
+    isLoading: false
+  });
+
   // Update formData category when categories load
   React.useEffect(() => {
     if (categories.length > 0) {
@@ -58,7 +67,6 @@ export default function GoalsPage() {
   const handleAddGoal = async (e) => {
     e.preventDefault();
     setError(null);
-    setLoading(true);
 
     try {
       // Validation 1: Check if categories are loaded
@@ -92,22 +100,31 @@ export default function GoalsPage() {
         throw new Error(`Category "${selectedCategory.label}" is inactive. Please select another.`);
       }
 
-      // Log for debugging
-      console.log('✅ Form validation passed');
-      console.log('📝 Creating goal with:');
-      console.log('   Title:', formData.title);
-      console.log('   Category ID:', formData.category);
-      console.log('   Category Label:', selectedCategory.label);
-      console.log('   Amount:', formData.targetAmount);
+      // Show confirmation dialog
+      setConfirmDialog({
+        isOpen: true,
+        type: 'create',
+        data: { ...formData, selectedCategory, targetAmount: parseFloat(formData.targetAmount) },
+        isLoading: false
+      });
+    } catch (err) {
+      setError(err.message);
+      console.error('❌ Failed to add goal:', err);
+    }
+  };
 
+  const handleConfirmAddGoal = async () => {
+    setConfirmDialog(prev => ({ ...prev, isLoading: true }));
+    try {
+      const { selectedCategory, targetAmount, ...goalData } = confirmDialog.data;
       await addGoal({
-        ...formData,
-        targetAmount: parseFloat(formData.targetAmount),
+        ...goalData,
+        targetAmount,
         currentAmount: 0,
         status: 'Active',
       });
 
-      // Reset form to first category
+      // Reset form
       setFormData({
         title: '',
         description: '',
@@ -116,11 +133,35 @@ export default function GoalsPage() {
         category: categories.length > 0 ? categories[0].id : '',
       });
       setShowAddForm(false);
+      setConfirmDialog({ isOpen: false, type: null, data: null, isLoading: false });
     } catch (err) {
       setError(err.message);
       console.error('❌ Failed to add goal:', err);
     } finally {
-      setLoading(false);
+      setConfirmDialog(prev => ({ ...prev, isLoading: false }));
+    }
+  };
+
+  const handleDeleteGoal = (goalId) => {
+    const goal = goals.find(g => g._id === goalId);
+    setConfirmDialog({
+      isOpen: true,
+      type: 'delete',
+      data: { id: goalId, goal },
+      isLoading: false
+    });
+  };
+
+  const handleConfirmDelete = async () => {
+    setConfirmDialog(prev => ({ ...prev, isLoading: true }));
+    try {
+      await deleteGoal(confirmDialog.data.id);
+      setConfirmDialog({ isOpen: false, type: null, data: null, isLoading: false });
+    } catch (err) {
+      setError(`Failed to delete goal: ${err.message}`);
+      console.error('Failed to delete goal:', err);
+    } finally {
+      setConfirmDialog(prev => ({ ...prev, isLoading: false }));
     }
   };
 
@@ -587,6 +628,36 @@ export default function GoalsPage() {
             ))}
           </motion.div>
         </motion.div>
+      )}
+
+      {/* Confirmation Dialogs */}
+      {confirmDialog.type === 'create' && (
+        <ConfirmDialog
+          isOpen={confirmDialog.isOpen}
+          title="Create New Goal"
+          message="Create this savings goal?"
+          details={`${confirmDialog.data?.selectedCategory?.icon} ${confirmDialog.data?.title} • ₹${confirmDialog.data?.targetAmount?.toLocaleString('en-IN')}`}
+          confirmText="Create Goal"
+          cancelText="Cancel"
+          onConfirm={handleConfirmAddGoal}
+          onCancel={() => setConfirmDialog({ isOpen: false, type: null, data: null, isLoading: false })}
+          isLoading={confirmDialog.isLoading}
+        />
+      )}
+
+      {confirmDialog.type === 'delete' && (
+        <ConfirmDialog
+          isOpen={confirmDialog.isOpen}
+          title="Delete Goal"
+          message="Are you sure you want to delete this goal? This cannot be undone."
+          details={`${confirmDialog.data?.goal?.title} • ₹${confirmDialog.data?.goal?.targetAmount?.toLocaleString('en-IN')}`}
+          confirmText="Delete Goal"
+          cancelText="Cancel"
+          onConfirm={handleConfirmDelete}
+          onCancel={() => setConfirmDialog({ isOpen: false, type: null, data: null, isLoading: false })}
+          isLoading={confirmDialog.isLoading}
+          isDangerous={true}
+        />
       )}
     </motion.div>
   );

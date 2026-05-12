@@ -7,6 +7,7 @@ import AddExpense from '../components/AddExpense';
 import TransactionList from '../components/TransactionList';
 import NarrativeChart from '../components/ui/NarrativeChart';
 import CuriosityWidget from '../components/ui/CuriosityWidget';
+import ConfirmDialog from '../components/ui/ConfirmDialog';
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -33,10 +34,56 @@ export default function TransactionsPage() {
   const [showAddIncome, setShowAddIncome] = useState(false);
   const [showAddExpense, setShowAddExpense] = useState(false);
 
+  // Confirm dialog state
+  const [confirmDialog, setConfirmDialog] = useState({
+    isOpen: false,
+    type: null, // 'add-income', 'add-expense', 'delete'
+    data: null,
+    isLoading: false
+  });
+
   const handleAddTransaction = async (tx) => {
-    await addTransaction(tx);
-    setShowAddIncome(false);
-    setShowAddExpense(false);
+    setConfirmDialog(prev => ({
+      ...prev,
+      isOpen: true,
+      type: tx.type === 'income' ? 'add-income' : 'add-expense',
+      data: tx
+    }));
+  };
+
+  const handleConfirmAdd = async () => {
+    setConfirmDialog(prev => ({ ...prev, isLoading: true }));
+    try {
+      await addTransaction(confirmDialog.data);
+      setShowAddIncome(false);
+      setShowAddExpense(false);
+      setConfirmDialog({ isOpen: false, type: null, data: null, isLoading: false });
+    } catch (err) {
+      console.error('Failed to add transaction:', err);
+    } finally {
+      setConfirmDialog(prev => ({ ...prev, isLoading: false }));
+    }
+  };
+
+  const handleDeleteTransaction = (id, tx) => {
+    setConfirmDialog({
+      isOpen: true,
+      type: 'delete',
+      data: { id, transaction: tx },
+      isLoading: false
+    });
+  };
+
+  const handleConfirmDelete = async () => {
+    setConfirmDialog(prev => ({ ...prev, isLoading: true }));
+    try {
+      await deleteTransaction(confirmDialog.data.id);
+      setConfirmDialog({ isOpen: false, type: null, data: null, isLoading: false });
+    } catch (err) {
+      console.error('Failed to delete transaction:', err);
+    } finally {
+      setConfirmDialog(prev => ({ ...prev, isLoading: false }));
+    }
   };
 
   // Analyze spending patterns
@@ -197,9 +244,53 @@ export default function TransactionsPage() {
           <h2 className="text-lg sm:text-xl font-bold mb-4 sm:mb-6">
             All Transactions {transactions?.length > 0 && `(${transactions.length})`}
           </h2>
-          <TransactionList transactions={transactions} onDelete={deleteTransaction} />
+          <TransactionList transactions={transactions} onDelete={handleDeleteTransaction} />
         </GlassCard>
       </motion.div>
+
+      {/* Confirmation Dialogs */}
+      {confirmDialog.type === 'add-income' && (
+        <ConfirmDialog
+          isOpen={confirmDialog.isOpen}
+          title="Confirm Income"
+          message="Add this income transaction?"
+          details={`Amount: ₹${confirmDialog.data?.amount?.toLocaleString('en-IN')} | Type: ${confirmDialog.data?.description}`}
+          confirmText="Add Income"
+          cancelText="Cancel"
+          onConfirm={handleConfirmAdd}
+          onCancel={() => setConfirmDialog({ isOpen: false, type: null, data: null, isLoading: false })}
+          isLoading={confirmDialog.isLoading}
+        />
+      )}
+
+      {confirmDialog.type === 'add-expense' && (
+        <ConfirmDialog
+          isOpen={confirmDialog.isOpen}
+          title="Confirm Expense"
+          message="Add this expense transaction?"
+          details={`Amount: ₹${confirmDialog.data?.amount?.toLocaleString('en-IN')} | Category: ${confirmDialog.data?.category}`}
+          confirmText="Add Expense"
+          cancelText="Cancel"
+          onConfirm={handleConfirmAdd}
+          onCancel={() => setConfirmDialog({ isOpen: false, type: null, data: null, isLoading: false })}
+          isLoading={confirmDialog.isLoading}
+        />
+      )}
+
+      {confirmDialog.type === 'delete' && (
+        <ConfirmDialog
+          isOpen={confirmDialog.isOpen}
+          title="Delete Transaction"
+          message="Are you sure you want to delete this transaction? This cannot be undone."
+          details={`Amount: ₹${confirmDialog.data?.transaction?.amount?.toLocaleString('en-IN')} | Type: ${confirmDialog.data?.transaction?.type}`}
+          confirmText="Delete"
+          cancelText="Cancel"
+          onConfirm={handleConfirmDelete}
+          onCancel={() => setConfirmDialog({ isOpen: false, type: null, data: null, isLoading: false })}
+          isLoading={confirmDialog.isLoading}
+          isDangerous={true}
+        />
+      )}
     </motion.div>
   );
 }
