@@ -1,3 +1,5 @@
+console.log('🚀 [BOOTSTRAP] main.jsx - App is loading');
+
 import React from 'react'
 import ReactDOM from 'react-dom/client'
 import App from './App'
