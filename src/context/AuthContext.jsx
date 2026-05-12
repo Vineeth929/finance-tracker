@@ -14,26 +14,38 @@ export const AuthProvider = ({ children }) => {
   // Check if user is logged in on mount
   useEffect(() => {
     const token = localStorage.getItem('authToken');
+    console.log('🔄 AuthProvider mounted');
+    console.log('   Token in storage:', !!token);
+
     if (token) {
       verifyToken(token);
     } else {
+      console.log('   No token, marking as loaded');
       setLoading(false);
     }
   }, []);
 
   const verifyToken = async (token) => {
     try {
+      console.log('🔐 Starting token verification...');
       setLoading(true);
       const response = await apiClient.auth.getUser(token);
-      if (response) {
+
+      if (response && response.id) {
+        console.log('✅ Token verified, user ID:', response.id);
         setUser(response);
         setError(null);
+      } else {
+        console.error('❌ Invalid response from token verification');
+        localStorage.removeItem('authToken');
+        setUser(null);
       }
     } catch (err) {
-      console.error('Token verification failed:', err);
+      console.error('❌ Token verification failed:', err.message);
       localStorage.removeItem('authToken');
       setUser(null);
     } finally {
+      console.log('✅ Token verification complete');
       setLoading(false);
     }
   };

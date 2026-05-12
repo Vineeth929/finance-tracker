@@ -79,13 +79,19 @@ class APIClient {
     login: (email, password) =>
       this.post('/auth/login', { email, password }),
 
-    getUser: (token) => {
-      // Special case: use provided token instead of stored token
+    getUser: async (token) => {
+      // CRITICAL FIX: Use async/await to ensure token stays set during request
       const originalGetToken = this.getToken;
       this.getToken = () => token;
-      const result = this.get('/auth/me');
-      this.getToken = originalGetToken;
-      return result;
+      try {
+        console.log('🔐 Verifying token...');
+        const result = await this.get('/auth/me');
+        console.log('✅ Token verified, user:', result?.id);
+        return result;
+      } finally {
+        // Restore AFTER the async request completes
+        this.getToken = originalGetToken;
+      }
     },
 
     me: () => this.get('/auth/me'),
