@@ -81,14 +81,28 @@ class APIClient {
 
     getUser: async (token) => {
       // CRITICAL FIX: Use async/await to ensure token stays set during request
+      console.log('🔐 [GETUSER] Starting token verification');
+      console.log('   Token provided:', token?.substring(0, 20) + '...');
+
       const originalGetToken = this.getToken;
       this.getToken = () => token;
+
       try {
-        console.log('🔐 Verifying token...');
+        console.log('🔐 [GETUSER] Calling GET /auth/me with token set...');
         const result = await this.get('/auth/me');
-        console.log('✅ Token verified, user:', result?.id);
+
+        console.log('✅ [GETUSER] API response received');
+        console.log('   Response object:', result);
+        console.log('   Has _id:', !!result?._id);
+        console.log('   Has id:', !!result?.id);
+        console.log('   User ID:', result?._id || result?.id);
+
         return result;
+      } catch (err) {
+        console.error('❌ [GETUSER] API call failed:', err.message);
+        throw err;
       } finally {
+        console.log('🔐 [GETUSER] Restoring original token getter');
         // Restore AFTER the async request completes
         this.getToken = originalGetToken;
       }
