@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
+import { useModals } from '../context/ModalContext';
 
 export default function AddExpense({ onAddExpense }) {
+  const { showToast } = useModals();
   const [formData, setFormData] = useState({
     amount: '',
     category: 'Needs',
@@ -36,7 +38,7 @@ export default function AddExpense({ onAddExpense }) {
   const handleSubmit = (e) => {
     e.preventDefault();
     if (!formData.amount || formData.amount <= 0) {
-      alert('Please enter a valid amount');
+      showToast('Please enter a valid amount', 'error');
       return;
     }
 

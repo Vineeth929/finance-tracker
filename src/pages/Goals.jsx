@@ -9,7 +9,6 @@ import ProgressAnimation from '../components/ui/ProgressAnimation';
 import MilestoneCard from '../components/ui/MilestoneCard';
 import CuriosityWidget from '../components/ui/CuriosityWidget';
 import SkeletonLoader from '../components/ui/SkeletonLoader';
-import ConfirmDialog from '../components/ui/ConfirmDialog';
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -33,26 +32,20 @@ const itemVariants = {
 
 export default function GoalsPage() {
   const { goals = [], addGoal, deleteGoal } = useApp();
-  const { showToast } = useModals();
+  const { showToast, showModal, closeModal } = useModals();
   const { categories, loading: categoriesLoading, error: categoriesError, validateCategory, getValidCategoryIds } = useGoalCategories();
 
   const [showAddForm, setShowAddForm] = useState(false);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [pendingDeleteId, setPendingDeleteId] = useState(null);
+  const [pendingCreateData, setPendingCreateData] = useState(null);
   const [formData, setFormData] = useState({
     title: '',
     description: '',
     targetAmount: '',
     deadline: '',
     category: '', // Will be set once categories load
-  });
-
-  // Confirm dialog state
-  const [confirmDialog, setConfirmDialog] = useState({
-    isOpen: false,
-    type: null, // 'create' or 'delete'
-    data: null,
-    isLoading: false
   });
 
   // Update formData category when categories load
@@ -102,12 +95,22 @@ export default function GoalsPage() {
         throw new Error(`Category "${selectedCategory.label}" is inactive. Please select another.`);
       }
 
-      // Show confirmation dialog
-      setConfirmDialog({
-        isOpen: true,
-        type: 'create',
-        data: { ...formData, selectedCategory, targetAmount: parseFloat(formData.targetAmount) },
-        isLoading: false
+      // Store pending data and show confirmation via global modal
+      const goalData = { ...formData, selectedCategory, targetAmount: parseFloat(formData.targetAmount) };
+      setPendingCreateData(goalData);
+
+      showModal({
+        type: 'confirm',
+        title: 'Create New Goal',
+        message: 'Create this savings goal?',
+        details: `${selectedCategory.icon} ${formData.title} • ₹${parseFloat(formData.targetAmount).toLocaleString('en-IN')}`,
+        confirmText: 'Create Goal',
+        cancelText: 'Cancel',
+        isDangerous: false,
+        onConfirm: handleConfirmAddGoal,
+        onCancel: () => {
+          setPendingCreateData(null);
+        }
       });
     } catch (err) {
       setError(err.message);
@@ -116,9 +119,10 @@ export default function GoalsPage() {
   };
 
   const handleConfirmAddGoal = async () => {
-    setConfirmDialog(prev => ({ ...prev, isLoading: true }));
+    if (!pendingCreateData) return;
+
     try {
-      const { selectedCategory, targetAmount, ...goalData } = confirmDialog.data;
+      const { selectedCategory, targetAmount, ...goalData } = pendingCreateData;
       await addGoal({
         ...goalData,
         targetAmount,
@@ -139,39 +143,45 @@ export default function GoalsPage() {
       });
       setShowAddForm(false);
       setError(null);
-      setConfirmDialog({ isOpen: false, type: null, data: null, isLoading: false });
+      setPendingCreateData(null);
     } catch (err) {
       setError(err.message);
       showToast(`Failed to create goal: ${err.message}`, 'error');
       console.error('❌ Failed to add goal:', err);
-    } finally {
-      setConfirmDialog(prev => ({ ...prev, isLoading: false }));
     }
   };
 
   const handleDeleteGoal = (goalId) => {
     const goal = goals.find(g => g._id === goalId);
-    setConfirmDialog({
-      isOpen: true,
-      type: 'delete',
-      data: { id: goalId, goal },
-      isLoading: false
+    setPendingDeleteId(goalId);
+
+    showModal({
+      type: 'confirm',
+      title: 'Delete Goal',
+      message: 'Are you sure you want to delete this goal? This cannot be undone.',
+      details: `${goal?.title} • ₹${goal?.targetAmount?.toLocaleString('en-IN')}`,
+      confirmText: 'Delete Goal',
+      cancelText: 'Cancel',
+      isDangerous: true,
+      onConfirm: handleConfirmDelete,
+      onCancel: () => {
+        setPendingDeleteId(null);
+      }
     });
   };
 
   const handleConfirmDelete = async () => {
-    setConfirmDialog(prev => ({ ...prev, isLoading: true }));
+    if (!pendingDeleteId) return;
+
     try {
-      await deleteGoal(confirmDialog.data.id);
+      await deleteGoal(pendingDeleteId);
       showToast('Goal deleted successfully', 'success');
-      setConfirmDialog({ isOpen: false, type: null, data: null, isLoading: false });
+      setPendingDeleteId(null);
     } catch (err) {
       const errorMsg = `Failed to delete goal: ${err.message}`;
       setError(errorMsg);
       showToast(errorMsg, 'error');
       console.error('Failed to delete goal:', err);
-    } finally {
-      setConfirmDialog(prev => ({ ...prev, isLoading: false }));
     }
   };
 
@@ -627,36 +637,6 @@ export default function GoalsPage() {
             ))}
           </motion.div>
         </motion.div>
-      )}
-
-      {/* Confirmation Dialogs */}
-      {confirmDialog.type === 'create' && (
-        <ConfirmDialog
-          isOpen={confirmDialog.isOpen}
-          title="Create New Goal"
-          message="Create this savings goal?"
-          details={`${confirmDialog.data?.selectedCategory?.icon} ${confirmDialog.data?.title} • ₹${confirmDialog.data?.targetAmount?.toLocaleString('en-IN')}`}
-          confirmText="Create Goal"
-          cancelText="Cancel"
-          onConfirm={handleConfirmAddGoal}
-          onCancel={() => setConfirmDialog({ isOpen: false, type: null, data: null, isLoading: false })}
-          isLoading={confirmDialog.isLoading}
-        />
-      )}
-
-      {confirmDialog.type === 'delete' && (
-        <ConfirmDialog
-          isOpen={confirmDialog.isOpen}
-          title="Delete Goal"
-          message="Are you sure you want to delete this goal? This cannot be undone."
-          details={`${confirmDialog.data?.goal?.title} • ₹${confirmDialog.data?.goal?.targetAmount?.toLocaleString('en-IN')}`}
-          confirmText="Delete Goal"
-          cancelText="Cancel"
-          onConfirm={handleConfirmDelete}
-          onCancel={() => setConfirmDialog({ isOpen: false, type: null, data: null, isLoading: false })}
-          isLoading={confirmDialog.isLoading}
-          isDangerous={true}
-        />
       )}
 
     </motion.div>

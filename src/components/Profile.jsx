@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { useModals } from '../context/ModalContext';
 
 export default function Profile() {
   const navigate = useNavigate();
   const { user, updateProfile, updatePassword, logout } = useAuth();
+  const { showModal } = useModals();
   const [activeTab, setActiveTab] = useState('profile');
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState('');
@@ -101,10 +103,19 @@ export default function Profile() {
   };
 
   const handleLogout = () => {
-    if (window.confirm('Are you sure you want to log out?')) {
-      logout();
-      navigate('/login');
-    }
+    showModal({
+      type: 'confirm',
+      title: 'Confirm Logout',
+      message: 'Are you sure you want to log out?',
+      details: 'You will need to sign in again to access your account.',
+      confirmText: 'Logout',
+      cancelText: 'Cancel',
+      isDangerous: true,
+      onConfirm: () => {
+        logout();
+        navigate('/login');
+      }
+    });
   };
 
   return (

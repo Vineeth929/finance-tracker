@@ -1,20 +1,14 @@
 import React, { useState } from 'react';
 import { calculateBudgetStatus } from '../utils/calculations';
 import { useModals } from '../context/ModalContext';
-import ConfirmDialog from './ui/ConfirmDialog';
 
 const CATEGORIES = ['Needs', 'Wants', 'Savings & Investment'];
 
 export default function BudgetPlanner({ transactions, budgets, onBudgetChange, selectedMonth }) {
-  const { showToast } = useModals();
+  const { showToast, showModal } = useModals();
   const [editingCategory, setEditingCategory] = useState(null);
   const [inputValue, setInputValue] = useState('');
-  const [confirmDialog, setConfirmDialog] = useState({
-    isOpen: false,
-    category: null,
-    newAmount: 0,
-    isLoading: false
-  });
+  const [pendingBudgetUpdate, setPendingBudgetUpdate] = useState(null);
 
   const safeBudgets = budgets || { Needs: 0, Wants: 0, 'Savings & Investment': 0 };
   const safeTransactions = Array.isArray(transactions) ? transactions : [];
@@ -27,27 +21,35 @@ export default function BudgetPlanner({ transactions, budgets, onBudgetChange, s
 
   const handleSaveBudget = (category) => {
     const amount = parseFloat(inputValue) || 0;
-    setConfirmDialog({
-      isOpen: true,
-      category,
-      newAmount: amount,
-      isLoading: false
+    setPendingBudgetUpdate({ category, newAmount: amount });
+
+    showModal({
+      type: 'confirm',
+      title: `Update ${category} Budget`,
+      message: `Set ${category} budget to ₹${amount.toLocaleString('en-IN')}?`,
+      details: `Current budget: ₹${(safeBudgets[category] || 0).toLocaleString('en-IN')}`,
+      confirmText: 'Update Budget',
+      cancelText: 'Cancel',
+      isDangerous: false,
+      onConfirm: handleConfirmBudget,
+      onCancel: () => {
+        setPendingBudgetUpdate(null);
+      }
     });
   };
 
   const handleConfirmBudget = async () => {
-    setConfirmDialog(prev => ({ ...prev, isLoading: true }));
+    if (!pendingBudgetUpdate) return;
+
     try {
-      const { category, newAmount } = confirmDialog;
+      const { category, newAmount } = pendingBudgetUpdate;
       await onBudgetChange({ ...safeBudgets, [category]: newAmount });
       showToast(`${category} budget updated to ₹${newAmount.toLocaleString('en-IN')}`, 'success');
       setEditingCategory(null);
-      setConfirmDialog({ isOpen: false, category: null, newAmount: 0, isLoading: false });
+      setPendingBudgetUpdate(null);
     } catch (err) {
       showToast(`Failed to update budget: ${err.message}`, 'error');
       console.error('Failed to update budget:', err);
-    } finally {
-      setConfirmDialog(prev => ({ ...prev, isLoading: false }));
     }
   };
 
@@ -97,19 +99,6 @@ export default function BudgetPlanner({ transactions, budgets, onBudgetChange, s
           );
         })}
       </div>
-
-      {/* Confirm Budget Update Dialog */}
-      <ConfirmDialog
-        isOpen={confirmDialog.isOpen}
-        title={`Update ${confirmDialog.category} Budget`}
-        message={`Set ${confirmDialog.category} budget to ₹${confirmDialog.newAmount.toLocaleString('en-IN')}?`}
-        details={`Current budget: ₹${(safeBudgets[confirmDialog.category] || 0).toLocaleString('en-IN')}`}
-        confirmText="Update Budget"
-        cancelText="Cancel"
-        onConfirm={handleConfirmBudget}
-        onCancel={() => setConfirmDialog({ isOpen: false, category: null, newAmount: 0, isLoading: false })}
-        isLoading={confirmDialog.isLoading}
-      />
 
     </div>
   );
