@@ -165,17 +165,6 @@ export default function GoalsPage() {
     }
   };
 
-  const handleDeleteGoal = async (goalId) => {
-    if (!window.confirm('Are you sure you want to delete this goal?')) return;
-
-    try {
-      await deleteGoal(goalId);
-    } catch (err) {
-      setError(`Failed to delete goal: ${err.message}`);
-      console.error('Failed to delete goal:', err);
-    }
-  };
-
   const getProgress = (goal) => {
     return goal?.targetAmount > 0
       ? ((goal?.currentAmount || 0) / goal.targetAmount) * 100
