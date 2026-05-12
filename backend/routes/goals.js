@@ -9,12 +9,19 @@ async function validateCategoryExists(req, res, next) {
   if (req.body.category) {
     try {
       // Normalize the category ID (trim whitespace, lowercase)
-      const categoryId = (req.body.category || '').trim().toLowerCase();
+      let categoryId = (req.body.category || '').trim().toLowerCase();
 
       if (!categoryId) {
         return res.status(400).json({
           error: 'Category ID cannot be empty'
         });
+      }
+
+      // Backwards compatibility: map old "general" category to "other"
+      if (categoryId === 'general') {
+        console.log('🔄 Migrating legacy category: "general" → "other"');
+        categoryId = 'other';
+        req.body.category = 'other'; // Update the request body
       }
 
       console.log(`🔍 Validating category: "${categoryId}"`);
