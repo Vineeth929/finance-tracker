@@ -14,7 +14,7 @@ const app = express();
 const PORT = process.env.PORT || 5000;
 console.log('🎯 Server will listen on port:', PORT);
 
-// Production-grade CORS configuration with environment variables
+// ====== CORS MUST BE FIRST ======
 const defaultAllowedOrigins = [
   'https://vineeth929.github.io',
   'http://localhost:5173',
@@ -29,26 +29,37 @@ const allowedOrigins = process.env.ALLOWED_ORIGINS
 
 console.log('🔒 CORS allowed origins:', allowedOrigins);
 
+// CORS options with explicit handlers
 const corsOptions = {
   origin: (origin, callback) => {
-    console.log('📍 Incoming request origin:', origin);
-
+    console.log(`[CORS] Incoming request: ${origin || 'no-origin'}`);
     if (!origin || allowedOrigins.includes(origin)) {
+      console.log(`[CORS] ✅ Origin allowed: ${origin}`);
       callback(null, true);
     } else {
-      console.warn('❌ CORS blocked origin:', origin);
-      callback(new Error('CORS policy violation'));
+      console.warn(`[CORS] ❌ Origin blocked: ${origin}`);
+      callback(new Error('Not allowed by CORS'));
     }
   },
   methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
   credentials: true,
   allowedHeaders: ['Content-Type', 'Authorization'],
+  exposedHeaders: ['Content-Length', 'X-JSON-Response'],
   optionsSuccessStatus: 200,
-  maxAge: 86400
+  maxAge: 3600
 };
 
+// Apply CORS middleware FIRST - before everything
 app.use(cors(corsOptions));
+
+// Handle preflight requests for all routes
 app.options('*', cors(corsOptions));
+
+// Request logger to verify requests reach middleware
+app.use((req, res, next) => {
+  console.log(`[REQUEST] ${req.method} ${req.path} from ${req.headers.origin || 'no-origin'}`);
+  next();
+});
 
 app.use(express.json());
 app.use(generalLimiter);
