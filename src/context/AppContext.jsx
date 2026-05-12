@@ -48,7 +48,16 @@ export const AppProvider = ({ children }) => {
         ...options.headers,
       },
     });
-    if (!response.ok) throw new Error(`API error: ${response.statusText}`);
+    if (!response.ok) {
+      let errorMessage = `API error: ${response.statusText}`;
+      try {
+        const errorData = await response.json();
+        errorMessage = errorData.error || errorData.message || errorMessage;
+      } catch (e) {
+        // Fall back to statusText if response isn't JSON
+      }
+      throw new Error(errorMessage);
+    }
     return response.json();
   };
 
@@ -81,6 +90,8 @@ export const AppProvider = ({ children }) => {
       setGoals(data || []);
     } catch (err) {
       console.error('Failed to fetch goals:', err);
+      setError(err.message);
+      setGoals([]);
     }
   };
 

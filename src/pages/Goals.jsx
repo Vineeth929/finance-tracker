@@ -9,6 +9,7 @@ import MilestoneCard from '../components/ui/MilestoneCard';
 import CuriosityWidget from '../components/ui/CuriosityWidget';
 import SkeletonLoader from '../components/ui/SkeletonLoader';
 import ConfirmDialog from '../components/ui/ConfirmDialog';
+import Toast from '../components/ui/Toast';
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -51,6 +52,13 @@ export default function GoalsPage() {
     type: null, // 'create' or 'delete'
     data: null,
     isLoading: false
+  });
+
+  // Toast notification state
+  const [toast, setToast] = useState({
+    isOpen: false,
+    message: '',
+    type: 'success'
   });
 
   // Update formData category when categories load
@@ -124,6 +132,13 @@ export default function GoalsPage() {
         status: 'Active',
       });
 
+      // Show success toast
+      setToast({
+        isOpen: true,
+        message: `Goal "${goalData.title}" created successfully! 🎯`,
+        type: 'success'
+      });
+
       // Reset form
       setFormData({
         title: '',
@@ -133,9 +148,15 @@ export default function GoalsPage() {
         category: categories.length > 0 ? categories[0].id : '',
       });
       setShowAddForm(false);
+      setError(null);
       setConfirmDialog({ isOpen: false, type: null, data: null, isLoading: false });
     } catch (err) {
       setError(err.message);
+      setToast({
+        isOpen: true,
+        message: `Failed to create goal: ${err.message}`,
+        type: 'error'
+      });
       console.error('❌ Failed to add goal:', err);
     } finally {
       setConfirmDialog(prev => ({ ...prev, isLoading: false }));
@@ -156,9 +177,20 @@ export default function GoalsPage() {
     setConfirmDialog(prev => ({ ...prev, isLoading: true }));
     try {
       await deleteGoal(confirmDialog.data.id);
+      setToast({
+        isOpen: true,
+        message: 'Goal deleted successfully',
+        type: 'success'
+      });
       setConfirmDialog({ isOpen: false, type: null, data: null, isLoading: false });
     } catch (err) {
-      setError(`Failed to delete goal: ${err.message}`);
+      const errorMsg = `Failed to delete goal: ${err.message}`;
+      setError(errorMsg);
+      setToast({
+        isOpen: true,
+        message: errorMsg,
+        type: 'error'
+      });
       console.error('Failed to delete goal:', err);
     } finally {
       setConfirmDialog(prev => ({ ...prev, isLoading: false }));
@@ -648,6 +680,14 @@ export default function GoalsPage() {
           isDangerous={true}
         />
       )}
+
+      {/* Success/Error Toast Notification */}
+      <Toast
+        isOpen={toast.isOpen}
+        message={toast.message}
+        type={toast.type}
+        onClose={() => setToast({ ...toast, isOpen: false })}
+      />
     </motion.div>
   );
 }

@@ -8,6 +8,7 @@ import TransactionList from '../components/TransactionList';
 import NarrativeChart from '../components/ui/NarrativeChart';
 import CuriosityWidget from '../components/ui/CuriosityWidget';
 import ConfirmDialog from '../components/ui/ConfirmDialog';
+import Toast from '../components/ui/Toast';
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -42,6 +43,13 @@ export default function TransactionsPage() {
     isLoading: false
   });
 
+  // Toast notification state
+  const [toast, setToast] = useState({
+    isOpen: false,
+    message: '',
+    type: 'success'
+  });
+
   const handleAddTransaction = async (tx) => {
     setConfirmDialog(prev => ({
       ...prev,
@@ -55,10 +63,20 @@ export default function TransactionsPage() {
     setConfirmDialog(prev => ({ ...prev, isLoading: true }));
     try {
       await addTransaction(confirmDialog.data);
+      setToast({
+        isOpen: true,
+        message: `Transaction added: ₹${confirmDialog.data.amount.toLocaleString('en-IN')} ${confirmDialog.data.type === 'income' ? 'income' : 'expense'}`,
+        type: 'success'
+      });
       setShowAddIncome(false);
       setShowAddExpense(false);
       setConfirmDialog({ isOpen: false, type: null, data: null, isLoading: false });
     } catch (err) {
+      setToast({
+        isOpen: true,
+        message: `Failed to add transaction: ${err.message}`,
+        type: 'error'
+      });
       console.error('Failed to add transaction:', err);
     } finally {
       setConfirmDialog(prev => ({ ...prev, isLoading: false }));
@@ -78,8 +96,18 @@ export default function TransactionsPage() {
     setConfirmDialog(prev => ({ ...prev, isLoading: true }));
     try {
       await deleteTransaction(confirmDialog.data.id);
+      setToast({
+        isOpen: true,
+        message: 'Transaction deleted',
+        type: 'success'
+      });
       setConfirmDialog({ isOpen: false, type: null, data: null, isLoading: false });
     } catch (err) {
+      setToast({
+        isOpen: true,
+        message: `Failed to delete transaction: ${err.message}`,
+        type: 'error'
+      });
       console.error('Failed to delete transaction:', err);
     } finally {
       setConfirmDialog(prev => ({ ...prev, isLoading: false }));
@@ -291,6 +319,14 @@ export default function TransactionsPage() {
           isDangerous={true}
         />
       )}
+
+      {/* Success/Error Toast Notification */}
+      <Toast
+        isOpen={toast.isOpen}
+        message={toast.message}
+        type={toast.type}
+        onClose={() => setToast({ ...toast, isOpen: false })}
+      />
     </motion.div>
   );
 }
