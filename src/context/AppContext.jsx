@@ -177,14 +177,14 @@ export const AppProvider = ({ children }) => {
   const logout = () => {
     setUser(null);
     setTransactions([]);
-    setBudgets(null);
+    setBudgets({ Needs: 0, Wants: 0, 'Savings & Investment': 0 });
     setGoals([]);
     setNotifications([]);
-    localStorage.removeItem('token');
+    localStorage.removeItem('authToken');
   };
 
   useEffect(() => {
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem('authToken');
     if (token) {
       fetchTransactions();
       fetchBudgets();

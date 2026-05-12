@@ -1,4 +1,5 @@
 import React, { useEffect } from 'react';
+import ReactDOM from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 
 export default function ConfirmDialog({
@@ -28,7 +29,11 @@ export default function ConfirmDialog({
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [isOpen, isLoading, onCancel]);
 
-  return (
+  const modalRoot = document.getElementById('modal-root');
+
+  if (!isOpen || !modalRoot) return null;
+
+  return ReactDOM.createPortal(
     <AnimatePresence>
       {isOpen && (
         <>
@@ -122,6 +127,7 @@ export default function ConfirmDialog({
           </motion.div>
         </>
       )}
-    </AnimatePresence>
+    </AnimatePresence>,
+    modalRoot
   );
 }
