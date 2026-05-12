@@ -24,24 +24,44 @@ export function useInitializeApp() {
   const { fetchGoals, fetchTransactions, fetchBudgets } = useApp();
 
   useEffect(() => {
+    console.log('🔄 useInitializeApp effect triggered');
+    console.log('   authLoading:', authLoading);
+    console.log('   user:', user?.id || 'NOT SET');
+
     // Only fetch data AFTER auth is verified (not loading)
     // and we know whether user is authenticated
     if (!authLoading) {
+      console.log('✅ Auth loading complete');
+
       if (user) {
+        console.log('👤 User authenticated:', user.id);
+        console.log('📥 Fetching data...');
+
         // User is authenticated, safe to fetch data
         // Use allSettled to prevent one failure from blocking others
         Promise.allSettled([
           fetchTransactions(),
           fetchBudgets(),
           fetchGoals(),
-        ]).catch(err => {
+        ]).then((results) => {
+          console.log('✅ All data fetches completed');
+          results.forEach((result, idx) => {
+            const name = ['transactions', 'budgets', 'goals'][idx];
+            if (result.status === 'fulfilled') {
+              console.log(`   ✅ ${name}: loaded`);
+            } else {
+              console.log(`   ❌ ${name}: ${result.reason.message}`);
+            }
+          });
+        }).catch(err => {
           // allSettled shouldn't reject, but just in case
-          console.error('Data fetch error:', err);
+          console.error('❌ Data fetch error:', err);
         });
       } else {
-        // Auth verification completed but no user (not logged in)
-        // Don't fetch data, let app show login page
+        console.log('🚪 User not authenticated, skipping data fetch');
       }
+    } else {
+      console.log('⏳ Waiting for auth to load...');
     }
   }, [authLoading, user, fetchGoals, fetchTransactions, fetchBudgets]);
 

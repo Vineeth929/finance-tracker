@@ -65,10 +65,18 @@ export const AppProvider = ({ children }) => {
 
   const fetchGoals = async () => {
     try {
+      console.log('📥 Fetching goals from API...');
+      const token = localStorage.getItem('authToken');
+      console.log('🔐 Auth token present:', !!token);
+
       const data = await apiClient.goals.list();
+      console.log('✅ Goals fetched:', data);
+      console.log('📊 Total goals:', Array.isArray(data) ? data.length : 'ERROR - not an array');
+
       setGoals(data || []);
     } catch (err) {
-      console.error('Failed to fetch goals:', err);
+      console.error('❌ Failed to fetch goals:', err.message);
+      console.error('Error details:', err);
       setError(err.message);
       setGoals([]);
     }
@@ -108,10 +116,22 @@ export const AppProvider = ({ children }) => {
 
   const addGoal = async (goal) => {
     try {
+      console.log('📤 Creating goal:', goal);
       const newGoal = await apiClient.goals.create(goal);
+      console.log('✅ API response:', newGoal);
+
+      // CRITICAL: Verify response is actually a valid goal
+      if (!newGoal || !newGoal._id) {
+        const errorMsg = 'API returned invalid goal object';
+        console.error('❌ ' + errorMsg, newGoal);
+        throw new Error(errorMsg);
+      }
+
+      console.log('💾 Adding to local state:', newGoal._id);
       setGoals([...goals, newGoal]);
       return newGoal;
     } catch (err) {
+      console.error('❌ Failed to create goal:', err.message);
       setError(err.message);
       throw err;
     }
@@ -141,9 +161,15 @@ export const AppProvider = ({ children }) => {
 
   const deleteGoal = async (id) => {
     try {
+      console.log('🗑️ Deleting goal:', id);
       await apiClient.goals.delete(id);
+      console.log('✅ Goal deleted from API');
+
+      // Only remove from state AFTER backend confirms deletion
       setGoals(goals.filter(g => g._id !== id));
+      console.log('💾 Updated local state, removed goal:', id);
     } catch (err) {
+      console.error('❌ Failed to delete goal:', err.message);
       setError(err.message);
       throw err;
     }

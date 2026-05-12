@@ -122,13 +122,18 @@ export default function GoalsPage() {
     if (!pendingCreateData) return;
 
     try {
+      console.log('🚀 handleConfirmAddGoal started');
       const { selectedCategory, targetAmount, ...goalData } = pendingCreateData;
-      await addGoal({
+      const goalPayload = {
         ...goalData,
         targetAmount,
         currentAmount: 0,
         status: 'Active',
-      });
+      };
+      console.log('📝 Goal payload:', goalPayload);
+
+      const result = await addGoal(goalPayload);
+      console.log('✅ Goal created successfully:', result);
 
       // Show success toast
       showToast(`Goal "${goalData.title}" created successfully! 🎯`, 'success');
@@ -144,10 +149,12 @@ export default function GoalsPage() {
       setShowAddForm(false);
       setError(null);
       setPendingCreateData(null);
+
+      console.log('✨ Form reset, state cleared');
     } catch (err) {
+      console.error('❌ Goal creation failed:', err.message);
       setError(err.message);
       showToast(`Failed to create goal: ${err.message}`, 'error');
-      console.error('❌ Failed to add goal:', err);
     }
   };
 
