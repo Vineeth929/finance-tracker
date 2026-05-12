@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 export default function ConfirmDialog({
@@ -14,6 +14,20 @@ export default function ConfirmDialog({
   isDangerous = false, // red styling for delete operations
   children
 }) {
+  // Handle ESC key to dismiss dialog
+  useEffect(() => {
+    if (!isOpen) return;
+
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape' && !isLoading) {
+        onCancel();
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isOpen, isLoading, onCancel]);
+
   return (
     <AnimatePresence>
       {isOpen && (
@@ -25,6 +39,7 @@ export default function ConfirmDialog({
             exit={{ opacity: 0 }}
             onClick={onCancel}
             className="fixed inset-0 bg-black/50 z-40"
+            aria-hidden="true"
           />
 
           {/* Dialog */}
@@ -33,18 +48,23 @@ export default function ConfirmDialog({
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.95 }}
             className="fixed inset-0 z-50 flex items-center justify-center p-4"
+            role="presentation"
           >
             <div
               className="rounded-lg p-6 max-w-md w-full shadow-2xl"
               style={{ background: 'var(--glass-bg)', border: '1px solid var(--glass-border)' }}
+              role="alertdialog"
+              aria-modal="true"
+              aria-labelledby="dialog-title"
+              aria-describedby="dialog-message"
             >
               {/* Title */}
-              <h2 className="text-xl font-bold mb-3 gradient-text">
+              <h2 id="dialog-title" className="text-xl font-bold mb-3 gradient-text">
                 {title}
               </h2>
 
               {/* Message */}
-              <p className="mb-4" style={{ color: 'var(--text-secondary)' }}>
+              <p id="dialog-message" className="mb-4" style={{ color: 'var(--text-secondary)' }}>
                 {message}
               </p>
 

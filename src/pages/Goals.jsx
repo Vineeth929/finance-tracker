@@ -383,11 +383,11 @@ export default function GoalsPage() {
                   <motion.button
                     type="submit"
                     className="btn btn-primary flex-1"
-                    disabled={loading}
+                    disabled={loading || confirmDialog.isOpen}
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
                   >
-                    {loading ? 'Creating...' : 'Create Goal'}
+                    {confirmDialog.isOpen ? 'Confirming...' : loading ? 'Creating...' : 'Create Goal'}
                   </motion.button>
                   <motion.button
                     type="button"
